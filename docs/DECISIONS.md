@@ -4,19 +4,19 @@ This file records decisions that should survive individual development sessions.
 
 ## D001 — Files first, no application/database in V1
 
-Decision: canonical state is stored as readable YAML/Markdown in Git. Local scripts perform deterministic maintenance.
+Decision: canonical state is stored as readable JSON/Markdown in Git. Local scripts perform deterministic maintenance.
 
 Reason: the dataset is small, AI-readable files are the product's core value, Git already provides history, and a database/UI would add maintenance cost before it solves a real problem.
 
 Status: accepted.
 
-## D002 — Canonical YAML and generated `CURRENT.md`
+## D002 — Canonical JSON and generated `CURRENT.md`
 
-Decision: `context/` is authoritative. `CURRENT.md` is a compact, generated convenience view for fast AI reading.
+Decision: `context/` is authoritative structured JSON. `CURRENT.md` is a compact, generated convenience view for fast AI reading.
 
-Reason: one canonical truth avoids drift while still allowing a highly efficient entry point for web and local agents.
+Reason: PowerShell 7 can read/write JSON without extra modules; JSON is easy for AI and future Rust/TypeScript tooling to consume, supports deterministic serialization/schema validation, and avoids adding a YAML parser solely for maintenance scripts.
 
-Status: accepted.
+Status: accepted. This supersedes the bootstrap-only YAML choice before any real machine data was committed.
 
 ## D003 — Collection by allowlist
 
@@ -28,9 +28,9 @@ Status: accepted.
 
 ## D004 — Detect facts, maintain semantics
 
-Decision: objective facts such as versions, executable paths, disk free space, and command resolution should be detected locally where practical. Semantic facts such as `primary`, `legacy`, project lifecycle, and preferred install roots may be maintained by the user/agent.
+Decision: objective facts such as versions, executable paths, disk free space, and command resolution should be detected locally where practical. Semantic facts such as `primary`, `legacy`, project lifecycle, and preferred install roots may be maintained by the user/agent. Canonical records separate `observed` and `curated` ownership so routine scans cannot erase semantic context.
 
-Reason: scripts are better at repeatable observation; AI/user judgment is better at meaning and intent.
+Reason: scripts are better at repeatable observation; AI/user judgment is better at meaning and intent. Mixing ownership in the same flat fields creates inevitable merge/overwrite bugs.
 
 Status: accepted.
 
@@ -71,5 +71,93 @@ Status: accepted.
 Decision: the GitHub repository remains private, yet committed data is treated as potentially exposable. Secret values are never stored.
 
 Reason: private repository access is a useful boundary, not a substitute for correct secret handling.
+
+Status: accepted.
+
+## D010 — Layered discovery, not brute-force full-disk walking
+
+Decision: discovery combines structured OS/tool sources, targeted probes, configured roots, and optional indexed broad discovery. Raw whole-disk recursive traversal is never the default fallback.
+
+Reason: completeness comes from combining evidence sources, not reading millions of unrelated files. Brute-force walking is slow, noisy, privacy-heavy, and still cannot identify the effective/primary installation correctly.
+
+Status: accepted.
+
+## D011 — Discovery candidates are not canonical facts
+
+Decision: broad filesystem/index/config hits first become local candidates/observations. They require reconciliation and appropriate verification before promotion to canonical context.
+
+Reason: a file named `node.exe`, a stale config directory, or a copied repository does not prove a currently usable/meaningful entity.
+
+Status: accepted.
+
+## D012 — Stable identity with multi-source evidence
+
+Decision: one real entity may have evidence from Registry, winget, PATH, config, package manager, and filesystem discovery. Reconciliation merges these under a stable ID. Display name or path alone is not a universal identity key.
+
+Reason: otherwise one application appears multiple times and a simple install-path move looks like remove+add.
+
+Status: accepted.
+
+## D013 — Fast path, discovery path, enrichment path
+
+Decision: V1 exposes distinct scan profiles: Quick for routine verification, Discover for broad unknown discovery, Enrich for expensive selected details, and Full for Initial Audit (`Quick + Discover + selective Enrich`).
+
+Reason: “complete” must not mean “do every expensive operation on every sync”. This keeps routine maintenance quick without giving up broad initial/periodic coverage.
+
+Status: accepted.
+
+## D014 — Provider health governs absence semantics
+
+Decision: every collector/provider reports `success`, `partial`, `unavailable`, `timed_out`, or `failed`. Missing output can only become negative evidence when the provider completed successfully and actually covers that fact.
+
+Reason: a failed Docker/winget/runtime probe must not make MachineContext conclude that previously known software was uninstalled.
+
+Status: accepted.
+
+## D015 — Windows installed-app inventory uses Registry/winget, not `Win32_Product`
+
+Decision: V1 uses Add/Remove Programs Registry data as the structured installed-app baseline and winget as package identity/update-channel enrichment. `Win32_Product` / `wmic product` is prohibited for routine inventory.
+
+Reason: `Win32_Product` is incomplete for non-MSI software, slow, and can initiate Windows Installer consistency checks. Registry/winget are safer and more relevant to installation/update planning.
+
+Status: accepted.
+
+## D016 — Everything is an optional discovery accelerator
+
+Decision: if Everything/`es.exe` already exists, Discover may use its index to find project fingerprints and portable/custom-install candidates. MachineContext never auto-installs/configures Everything and must have a bounded fallback.
+
+Reason: its index can dramatically improve unknown discovery on multi-drive Windows machines, but product correctness must not depend on a third-party background service.
+
+Status: accepted.
+
+## D017 — Windows host and WSL are separate scopes
+
+Decision: V1 records WSL presence/distros/host relationships but does not flatten Linux runtimes/tools into the Windows host inventory. Deeper WSL inventory is a future scoped-context extension.
+
+Reason: command resolution, package managers, paths, and installed versions differ by environment. Flattening them would create misleading answers.
+
+Status: accepted.
+
+## D018 — Atomic publication through staging
+
+Decision: collectors write proposed state under ignored local staging, then reconciliation/validation/privacy/rendering completes before canonical files are replaced. A failed scan must not leave partially updated context.
+
+Reason: reliability and maintainability matter more than directly streaming probe results into Git files.
+
+Status: accepted.
+
+## D019 — Exact per-item check timestamps stay local by default
+
+Decision: exact per-item/per-provider `last_checked_at` lives in `.local` state. Committed `context/status.json` holds only compact published freshness/provider-health information. Repeated scans with unchanged facts should not rewrite every entity solely to change timestamps.
+
+Reason: this preserves freshness diagnostics without creating huge meaningless Git diffs on every run.
+
+Status: accepted.
+
+## D020 — No shell command strings by default
+
+Decision: shared probe execution resolves an executable and passes an argument list, with timeout, process-tree cancellation, stdout/stderr/exit-code handling, and output caps. Shell execution is opt-in only when a probe genuinely requires shell semantics.
+
+Reason: this avoids quoting/injection issues and makes behavior predictable across non-default paths and localized Windows environments.
 
 Status: accepted.
