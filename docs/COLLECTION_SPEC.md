@@ -41,6 +41,7 @@ V1 采集：
 - locale / preferred UI language（如果可安全、稳定检测）；
 - timezone；
 - PowerShell execution environment 中与脚本兼容性有关的信息；
+- Developer Mode、long-path support、virtualization 等**确实会影响开发/安装决策**的 OS capability（能可靠检测时）；
 - MachineContext 本地根目录。
 
 默认不需要上传：真实 Windows 用户名、机器 hostname、设备序列号、Windows product key、Microsoft account 信息。
@@ -53,6 +54,7 @@ V1 采集：
 - physical memory total；
 - GPU model；
 - GPU VRAM（可靠可得时）；
+- GPU driver version（对 CUDA、本地 AI、渲染/兼容性规划有价值时）；
 - 是否支持/启用常见虚拟化能力，仅在 WSL/Docker 等判断需要时记录。
 
 不要采集硬件序列号或设备唯一标识。
@@ -77,9 +79,12 @@ V1 采集：
 - PowerShell 7 (`pwsh`) version/path；
 - `cmd.exe`；
 - Git Bash / bash 的实际路径；
+- Windows Terminal 等主要 terminal host（如实际使用且可可靠检测）；
+- OpenSSH client/version（如存在，避免读取 private key 内容）；
 - `where.exe` / `Get-Command` 对关键工具的解析结果；
 - WSL version、default distro、已安装 distro 列表（如存在）；
-- PATH 中**与开发/工具规划有关**的条目摘要。
+- PATH 中**与开发/工具规划有关**的条目摘要；
+- 有必要时记录 shell profile/config 的 normalized path 和 exists 状态，不读取敏感内容。
 
 不要无差别上传全部环境变量值。环境变量默认只允许记录经过批准的名称/存在性。
 
@@ -95,6 +100,17 @@ V1 采集：
 - .NET SDK/runtime；
 - Flutter / Dart；
 - Ruby / PHP 等只在实际存在时记录，不要求为了清单安装。
+
+同时检查会改变 runtime 解析/更新方式的版本管理器是否存在，例如：
+
+- nvm-windows / nvm；
+- fnm；
+- Volta；
+- pyenv；
+- asdf；
+- 其他实际存在的 version manager。
+
+版本管理器与 runtime 的 `provided_by` / `managed_by` 关系比单纯记录两个版本更重要。
 
 ## F. Package managers
 
@@ -113,6 +129,8 @@ V1 采集：
 
 除版本/path 外，记录有决策价值的 global prefix/store/cache 位置；不要枚举所有全局 package 作为默认行为。
 
+如果 package manager 使用非默认 registry/mirror/proxy，允许记录**非敏感的 host/策略或“已配置”状态**，不得记录包含凭据的 URL、token 或密码。
+
 ## G. SDK / compiler / build toolchain
 
 至少关注：
@@ -124,8 +142,11 @@ V1 采集：
 - Windows SDK version(s)；
 - CMake；
 - Ninja / Make（如存在）；
-- Android Studio / Android SDK / adb（如存在）；
+- Android Studio / Android SDK / adb / NDK（如存在）；
+- CUDA Toolkit / `nvcc`（如存在且对本机开发有意义）；
 - 其他被长期项目真实使用的 SDK/编译器。
+
+Git 配置只记录会影响跨项目开发行为的非敏感事实（例如 long paths / autocrlf 等确有必要时）；不要把 user.email、credential 或 private remote 数据当默认库存内容。
 
 ## H. Developer applications and cloud CLIs
 
@@ -135,12 +156,16 @@ V1 采集：
 - GitHub CLI (`gh`)；
 - GitHub Desktop（如使用）；
 - Docker Desktop / Docker Engine / Compose；
+- Kubernetes tooling (`kubectl`, minikube/kind 等，如存在)；
 - Supabase CLI；
 - Vercel CLI；
 - Wrangler；
 - Firebase CLI；
 - AWS / Azure / Google Cloud CLI；
+- PostgreSQL/MySQL/MariaDB/Redis 等本地开发服务或 CLI（仅在实际存在/被项目使用时）；
 - 其他长期使用的开发工具。
+
+认证状态可在确有决策价值时以非敏感形式记录，例如“已登录/未登录”或 account alias；不得记录 token/credential 内容。
 
 不存在的工具不用生成大量 `not_installed` 记录；只有当“确认不存在”对当前规划长期有价值时才显式记录。
 
@@ -156,7 +181,7 @@ V1 采集：
 - Gemini CLI（如实际安装）；
 - OpenCodex 或相关 provider/harness；
 - 本地 Codex/OpenAI bridge/server；
-- 与这些工具有关的配置目录、默认 shell、local endpoint/port 等**非敏感事实**。
+- 与这些工具有关的配置目录、默认 shell、local endpoint/port、skills/preset 目录等**非敏感事实**。
 
 认证文件只能记录 `exists` 和必要的 normalized path，绝不读取/提交内容。
 
@@ -170,9 +195,10 @@ V1 采集：
 - 终端是否通常直连等人工语义 policy；
 - approved local developer services 的 bind address、port、用途；
 - localhost bridge/API 服务关系；
-- 与开发有关的重要网络 constraint。
+- 本地数据库、容器 daemon、dev server 等长期服务，仅在确实会影响规划/排障时登记；
+- 与开发有关的重要 DNS/registry/proxy constraint，以非敏感摘要形式记录。
 
-不要上传代理订阅 URL、节点列表、用户名、密码、token 或完整代理配置。
+不要上传代理订阅 URL、节点列表、用户名、密码、token、外网 IP 历史或完整代理配置。
 
 ## K. Projects
 
@@ -190,6 +216,7 @@ V1 采集：
 - manifest/lockfile **路径**；
 - 常用 dev/lint/typecheck/test/build 命令；
 - 常用本地 dev port/url；
+- `.env*` 等敏感配置文件只允许记录文件名/exists 状态，禁止读取值；
 - 对本机环境有影响的 constraints；
 - 与 MachineContext 中工具的 relationship。
 
@@ -208,6 +235,7 @@ V1 采集：
 - 对 winget/vendor installer/portable/package-manager 的偏好；
 - 更新时是否优先沿用原安装渠道；
 - 哪些工具刻意不加 PATH；
+- 哪些工具由 version manager 管理，不应直接覆盖安装；
 - 非默认路径造成的 downstream dependency；
 - 移动/升级某工具前必须检查的关系。
 
@@ -220,14 +248,14 @@ V1 采集：
 - `uses_shell`；
 - `requires`；
 - `uses`；
-- `provided_by`；
+- `provided_by` / `managed_by`；
 - `configured_with`；
 - `reads_auth_from`（只表示关系，不读 auth 内容）；
-- `serves` / `connects_to`；
+- `serves` / `connects_to` / `listens_on`；
 - `deployed_by`；
 - `used_by_project`。
 
-例如“移动 Git Bash 会影响哪个 Agent preset”就应能通过 relationship 回答。
+例如“移动 Git Bash 会影响哪个 Agent preset”或“升级 Node 应该走 installer 还是 version manager”都应能通过 relationship + install metadata 回答。
 
 ## N. Future: general software
 
@@ -239,7 +267,7 @@ V1 采集：
 - `browsers.yaml`：主要浏览器和重要 profile-independent 配置事实；
 - `media.yaml`：只有确实会影响规划时再加。
 
-仍然遵循“有决策价值才记录”。游戏、系统组件、VC redistributable 等不应默认成为完整资产清单。
+未来普通软件仍复用通用软件字段：版本、实际安装路径、role、安装方式、更新方式、关键 data/config path 与验证状态。仍然遵循“有决策价值才记录”，不要演变成所有 Windows package、游戏、系统组件、VC redistributable 的完整资产清单。
 
 ## Refresh policy
 
