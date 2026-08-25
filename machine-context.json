@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "name": "MachineContext",
+  "visibility": "private",
+  "root_hint": "E:\\MachineContext",
+  "entrypoint": "CURRENT.md",
+  "canonical": {
+    "status": "context/status.json",
+    "machine": "context/machine.json",
+    "network": "context/network.json",
+    "conventions": "context/conventions.json",
+    "relationships": "context/relationships.json",
+    "software_index": "context/software/index.json",
+    "projects_index": "context/projects/index.json"
+  },
+  "documentation": {
+    "index": "docs/README.md",
+    "product": "docs/PRODUCT.md",
+    "architecture": "docs/ARCHITECTURE.md",
+    "development": "docs/DEVELOPMENT.md",
+    "collection_spec": "docs/COLLECTION_SPEC.md",
+    "discovery_design": "docs/DISCOVERY_DESIGN.md",
+    "implementation_guide": "docs/IMPLEMENTATION_GUIDE.md",
+    "reference_research": "docs/REFERENCE_RESEARCH.md",
+    "bootstrap_hints": "docs/BOOTSTRAP_HINTS.md",
+    "roadmap": "docs/ROADMAP.md",
+    "decisions": "docs/DECISIONS.md",
+    "devlog": "docs/devlog/README.md"
+  },
+  "policy": {
+    "privacy": "PRIVACY.md",
+    "agent_instructions": "AGENTS.md",
+    "schema_notes": "SCHEMA.md"
+  },
+  "state": {
+    "phase": "bootstrap",
+    "initial_audit_complete": false
+  }
+}
