@@ -1,0 +1,22 @@
+schema_version: 1
+name: MachineContext
+visibility: private
+root_hint: 'E:\MachineContext'
+entrypoint: CURRENT.md
+
+canonical:
+  machine: context/machine.yaml
+  network: context/network.yaml
+  conventions: context/conventions.yaml
+  relationships: context/relationships.yaml
+  software_index: context/software/index.yaml
+  projects_index: context/projects/index.yaml
+
+policy:
+  privacy: PRIVACY.md
+  agent_instructions: AGENTS.md
+  schema_notes: SCHEMA.md
+
+state:
+  phase: bootstrap
+  initial_audit_complete: false
