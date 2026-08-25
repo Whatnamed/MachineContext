@@ -12,6 +12,12 @@ canonical:
   software_index: context/software/index.yaml
   projects_index: context/projects/index.yaml
 
+documentation:
+  product: docs/PRODUCT.md
+  development: docs/DEVELOPMENT.md
+  collection_spec: docs/COLLECTION_SPEC.md
+  bootstrap_hints: docs/BOOTSTRAP_HINTS.md
+
 policy:
   privacy: PRIVACY.md
   agent_instructions: AGENTS.md
