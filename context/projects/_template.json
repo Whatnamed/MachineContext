@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "replace-me",
+  "name": "Replace Me",
+  "observed": {
+    "local_path": null,
+    "repository": null,
+    "runtime_refs": [],
+    "package_manager_refs": [],
+    "tool_refs": [],
+    "service_refs": [],
+    "manifests": [],
+    "commands": {},
+    "local_endpoints": []
+  },
+  "curated": {
+    "status": "active",
+    "purpose": null,
+    "constraints": []
+  }
+}
