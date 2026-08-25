@@ -13,7 +13,7 @@ When working in this repository:
 1. read `CURRENT.md` for the fast machine-context view;
 2. read `machine-context.yaml` for canonical module locations;
 3. read `docs/DEVELOPMENT.md` before implementing repository changes;
-4. read `docs/COLLECTION-SPEC.md` before adding or changing machine collection;
+4. read `docs/COLLECTION_SPEC.md` before adding or changing machine collection;
 5. read `PRIVACY.md` before expanding any data scope.
 
 Do not rely on a chat prompt as the only source for persistent project requirements. Important requirements belong in the repository documentation.
@@ -62,5 +62,5 @@ Initial and audit-style collection must be read-only. Do not install, uninstall,
 - Update `docs/DEVELOPMENT.md` when the active implementation phase changes.
 - Update `docs/DECISIONS.md` when a durable architectural or data-model decision changes.
 - Add a concise entry under `docs/devlog/` for meaningful implementation sessions or migrations.
-- Update `docs/COLLECTION-SPEC.md` before a new category becomes part of normal collection.
+- Update `docs/COLLECTION_SPEC.md` before a new category becomes part of normal collection.
 - Keep `README.md` and `CURRENT.md` concise; detailed explanations belong in `docs/`.
