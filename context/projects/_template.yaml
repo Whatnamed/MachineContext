@@ -1,0 +1,19 @@
+id: replace-me
+name: Replace Me
+status: active
+
+local_path: null
+repository: null
+
+runtime_refs: []
+tool_refs: []
+service_refs: []
+
+manifests: []
+commands: {}
+constraints: []
+
+verification:
+  state: pending
+  source: detected
+  observed_at: null
