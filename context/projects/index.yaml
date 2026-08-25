@@ -1,0 +1,13 @@
+schema_version: 1
+
+projects: []
+
+project_policy:
+  store_environment_level_context_only: true
+  duplicate_full_dependency_manifests: false
+  statuses:
+    - active
+    - paused
+    - maintenance
+    - archived
+    - experimental
