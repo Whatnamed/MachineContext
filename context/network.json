@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "meta": {
+    "state": "bootstrap"
+  },
+  "primary_network": {
+    "observed": {},
+    "curated": {}
+  },
+  "proxy": {
+    "observed": {},
+    "curated": {}
+  },
+  "local_services": [],
+  "ports": [],
+  "constraints": []
+}
