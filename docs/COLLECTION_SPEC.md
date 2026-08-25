@@ -1,36 +1,49 @@
 # MachineContext Collection Spec
 
-本文档是采集范围的正式清单。**不要依赖临时 prompt 决定“这次该查什么”**。本地 collector 和 Agent 应以这里为准；需要新增采集项时先判断是否真的有决策价值，再扩展本规范。
+本文档是 V1 **“什么信息值得长期记录”** 的正式清单。不要依赖临时 prompt 决定本次该查什么。
+
+`DISCOVERY_DESIGN.md` 负责“怎么发现用户自己也忘记的东西”；`IMPLEMENTATION_GUIDE.md` 负责具体实现边界；本文件只负责信息价值与字段范围。
 
 原则：只收集对安装、更新、开发、迁移、排障和常用工具规划有帮助的信息；优先结构化事实，不保存无意义 raw dump；所有敏感边界同时受 `PRIVACY.md` 约束。
 
-## 通用软件记录字段
+## 通用实体模型
 
-对 runtime、CLI、开发工具、AI 工具以及未来普通软件，适用时记录：
+对 runtime、CLI、开发工具、AI 工具以及未来普通软件，适用时使用：
 
-| 字段 | 含义 |
-|---|---|
-| `id` | 稳定、唯一、与版本无关的 ID |
-| `name` | 可读名称 |
-| `category` | runtime / package-manager / sdk / cli / ai-tool / desktop-app 等 |
-| `status` | active / inactive / legacy / testing / broken / unknown |
-| `role` | primary / secondary / project-only / optional |
-| `version` | 当前检测版本 |
-| `executable` | 实际命令解析到的可执行文件路径 |
-| `install.root` | 主要安装根目录（有意义时） |
-| `install.method` | winget / vendor-installer / portable / npm-global / uv-tool / manual 等 |
-| `install.scope` | user / machine / project 等 |
-| `install.in_path` | 是否能通过预期 PATH 解析 |
-| `install.update_method` | 推荐/当前更新途径 |
-| `config_paths` | 有规划价值的配置位置，只记录路径，不读取敏感内容 |
-| `data_paths` | 有规划价值的数据/cache 路径 |
-| `verification.state` | verified / stale / pending / unavailable |
-| `verification.source` | detected / manual / imported / inferred |
-| `verification.observed_at` | ISO-8601 时间 |
-| `verification.command` | 安全的版本/存在性验证命令 |
-| `notes/constraints` | 非默认路径、兼容性、特殊行为等少量关键信息 |
+```text
+id                stable canonical identity
+kind/category     runtime / package-manager / sdk / cli / ai-tool / desktop-app ...
+name              readable display name
+observed           collector/reconciler-owned facts
+curated            user/agent-owned semantics
+```
 
-不相关字段可以省略，不要为了 schema 对齐制造大量 null。
+### 常见 observed fields
+
+- `present`；
+- `version`；
+- `executable` / `command_resolution`；
+- alternative installations（确有价值时）；
+- `install.root`；
+- `install.method`：winget / vendor-installer / portable / npm-global / uv-tool / manual / version-manager 等；
+- `install.scope`：user / machine / project / environment；
+- `install.package_id`；
+- `install.update_method`；
+- `config_paths` / `data_paths`（只记录安全 path/exists 信息）；
+- `evidence`：Registry/winget/command/config/filesystem 等安全来源摘要；
+- 环境 scope（Windows host / WSL / project-local 等需要区分时）。
+
+### 常见 curated fields
+
+- `status`：active / inactive / legacy / testing / broken / unknown；
+- `role`：primary / secondary / project-only / optional；
+- `purpose`；
+- `constraints`；
+- 少量 notes。
+
+不相关字段可以省略。不要为了 schema 对齐制造大量 null。
+
+**Routine collector 只更新 observed，不得覆盖 curated。**
 
 ## A. Machine / OS
 
@@ -38,59 +51,71 @@ V1 采集：
 
 - Windows product/name、edition、version/display version、build number；
 - OS architecture；
-- locale / preferred UI language（如果可安全、稳定检测）；
+- locale / preferred UI language（安全、稳定可得时）；
 - timezone；
 - PowerShell execution environment 中与脚本兼容性有关的信息；
-- Developer Mode、long-path support、virtualization 等**确实会影响开发/安装决策**的 OS capability（能可靠检测时）；
+- Developer Mode、long-path support、virtualization 等确实影响开发/安装决策的 capability；
 - MachineContext 本地根目录。
 
-默认不需要上传：真实 Windows 用户名、机器 hostname、设备序列号、Windows product key、Microsoft account 信息。
+默认不记录：真实 Windows 用户名、hostname、设备序列号、product key、Microsoft account 信息。
 
 ## B. Hardware
 
-V1 采集：
-
-- CPU model、architecture、logical/physical core count（有可靠来源时）；
+- CPU model、architecture、logical/physical core count；
 - physical memory total；
 - GPU model；
 - GPU VRAM（可靠可得时）；
-- GPU driver version（对 CUDA、本地 AI、渲染/兼容性规划有价值时）；
-- 是否支持/启用常见虚拟化能力，仅在 WSL/Docker 等判断需要时记录。
+- GPU driver version（对 CUDA/渲染/本地 AI 兼容性有价值时）；
+- virtualization capability/status（仅在 WSL/Docker/VM 规划需要时）。
 
-不要采集硬件序列号或设备唯一标识。
+不要记录硬件序列号或设备唯一标识。
 
 ## C. Storage / Drive roles
 
-每个长期有意义的 volume 记录：
+每个长期有意义的 volume：
 
 - drive letter / mount point；
 - filesystem；
 - total/free space；
-- type（local/removable 等，可靠可得时）；
-- 语义 role，例如 system / tools / development / projects / media，由检测结果与人工语义共同维护。
+- type（可靠可得时）；
+- curated role：system / tools / development / projects / media 等。
 
-此外归纳重要目录根，例如 `D:\Tools`、`E:\Dev`、项目根等；先检测实际使用，再写入安装规范。
+归纳重要 directory roots，例如 `D:\Tools`、`E:\Dev`、project roots。先检测真实使用，再形成 conventions。
 
-## D. Shells and command resolution
+## D. Shells / terminal / command resolution
 
-明确检查：
+检查：
 
-- Windows PowerShell（如存在）；
+- Windows PowerShell；
 - PowerShell 7 (`pwsh`) version/path；
 - `cmd.exe`；
-- Git Bash / bash 的实际路径；
-- Windows Terminal 等主要 terminal host（如实际使用且可可靠检测）；
-- OpenSSH client/version（如存在，避免读取 private key 内容）；
-- `where.exe` / `Get-Command` 对关键工具的解析结果；
-- WSL version、default distro、已安装 distro 列表（如存在）；
-- PATH 中**与开发/工具规划有关**的条目摘要；
-- 有必要时记录 shell profile/config 的 normalized path 和 exists 状态，不读取敏感内容。
+- Git Bash / bash 实际 path；
+- Windows Terminal 等主要 terminal host（实际存在/使用时）；
+- OpenSSH client/version（不读 private key）；
+- `where.exe` / `Get-Command` 对关键工具的有效 resolution；
+- PATH 中与开发/安装规划有关的条目摘要；
+- shell profile/config normalized path + exists（必要时，不读敏感内容）。
 
-不要无差别上传全部环境变量值。环境变量默认只允许记录经过批准的名称/存在性。
+特别识别 WindowsApps/App Execution Alias、shim、version manager 等：path hit 必须经过 safe verifier 才能认定 runtime/tool 可用。
 
-## E. Development runtimes
+不要上传环境变量值 dump。
 
-至少探测下列 runtime 是否存在，并在存在时记录通用软件字段：
+## E. Environment scopes / WSL
+
+V1 primary scope 是 Windows host。
+
+记录：
+
+- WSL 是否存在/version；
+- default distro；
+- installed distro list；
+- 与 Windows host 的 relationship。
+
+V1 不默认深入枚举每个 distro 的所有 Linux runtime/package。以后扩展时必须作为独立 scope/profile，不能把 Linux Node/Python 扁平合并进 Windows entity。
+
+## F. Development runtimes
+
+至少探测：
 
 - Node.js；
 - Python；
@@ -99,20 +124,22 @@ V1 采集：
 - Java/JDK；
 - .NET SDK/runtime；
 - Flutter / Dart；
-- Ruby / PHP 等只在实际存在时记录，不要求为了清单安装。
+- Ruby / PHP / Deno 等实际存在时记录。
 
-同时检查会改变 runtime 解析/更新方式的版本管理器是否存在，例如：
+需要允许 multiple installations，而不是把 runtime 当成单布尔值。
+
+同时探测会改变 resolution/update 的 version manager：
 
 - nvm-windows / nvm；
 - fnm；
 - Volta；
 - pyenv；
-- asdf；
-- 其他实际存在的 version manager。
+- asdf / mise；
+- conda 等实际存在者。
 
-版本管理器与 runtime 的 `provided_by` / `managed_by` 关系比单纯记录两个版本更重要。
+记录 `provided_by` / `managed_by` relationship，比单独两个版本更重要。
 
-## F. Package managers
+## G. Package managers
 
 至少探测：
 
@@ -125,153 +152,210 @@ V1 采集：
 - conda / mamba；
 - cargo；
 - winget；
-- Chocolatey / Scoop（如存在）。
+- Chocolatey / Scoop（存在时）。
 
-除版本/path 外，记录有决策价值的 global prefix/store/cache 位置；不要枚举所有全局 package 作为默认行为。
+除 version/path 外，记录有决策价值的 global prefix/store/cache。
 
-如果 package manager 使用非默认 registry/mirror/proxy，允许记录**非敏感的 host/策略或“已配置”状态**，不得记录包含凭据的 URL、token 或密码。
+如使用非默认 registry/mirror/proxy，只记录安全 host/策略/“已配置”状态；禁止 credential-bearing URL/token/password。
 
-## G. SDK / compiler / build toolchain
+默认不枚举所有 global package；只有对长期环境/项目关系有价值的 package 才进入 persistent context。
+
+## H. SDK / compiler / build toolchain
 
 至少关注：
 
-- Git、Git LFS；
+- Git / Git LFS；
 - Visual Studio edition/version/install path；
-- 已安装的关键 VS workloads（例如 Desktop development with C++）；
-- MSVC toolset version；
+- 关键 VS workloads；
+- MSVC toolset；
 - Windows SDK version(s)；
 - CMake；
-- Ninja / Make（如存在）；
-- Android Studio / Android SDK / adb / NDK（如存在）；
-- CUDA Toolkit / `nvcc`（如存在且对本机开发有意义）；
-- 其他被长期项目真实使用的 SDK/编译器。
+- Ninja / Make；
+- Android Studio / Android SDK / adb / NDK（存在时）；
+- CUDA Toolkit / `nvcc`（存在且有意义时）；
+- 其他长期项目实际使用的 SDK/compiler/debugger。
 
-Git 配置只记录会影响跨项目开发行为的非敏感事实（例如 long paths / autocrlf 等确有必要时）；不要把 user.email、credential 或 private remote 数据当默认库存内容。
+Git config 只记录跨项目开发行为相关的非敏感事实；不默认记录 user.email/credential/private remote。
 
-## H. Developer applications and cloud CLIs
+## I. Developer applications / cloud / infra CLIs
 
 至少探测/登记有价值的：
 
 - VS Code；
-- GitHub CLI (`gh`)；
-- GitHub Desktop（如使用）；
+- GitHub CLI / GitHub Desktop；
 - Docker Desktop / Docker Engine / Compose；
-- Kubernetes tooling (`kubectl`, minikube/kind 等，如存在)；
+- Kubernetes tooling (`kubectl`, minikube, kind 等)；
 - Supabase CLI；
 - Vercel CLI；
 - Wrangler；
 - Firebase CLI；
 - AWS / Azure / Google Cloud CLI；
-- PostgreSQL/MySQL/MariaDB/Redis 等本地开发服务或 CLI（仅在实际存在/被项目使用时）；
-- 其他长期使用的开发工具。
+- PostgreSQL/MySQL/MariaDB/Redis 等本地开发服务/CLI（实际存在或项目使用时）；
+- Terraform/Pulumi 等实际长期使用工具；
+- 其他长期开发工具。
 
-认证状态可在确有决策价值时以非敏感形式记录，例如“已登录/未登录”或 account alias；不得记录 token/credential 内容。
+认证状态只有确有规划价值时才能以非敏感布尔/alias 表示，绝不保存 credential。
 
-不存在的工具不用生成大量 `not_installed` 记录；只有当“确认不存在”对当前规划长期有价值时才显式记录。
+不存在的工具不要批量生成大量 `not_installed` item。
 
-## I. AI / Agent tooling
+## J. Installed application inventory
 
-单独记录在 `context/software/ai.yaml`。至少检查当前或历史上可能存在的：
+V1 开发相关 software discovery 以 Windows structured sources 为主：
 
-- Codex CLI；
-- Codex Desktop（可可靠检测版本时）；
+- HKLM/HKCU Uninstall Registry（含 32/64 view）；
+- winget package match / export enrichment；
+- 必要时 specialized MSIX/AppX provider；
+- Program Files / LocalAppData / custom roots 只作为候选发现补充。
+
+可记录的通用 app metadata：
+
+- display/product name；
+- version；
+- publisher；
+- normalized install location；
+- safe package/vendor identity；
+- install/update ownership/method；
+- role/status（curated）。
+
+禁止常规使用 `Win32_Product` / `wmic product`。
+
+未来 General Software phase 才决定哪些普通应用进入长期 context；V1 可以在 `.local` 保留 broad candidates，不必把所有 Redistributable/driver/system component 推到 Git。
+
+## K. AI / Agent tooling
+
+Canonical module：`context/software/ai.json`。
+
+至少检查当前/历史候选：
+
+- Codex CLI / Desktop；
 - DSH；
-- Agy（如实际安装）；
-- Claude Code（如实际安装）；
-- Gemini CLI（如实际安装）；
-- OpenCodex 或相关 provider/harness；
-- 本地 Codex/OpenAI bridge/server；
-- 与这些工具有关的配置目录、默认 shell、local endpoint/port、skills/preset 目录等**非敏感事实**。
+- Agy；
+- Claude Code；
+- Gemini CLI；
+- OpenCodex/provider/harness；
+- Cursor/Windsurf/其他 AI IDE（实际存在时）；
+- local Codex/OpenAI bridge/server；
+- skills/preset/plugin/MCP related directory/config existence；
+- default shell / local endpoint / port 等非敏感关系。
 
-认证文件只能记录 `exists` 和必要的 normalized path，绝不读取/提交内容。
+Config parser 只能提取 allowlisted safe fields，例如 MCP server **name/scope**。不得把 env、token、credential、完整 args/config 序列化进 context。
 
-## J. Network / proxy / local services
+认证文件只能记录 `exists` 与必要 normalized path。
 
-仅记录对软件使用和开发排障有价值的上下文：
+## L. Network / proxy / local services
 
-- 当前主要代理客户端及 role；
-- system proxy / TUN 是否启用（可安全检测时）；
-- 常用本地 proxy mixed/http/socks port；
-- 终端是否通常直连等人工语义 policy；
-- approved local developer services 的 bind address、port、用途；
-- localhost bridge/API 服务关系；
-- 本地数据库、容器 daemon、dev server 等长期服务，仅在确实会影响规划/排障时登记；
-- 与开发有关的重要 DNS/registry/proxy constraint，以非敏感摘要形式记录。
+只记录对使用/开发/排障有长期价值的 context：
 
-不要上传代理订阅 URL、节点列表、用户名、密码、token、外网 IP 历史或完整代理配置。
+- 当前主要 proxy client + curated role；
+- system proxy / TUN state；
+- local mixed/http/socks port；
+- terminal normally-direct 等 curated policy；
+- approved local developer services：bind/port/purpose；
+- localhost bridge/API relationship；
+- local database/container daemon/dev server 等长期服务；
+- 重要 DNS/registry/proxy constraint 的非敏感摘要。
 
-## K. Projects
+不记录：subscription URL、节点列表、用户名/password/token、外网 IP 历史、完整 proxy config、raw network connections。
 
-只登记需要长期上下文的项目。每个项目记录：
+## M. Projects
 
-- stable `id`、name、status（active/paused/maintenance/archived/experimental）；
+只把长期有用的 project 写进 `context/projects/`。每个 project 记录：
+
+### observed
+
+- stable ID/name；
 - local path；
-- Git repository / remote；
-- default/current working branch 在长期有意义时；
+- sanitized Git repository/remote identity；
 - workspace/project type；
 - runtime refs；
-- package manager refs；
+- package-manager refs；
 - tool refs；
-- service refs（Supabase/Vercel 等）；
+- service refs；
 - manifest/lockfile **路径**；
-- 常用 dev/lint/typecheck/test/build 命令；
-- 常用本地 dev port/url；
-- `.env*` 等敏感配置文件只允许记录文件名/exists 状态，禁止读取值；
-- 对本机环境有影响的 constraints；
-- 与 MachineContext 中工具的 relationship。
+- safe dev/lint/typecheck/test/build commands；
+- local dev endpoints；
+- `.env*` 仅 filename/exists；
+- 相关 machine relationship。
 
-不要复制项目完整 package dependency list。需要精确依赖时直接读取项目自己的 manifest/lockfile。
+### curated
 
-## L. Installation / update conventions
+- lifecycle：active / paused / maintenance / archived / experimental；
+- purpose；
+- machine/environment constraints。
 
-初次审计后归纳而不是预设：
+不要复制完整 dependency list。需要精确 package version 时读取 project 自己的 manifest/lockfile。
 
-- 各磁盘主要用途；
-- standalone CLI / portable tool 常用根目录；
-- runtime 常用安装位置；
-- global package/cache/store 常用位置；
-- SDK/大型工具是否倾向避开系统盘；
-- project 常用根目录；
-- 对 winget/vendor installer/portable/package-manager 的偏好；
-- 更新时是否优先沿用原安装渠道；
-- 哪些工具刻意不加 PATH；
-- 哪些工具由 version manager 管理，不应直接覆盖安装；
-- 非默认路径造成的 downstream dependency；
-- 移动/升级某工具前必须检查的关系。
+Package manager 判定优先 `packageManager`/workspace metadata/lockfile，不能看到 `package.json` 就默认 npm。
 
-这些属于语义事实，允许人工/Agent 维护，但必须建立在机器真实现状上。
+## N. Installation / update conventions
 
-## M. Relationships
+Initial Audit 后基于真实机器归纳：
 
-只记录能改善决策的关系，典型 relation：
+- 各盘主要用途；
+- standalone CLI / portable tool roots；
+- runtime 常用 location；
+- global package/cache/store location；
+- SDK/大型工具是否倾向避开 system disk；
+- project roots；
+- winget/vendor/portable/package-manager 偏好；
+- update 是否沿原 install channel；
+- 哪些工具刻意不进 PATH；
+- 哪些 runtime 由 version manager 管理；
+- non-default path downstream dependencies；
+- move/update 前必须检查的 relationships。
+
+这些主要属于 curated semantics，必须建立在 observed evidence 上。
+
+## O. Relationships
+
+只记录改善 planning/impact analysis 的关系，例如：
 
 - `uses_shell`；
 - `requires`；
 - `uses`；
 - `provided_by` / `managed_by`；
 - `configured_with`；
-- `reads_auth_from`（只表示关系，不读 auth 内容）；
+- `reads_auth_from`（只表示关系）；
 - `serves` / `connects_to` / `listens_on`；
 - `deployed_by`；
 - `used_by_project`。
 
-例如“移动 Git Bash 会影响哪个 Agent preset”或“升级 Node 应该走 installer 还是 version manager”都应能通过 relationship + install metadata 回答。
+Relationship 应区分 detected / inferred / curated origin，并可附 safe evidence。
 
-## N. Future: general software
+## P. Discovery coverage requirements
 
-非开发软件以后可以加入，不需要改核心模型。建议按 domain 新增 module，而不是把全部软件塞进 `development.yaml`：
+Collection Spec 不能只靠上述 named list。
 
-- `general.yaml`：常用通用工具；
-- `creative.yaml`：Figma、Adobe、3D/CAD、图像/视频等；
-- `productivity.yaml`：Obsidian、Office、同步/笔记等；
-- `browsers.yaml`：主要浏览器和重要 profile-independent 配置事实；
-- `media.yaml`：只有确实会影响规划时再加。
+Full/Discover 必须具备：
 
-未来普通软件仍复用通用软件字段：版本、实际安装路径、role、安装方式、更新方式、关键 data/config path 与验证状态。仍然遵循“有决策价值才记录”，不要演变成所有 Windows package、游戏、系统组件、VC redistributable 的完整资产清单。
+- structured Windows installed-app sweep；
+- project fingerprint discovery；
+- configured/known root discovery；
+- portable/custom-install candidate discovery；
+- optional Everything-index discovery（已存在时）；
+- bounded fallback（无 Everything 时）；
+- candidate -> verifier -> reconciliation 流程。
+
+Raw discovery 输出永远留在 `.local`，不直接进入 Git。
+
+## Q. Future: general software
+
+以后按 domain 新增 module，不改核心架构：
+
+- `general.json`；
+- `creative.json`（Figma/Adobe/3D/CAD/图像视频等）；
+- `productivity.json`（Obsidian/Office/同步/笔记等）；
+- `browsers.json`（profile-independent facts）；
+- `media.json`（只有确实影响规划时）。
+
+普通软件仍复用 observed/curated、version/path/install/update/evidence 模型。不要演变成 Windows 所有 package、游戏、system component 的完整 CMDB。
 
 ## Refresh policy
 
-- 安装/卸载/升级/迁移工具、修改 PATH、改变代理或新增长期项目后：事件触发 sync；
-- 版本、路径、free space、本地服务等易变化事实：每次相关 sync 重新验证；
-- role、项目 status、安装偏好：变化时人工/Agent 更新；
-- 可选周期 full verify：后续根据实际使用频率决定，不在 V1 强制常驻监控。
+- install/uninstall/update/move、PATH/proxy 改动、新增长期 project 后：事件触发 sync；
+- 日常：Quick；
+- 怀疑遗漏/大量变化：Discover；
+- 初次建库/周期深审计：Full；
+- expensive detail：Enrich on demand；
+- role/project status/install preference：人工/Agent 语义变更时更新；
+- exact per-item last-check time 存本地 `.local`，published freshness 仅写 compact `context/status.json`。
