@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "meta": {
+    "state": "bootstrap"
+  },
+  "system": {
+    "observed": {},
+    "curated": {}
+  },
+  "hardware": {
+    "observed": {},
+    "curated": {}
+  },
+  "storage": [],
+  "shells": [],
+  "paths": {
+    "machine_context_root": "E:\\MachineContext",
+    "known_roots": []
+  },
+  "environment": {
+    "path_summary": []
+  },
+  "constraints": []
+}
