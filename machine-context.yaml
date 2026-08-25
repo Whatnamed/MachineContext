@@ -13,10 +13,15 @@ canonical:
   projects_index: context/projects/index.yaml
 
 documentation:
+  index: docs/README.md
   product: docs/PRODUCT.md
+  architecture: docs/ARCHITECTURE.md
   development: docs/DEVELOPMENT.md
   collection_spec: docs/COLLECTION_SPEC.md
   bootstrap_hints: docs/BOOTSTRAP_HINTS.md
+  roadmap: docs/ROADMAP.md
+  decisions: docs/DECISIONS.md
+  devlog: docs/devlog/README.md
 
 policy:
   privacy: PRIVACY.md
