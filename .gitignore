@@ -1,0 +1,33 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Authentication/session material
+**/auth.json
+**/*token*
+**/*credential*
+**/*secret*
+**/cookies*
+**/session*
+
+# Local/generated scratch data
+.local/
+tmp/
+temp/
+logs/
+*.log
+
+# Collector raw dumps should never be committed by default
+raw/
+captures/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
