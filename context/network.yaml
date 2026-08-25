@@ -1,0 +1,12 @@
+meta:
+  state: bootstrap
+  verification:
+    state: pending
+    source: detected
+    observed_at: null
+
+primary_network: {}
+proxy: {}
+local_services: []
+ports: []
+constraints: []
