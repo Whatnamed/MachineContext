@@ -4,27 +4,32 @@
 
 MachineContext is a private, AI-readable source of truth for the local machine environment. It exists so ChatGPT, Codex, Agy, and other agents can plan installations, configuration, upgrades, development work, and troubleshooting without repeatedly asking the user to rediscover local facts.
 
-This file contains repository-wide agent rules only. Product scope, current implementation work, collection details, and roadmap live under `docs/`.
+This file contains repository-wide agent rules only. Product scope, current implementation work, collection details, discovery design, and roadmap live under `docs/`.
 
 ## Read first
 
 When working in this repository:
 
 1. read `CURRENT.md` for the fast machine-context view;
-2. read `machine-context.yaml` for canonical module locations;
+2. read `machine-context.json` for canonical module locations;
 3. read `docs/DEVELOPMENT.md` before implementing repository changes;
-4. read `docs/COLLECTION_SPEC.md` before adding or changing machine collection;
-5. read `PRIVACY.md` before expanding any data scope.
+4. read `docs/COLLECTION_SPEC.md` for what may/should be collected;
+5. read `docs/DISCOVERY_DESIGN.md` before changing discovery/reconciliation;
+6. read `docs/IMPLEMENTATION_GUIDE.md` before implementing collectors/sync;
+7. read `PRIVACY.md` before expanding any data scope.
 
 Do not rely on a chat prompt as the only source for persistent project requirements. Important requirements belong in the repository documentation.
 
 ## Repository invariants
 
-- Canonical machine facts live under `context/`.
-- `CURRENT.md` is a compact generated/convenience view; canonical YAML wins on conflict.
+- Canonical machine facts live as structured JSON under `context/`.
+- `CURRENT.md` is a compact generated/convenience view; canonical JSON wins on conflict.
+- Collector-owned observed facts and user/agent-curated semantics have separate ownership. Routine scans must not overwrite curated meaning.
+- Broad discovery produces candidates/evidence, not canonical facts. Promotion requires reconciliation and appropriate verification.
 - Objective, volatile facts should be detected or verified locally whenever practical.
 - `unknown` is not equivalent to `absent` or `not_installed`.
-- Keep stable IDs stable across updates.
+- Collector/provider failure must never be interpreted as evidence that previously known software disappeared.
+- Keep stable IDs stable across updates; display name/path alone should not define identity when stronger package/vendor identity exists.
 - Prefer additive, backward-compatible evolution over reorganizing existing data.
 - Keep diffs focused; do not rewrite unrelated records during routine sync.
 - Do not duplicate detailed project dependency manifests already owned by a project's `package.json`, lockfile, `pyproject.toml`, Cargo files, and similar sources of truth.
@@ -43,24 +48,27 @@ Optimize for, in order:
 
 Files plus small deterministic local scripts are preferred until a CLI or UI demonstrably reduces maintenance cost.
 
-Deterministic collection should gather facts; AI should reconcile, classify, explain, and maintain semantic relationships rather than invent machine state.
+Deterministic collection should gather facts; reconciliation code should merge evidence; AI/user judgment should classify meaning, intent, conventions, and high-value relationships rather than invent machine state.
+
+V1 is Windows-first. Do not add abstraction merely to pretend cross-platform support before a second platform is needed.
 
 ## Safety and privacy
 
 The repository must remain private, but treat committed content as if it could someday leak.
 
-Never commit passwords, API keys, access/refresh tokens, cookies, private keys, proxy credentials or subscription URLs, `.env` values, authentication-file contents, browser profiles, or arbitrary personal document contents.
+Never commit passwords, API keys, access/refresh tokens, cookies, private keys, proxy credentials or subscription URLs, `.env` values, authentication-file contents, browser profiles, shell history, raw process command lines, or arbitrary personal document contents.
 
 Collectors use an allowlist model. Record the existence or normalized path of a sensitive file only when useful; never read its secret contents for inventory purposes.
 
 Prefer `%USERPROFILE%`, `%APPDATA%`, `%LOCALAPPDATA%`, and similar normalized paths when a literal account name adds no value.
 
-Initial and audit-style collection must be read-only. Do not install, uninstall, move, upgrade, edit PATH, change proxy settings, or otherwise mutate the machine merely to make the inventory cleaner.
+Initial and audit-style collection must be read-only. Do not install dependencies/tools, uninstall, move, upgrade, edit PATH, change proxy settings, or otherwise mutate the machine merely to make the inventory cleaner.
 
 ## Documentation hygiene
 
 - Update `docs/DEVELOPMENT.md` when the active implementation phase changes.
 - Update `docs/DECISIONS.md` when a durable architectural or data-model decision changes.
-- Add a concise entry under `docs/devlog/` for meaningful implementation sessions or migrations.
 - Update `docs/COLLECTION_SPEC.md` before a new category becomes part of normal collection.
+- Update `docs/DISCOVERY_DESIGN.md` when discovery, identity, evidence, or reconciliation semantics change.
+- Add a concise entry under `docs/devlog/` for meaningful implementation sessions or migrations.
 - Keep `README.md` and `CURRENT.md` concise; detailed explanations belong in `docs/`.
