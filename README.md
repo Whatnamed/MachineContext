@@ -30,12 +30,19 @@ For an agent developing MachineContext itself, read `AGENTS.md` and then `docs/D
 
 ## Documentation
 
-- `docs/PRODUCT.md` — product purpose, principles, V1 scope, non-goals, and future directions.
-- `docs/DEVELOPMENT.md` — current implementation phase, engineering plan, and V1 acceptance criteria.
-- `docs/COLLECTION_SPEC.md` — authoritative list of what the local audit/collector should collect.
-- `docs/BOOTSTRAP_HINTS.md` — historical, unverified clues from earlier work; useful only for locating things during the first audit.
-- `SCHEMA.md` — lightweight data-model conventions.
-- `PRIVACY.md` — collection and secret-handling boundaries.
+Start with `docs/README.md`. The main documents are:
+
+- `docs/PRODUCT.md` — product purpose, principles, scope, non-goals, and future directions;
+- `docs/ARCHITECTURE.md` — source-of-truth boundaries and data flow;
+- `docs/DEVELOPMENT.md` — active implementation phase and V1 acceptance criteria;
+- `docs/COLLECTION_SPEC.md` — authoritative list of what the local audit/collector should collect;
+- `docs/BOOTSTRAP_HINTS.md` — historical, unverified clues used only to locate facts during the first audit;
+- `docs/ROADMAP.md` — staged future development;
+- `docs/DECISIONS.md` — durable architecture/data-model decisions;
+- `docs/devlog/` — concise cross-session development notes;
+- `SCHEMA.md` — lightweight data-model conventions;
+- `PRIVACY.md` — collection and secret-handling boundaries;
+- `CHANGELOG.md` — notable project-level changes.
 
 ## Repository layout
 
@@ -46,7 +53,9 @@ MachineContext/
   AGENTS.md
   PRIVACY.md
   SCHEMA.md
+  CHANGELOG.md
   docs/
+    devlog/
   context/
     machine.yaml
     network.yaml
@@ -55,10 +64,16 @@ MachineContext/
     software/
     projects/
   scripts/
+    collect.ps1
+    verify.ps1
+    render.ps1
+    validate.ps1
+    sync.ps1
     collectors/
     lib/
   tests/
     fixtures/
+  schemas/
 ```
 
 ## V1 scope
