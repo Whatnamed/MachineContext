@@ -2,48 +2,65 @@
 
 ## Purpose
 
-MachineContext is the private, AI-readable source of truth for this computer's environment. It exists so ChatGPT, Codex, Agy, and other agents can quickly understand the real machine before planning installation, configuration, upgrades, development, or troubleshooting.
+MachineContext is a private, AI-readable source of truth for the local machine environment. It exists so ChatGPT, Codex, Agy, and other agents can plan installations, configuration, upgrades, development work, and troubleshooting without repeatedly asking the user to rediscover local facts.
 
-This file contains only repository-wide agent rules. Current development goals belong in `docs/DEVELOPMENT.md`; product direction belongs in `docs/PRODUCT.md`; collection scope belongs in `docs/COLLECTION_SPEC.md`.
+This file contains repository-wide agent rules only. Product scope, current implementation work, collection details, and roadmap live under `docs/`.
 
-## Priorities
+## Read first
 
-When changing MachineContext, optimize in this order:
+When working in this repository:
+
+1. read `CURRENT.md` for the fast machine-context view;
+2. read `machine-context.yaml` for canonical module locations;
+3. read `docs/DEVELOPMENT.md` before implementing repository changes;
+4. read `docs/COLLECTION-SPEC.md` before adding or changing machine collection;
+5. read `PRIVACY.md` before expanding any data scope.
+
+Do not rely on a chat prompt as the only source for persistent project requirements. Important requirements belong in the repository documentation.
+
+## Repository invariants
+
+- Canonical machine facts live under `context/`.
+- `CURRENT.md` is a compact generated/convenience view; canonical YAML wins on conflict.
+- Objective, volatile facts should be detected or verified locally whenever practical.
+- `unknown` is not equivalent to `absent` or `not_installed`.
+- Keep stable IDs stable across updates.
+- Prefer additive, backward-compatible evolution over reorganizing existing data.
+- Keep diffs focused; do not rewrite unrelated records during routine sync.
+- Do not duplicate detailed project dependency manifests already owned by a project's `package.json`, lockfile, `pyproject.toml`, Cargo files, and similar sources of truth.
+- Git history is the default history mechanism; avoid unnecessary snapshot duplication.
+
+## Engineering principles
+
+Optimize for, in order:
 
 1. maintainability;
-2. fast and convenient access for local and web AI;
-3. factual completeness and useful detail;
+2. fast and convenient reading by local and web AI;
+3. useful completeness and detail;
 4. freshness and verifiability;
-5. lightweight and simple implementation;
-6. additive extensibility without large future refactors.
+5. lightweight and simple operation;
+6. extensibility without large future refactors.
 
-Do not add product complexity without a demonstrated maintenance benefit.
+Files plus small deterministic local scripts are preferred until a CLI or UI demonstrably reduces maintenance cost.
 
-## Source of truth
+Deterministic collection should gather facts; AI should reconcile, classify, explain, and maintain semantic relationships rather than invent machine state.
 
-- `CURRENT.md` is the compact AI entry point, not the canonical store.
-- Canonical machine facts live under `context/`.
-- `machine-context.yaml` is the stable manifest for locating canonical modules and project documents.
-- If `CURRENT.md` conflicts with canonical YAML, canonical YAML wins and `CURRENT.md` must be regenerated.
-- Unknown is not absent. Never convert missing evidence into `not_installed`.
-- Detect objective facts locally whenever practical; do not promote old chat memory or guesses to current truth.
-- Give volatile facts verification metadata and an observation time.
-- Keep stable IDs stable. Prefer additive fields/modules over breaking schema changes.
+## Safety and privacy
 
-## Change discipline
+The repository must remain private, but treat committed content as if it could someday leak.
 
-- Prefer small, reviewable diffs and avoid rewriting unrelated records.
-- Do not duplicate full dependency manifests already owned by project repositories (`package.json`, lockfiles, `pyproject.toml`, etc.). Record references and environment-level relationships instead.
-- Put machine facts in `context/machine.yaml`, software in modular files under `context/software/`, projects under `context/projects/`, cross-cutting relationships in `context/relationships.yaml`, and user installation/update conventions in `context/conventions.yaml`.
-- Deterministic scripts should collect and verify facts; agents should reconcile, classify, explain, and maintain semantic context.
-- Initial or recovery audits must be read-only unless the user explicitly asks for system changes.
+Never commit passwords, API keys, access/refresh tokens, cookies, private keys, proxy credentials or subscription URLs, `.env` values, authentication-file contents, browser profiles, or arbitrary personal document contents.
 
-## Privacy
+Collectors use an allowlist model. Record the existence or normalized path of a sensitive file only when useful; never read its secret contents for inventory purposes.
 
-The repository must remain private, but treat it as if it could leak. Never commit secrets, tokens, passwords, API keys, OAuth credentials, cookies, private keys, proxy subscription URLs/credentials, `.env` values, browser profiles, or authentication-file contents.
+Prefer `%USERPROFILE%`, `%APPDATA%`, `%LOCALAPPDATA%`, and similar normalized paths when a literal account name adds no value.
 
-Prefer normalized paths such as `%USERPROFILE%`, `%APPDATA%`, and `%LOCALAPPDATA%` where practical. Collectors must use an allowlist model. Read `PRIVACY.md` before expanding collection scope.
+Initial and audit-style collection must be read-only. Do not install, uninstall, move, upgrade, edit PATH, change proxy settings, or otherwise mutate the machine merely to make the inventory cleaner.
 
-## Before working
+## Documentation hygiene
 
-For repository development, read `docs/DEVELOPMENT.md` and the relevant specification. For machine-dependent planning, read `CURRENT.md` first and open canonical modules only as needed.
+- Update `docs/DEVELOPMENT.md` when the active implementation phase changes.
+- Update `docs/DECISIONS.md` when a durable architectural or data-model decision changes.
+- Add a concise entry under `docs/devlog/` for meaningful implementation sessions or migrations.
+- Update `docs/COLLECTION-SPEC.md` before a new category becomes part of normal collection.
+- Keep `README.md` and `CURRENT.md` concise; detailed explanations belong in `docs/`.
