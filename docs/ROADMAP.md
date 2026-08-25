@@ -2,34 +2,42 @@
 
 The roadmap is intentionally staged. Later phases should be pulled forward only when the previous maintenance loop is reliable.
 
-## Phase 0 — Repository bootstrap
+## Phase 0 — Repository bootstrap and design convergence
 
 Status: complete.
 
 - private GitHub repository;
-- canonical context layout;
-- AI entry point and root manifest;
-- privacy and schema rules;
+- canonical JSON context layout + `CURRENT.md` entry view;
+- privacy/schema/agent rules;
 - product/development/collection documentation;
-- initial script and collector folders.
+- similar-project and Windows inventory research;
+- layered discovery/reconciliation design;
+- implementation guardrails for observed/curated ownership, provider health, atomic publication, and Git sync;
+- initial script/collector/test folders.
 
 ## Phase 1 — Initial Audit + V1 collector
 
 Status: next.
 
-Goal: turn the repository from a documented skeleton into verified context for the real machine.
+Goal: turn the repository from a documented skeleton into verified context for the real Windows machine.
 
 Deliverables:
 
-- read-only Windows collectors for V1 scope;
-- normalization to stable IDs and canonical YAML;
-- verification and stale/unavailable handling;
-- privacy/schema validation;
-- `CURRENT.md` rendering;
-- simple `sync.ps1` orchestration;
-- first real-machine audit using `BOOTSTRAP_HINTS.md` only as search hints;
-- initial project registry and installation conventions;
-- idempotence check: a second unchanged run should produce essentially zero diff.
+- shared PowerShell probe/JSON/path/privacy/staging helpers;
+- structured Windows providers (Registry/CIM/PATH/tool-specific APIs/CLIs);
+- Quick / Discover / Enrich / Full modes;
+- optional Everything indexed discovery adapter + bounded fallback;
+- project fingerprint discovery;
+- candidate/evidence reconciliation and stable identity;
+- multi-source dedupe and safe absence semantics;
+- canonical `observed` updates preserving `curated` semantics;
+- provider health/diagnostics and compact `context/status.json`;
+- privacy/reference validation;
+- deterministic `CURRENT.md` rendering;
+- atomic staging/publication and safe `sync.ps1` orchestration;
+- first real-machine Full Audit using `BOOTSTRAP_HINTS.md` only as search hints;
+- initial long-lived project registry and installation conventions;
+- idempotence/recovery tests.
 
 ## Phase 2 — Maintenance hardening
 
@@ -37,53 +45,56 @@ Goal: make routine updates boring and dependable.
 
 Possible work:
 
-- targeted rescans instead of always scanning every domain;
-- better error reporting without failing the whole sync;
-- tests for parsers/normalizers using fixtures;
-- stable formatting and ordering guarantees;
-- stale-age policies per fact category where useful;
-- optional reviewed commit/push helper;
-- relationship consistency checks.
+- targeted scope refresh based on changed/related entities;
+- stronger installer/update ownership inference;
+- better conflict resolution and diagnostics;
+- broader fixture coverage for localized/edge-case Windows outputs;
+- stale/freshness policies by provider/domain where useful;
+- explicit reviewed commit/push helper;
+- relationship consistency and impact checks;
+- performance profiling/bounded concurrency based on real scan timings.
 
 ## Phase 3 — General software context
 
 Goal: expand beyond development only after the core loop is trustworthy.
 
-Add domain modules as needed, for example:
+Add selective modules such as:
 
-- general desktop utilities;
-- creative/design/3D/video tools;
-- productivity and notes/sync tools;
-- browsers and other frequently discussed software.
+- `general.json` — common desktop utilities;
+- `creative.json` — design/Adobe/3D/CAD/image/video tools;
+- `productivity.json` — notes/sync/Office-like tools;
+- `browsers.json` — profile-independent browser facts;
+- `media.json` — only when useful for planning.
 
-This phase must remain selective: record software that improves future AI decisions, not every Windows package.
+Broad Windows installed-app inventory can feed candidates, but persistent context remains decision-oriented rather than becoming an enterprise CMDB.
 
-## Phase 4 — Convenience CLI
+## Phase 4 — Convenience CLI / optional read-only MCP
 
 Goal: reduce user/agent friction without changing the canonical model.
 
-Potential interface:
+Potential CLI:
 
-- `mc scan`
+- `mc scan [quick|discover|full]`
 - `mc verify`
 - `mc status`
 - `mc sync`
 - `mc project add`
 
-The CLI should wrap the same files and validation rules rather than introduce a separate database.
+If local Agent usage shows clear benefit, expose a small read-only MCP over the same canonical/live context. Neither CLI nor MCP becomes a new source of truth.
 
 ## Phase 5 — Smarter planning support
 
 Potential features:
 
 - impact analysis before moving/upgrading a tool;
-- installation-location recommendations based on real conventions and disk roles;
-- update-path recommendations based on original install method;
-- change summaries for web AI;
+- installation-location recommendations based on real conventions, disk roles, managers, and downstream relationships;
+- update-path recommendations based on original install/manager ownership;
+- change summaries optimized for web AI;
+- targeted refresh of only the context required by the current planning task;
 - optional scheduled verification if it proves useful.
 
-## Optional future — Local dashboard / multi-machine
+## Optional future — Local dashboard / deeper scopes / multi-machine
 
-A dashboard is only justified if text + CLI becomes inconvenient for browsing or maintenance. Multi-machine support is deferred until there is an actual second long-lived machine to represent.
+A dashboard is only justified if files + CLI becomes inconvenient for browsing/maintenance. Deeper WSL/container inventory and multi-machine support are deferred until actual usage requires them.
 
-Any future UI should preserve the repository's readable, portable context layer rather than hide truth exclusively in an application database.
+Any future UI/database may cache/index canonical data, but readable portable repository files remain the authoritative exchange layer.
