@@ -58,6 +58,68 @@ function Test-McScalar {
     return ($InputObject -is [string] -or $InputObject -is [char] -or $InputObject.GetType().IsPrimitive -or $InputObject -is [decimal] -or $InputObject -is [datetime] -or $InputObject -is [guid] -or $InputObject -is [uri])
 }
 
+function Test-McLegacyCollectionMetadata {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if (-not (Test-McMapping -InputObject $InputObject)) {
+        return $false
+    }
+
+    $entries = @(Get-McPropertyEntries -InputObject $InputObject)
+    $names = @($entries | ForEach-Object { [string]$_.Name })
+    $required = @('Count', 'IsFixedSize', 'IsReadOnly', 'LongLength', 'Rank', 'SyncRoot')
+    if (@($required | Where-Object { $_ -notin $names }).Count -gt 0) {
+        return $false
+    }
+
+    $allowed = @('Count', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'Length', 'LongLength', 'Rank', 'SyncRoot')
+    if (@($names | Where-Object { $_ -notin $allowed }).Count -gt 0) {
+        return $false
+    }
+
+    $syncRootEntry = $entries | Where-Object { [string]$_.Name -ceq 'SyncRoot' } | Select-Object -First 1
+    return ($null -ne $syncRootEntry)
+}
+
+function ConvertFrom-McLegacyCollectionMetadata {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject
+    )
+
+    $entries = @(Get-McPropertyEntries -InputObject $InputObject)
+    $countEntry = $entries | Where-Object { [string]$_.Name -ceq 'Count' } | Select-Object -First 1
+    $syncRootEntry = $entries | Where-Object { [string]$_.Name -ceq 'SyncRoot' } | Select-Object -First 1
+    $count = 0
+    if ($null -ne $countEntry) {
+        [int]::TryParse([string]$countEntry.Value, [ref]$count) | Out-Null
+    }
+
+    $rawItems = @()
+    if ($count -gt 0 -and $null -ne $syncRootEntry) {
+        $rawItems = @($syncRootEntry.Value)
+        if ($count -eq 1 -and $rawItems.Count -eq 0) {
+            $rawItems = @($syncRootEntry.Value)
+        }
+    }
+    if ($count -le 0) {
+        $rawItems = @()
+    }
+
+    if ($count -gt 0 -and $rawItems.Count -gt $count) {
+        $rawItems = @($rawItems | Select-Object -First $count)
+    }
+    while ($rawItems.Count -lt $count) {
+        $rawItems += $null
+    }
+    return ,([object[]]$rawItems)
+}
+
 function Get-McPropertyEntries {
     [CmdletBinding()]
     param(
@@ -115,6 +177,10 @@ function Copy-McValue {
 
     if ($InputObject -is [guid] -or $InputObject -is [uri]) {
         return [string]$InputObject
+    }
+
+    if (Test-McLegacyCollectionMetadata -InputObject $InputObject) {
+        return Copy-McValue -InputObject (ConvertFrom-McLegacyCollectionMetadata -InputObject $InputObject)
     }
 
     if (Test-McScalar -InputObject $InputObject) {
@@ -190,6 +256,10 @@ function ConvertTo-McStableObject {
 
     if ($InputObject -is [guid] -or $InputObject -is [uri]) {
         return [string]$InputObject
+    }
+
+    if (Test-McLegacyCollectionMetadata -InputObject $InputObject) {
+        return ConvertTo-McStableObject -InputObject (ConvertFrom-McLegacyCollectionMetadata -InputObject $InputObject)
     }
 
     if (Test-McScalar -InputObject $InputObject) {

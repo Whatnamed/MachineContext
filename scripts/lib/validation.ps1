@@ -317,7 +317,7 @@ function Add-McForbiddenMetadataFindings {
     if (Test-McMapping -InputObject $InputObject) {
         foreach ($entry in (Get-McPropertyEntries -InputObject $InputObject)) {
             $entryPath = "{0}.{1}" -f $Path, $entry.Name
-            if ([string]$entry.Name -in @('SyncRoot', 'IsFixedSize', 'IsReadOnly', 'LongLength', 'Rank')) {
+            if ([string]$entry.Name -in @('SyncRoot', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'LongLength', 'Rank')) {
                 Add-McValidationFinding -Findings $Findings -Severity error -Code 'dotnet_collection_metadata' -Message 'Canonical data must not contain .NET collection metadata properties.' -Path $entryPath
             }
             Add-McForbiddenMetadataFindings -InputObject $entry.Value -Findings $Findings -Path $entryPath

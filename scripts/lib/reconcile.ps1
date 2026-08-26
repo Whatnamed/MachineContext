@@ -395,7 +395,6 @@ function Merge-McProjects {
             if (-not [string]::IsNullOrWhiteSpace([string]$candidate.name_hint)) { Set-McObjectProperty -InputObject $record -Name 'name' -Value ([string]$candidate.name_hint) }
         }
         $records[$id] = $record
-        Write-McJson -Path (Join-Path $projectRoot (Get-McProjectRecordFileName -Id $id)) -InputObject $record
     }
 
     $indexRefs = [System.Collections.Generic.List[object]]::new()
@@ -406,6 +405,7 @@ function Merge-McProjects {
             path = [string]$record.observed.local_path
             context_file = ('context/projects/{0}' -f (Get-McProjectRecordFileName -Id ([string]$record.id)))
         })
+        Write-McJson -Path (Join-Path $projectRoot (Get-McProjectRecordFileName -Id ([string]$record.id))) -InputObject $record
     }
     $ProjectIndex.projects = @($indexRefs)
     return $ProjectIndex

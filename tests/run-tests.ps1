@@ -97,6 +97,20 @@ Invoke-McTest -Name 'recursive JSON type contract' -Body {
     Assert-McTrue -Condition (Test-McSequence -InputObject $orderedCopy.second) -Message 'mapping arrays must remain sequences'
     Assert-McTrue -Condition (Test-McSequence -InputObject $customCopy.nested.values) -Message 'nested empty arrays must remain sequences'
 
+    $legacyMetadata = [pscustomobject][ordered]@{
+        Count = 1
+        IsFixedSize = $true
+        IsReadOnly = $false
+        IsSynchronized = $false
+        Length = 1
+        LongLength = 1
+        Rank = 1
+        SyncRoot = [pscustomobject][ordered]@{ id = 'legacy-item' }
+    }
+    $repairedLegacy = Copy-McValue -InputObject $legacyMetadata
+    Assert-McTrue -Condition (Test-McSequence -InputObject $repairedLegacy) -Message 'legacy collection metadata must repair to a sequence'
+    Assert-McEqual -Actual $repairedLegacy[0].id -Expected 'legacy-item' -Message 'legacy collection metadata must retain SyncRoot items'
+
     $morphoProject = [pscustomobject][ordered]@{
         schema_version = 1
         id = 'project-morpho-fixture'
