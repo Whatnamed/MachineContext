@@ -71,9 +71,11 @@
   "audit_closure": {
     "state": "partial",
     "blocking": {
-      "canonical_unknown_count": 5,
+      "accepted_unknown_count": 1,
+      "canonical_unknown_count": 4,
       "conflict_count": 0,
       "local_candidate_unknown_count": 3,
+      "open_unknown_count": 3,
       "unresolved_entry_count": 1
     },
     "generated_at": "2026-08-26T08:46:51.5607096Z",

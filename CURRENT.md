@@ -9,7 +9,7 @@
 - Mode: Full
 - Verified at: 2026-08-26T08:43:51.2010267Z
 - Audit closure: partial
-- Audit findings: conflicts=0, canonical_unknowns=5, unresolved=1, candidate_unknowns=3
+- Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
 - Providers:
   - `ai-tooling`: success
   - `bounded-filesystem-discovery`: partial
