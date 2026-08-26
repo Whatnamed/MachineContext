@@ -213,3 +213,11 @@ Project display names use curated meaning first, then sanitized repository basen
 Reason: real developer/tool roots contain SDK repositories, examples, generated output, caches, and nested packages. A Git fingerprint proves repository structure but does not by itself prove that the repository is a user-maintained environment project.
 
 Status: accepted.
+
+## D027 — Bounded tool fingerprints are discovery evidence only
+
+Decision: when Discover/Full runs, fallback filesystem discovery may inspect only bounded configured/developer/tool/install roots for a small allowlist of high-value executable fingerprints. It records low-confidence candidate/evidence objects and budget diagnostics under `.local`; it never verifies or publishes a canonical software entity. Everything/`es.exe`, when already present, uses the same candidate-only semantics and query allowlist.
+
+Reason: portable/custom installations can be missed by Registry and PATH, but arbitrary recursive file inventory is noisy, expensive, and privacy-sensitive. A filename match is useful for selecting a later verifier, not proof that the tool is usable or user-relevant.
+
+Status: accepted.

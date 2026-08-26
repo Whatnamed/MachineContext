@@ -443,6 +443,24 @@ Invoke-McTest -Name 'project root classification and promotion' -Body {
     }
 }
 
+Invoke-McTest -Name 'bounded discovery remains candidate-only' -Body {
+    $toolPattern = Get-McDiscoveryToolPatternMatch -FileName 'node.exe'
+    Assert-McEqual -Actual $toolPattern.name -Expected 'node' -Message 'bounded discovery must recognize high-value tool fingerprints'
+    Assert-McTrue -Condition ($null -eq (Get-McDiscoveryToolPatternMatch -FileName 'random-library.dll')) -Message 'bounded discovery must ignore unrelated binaries'
+
+    $policy = [pscustomobject][ordered]@{ root = 'E:\Portable'; kind = 'unknown-root'; source = 'fixture'; auto_promote = $false; walk_depth = 1; priority = 0 }
+    $everythingPattern = [pscustomobject][ordered]@{ query = 'node.exe'; kind = 'portable-tool'; name = 'node' }
+    $candidate = New-McEverythingCandidate -RawPath 'E:\Portable\node.exe' -Pattern $everythingPattern -Policy $policy
+    Assert-McEqual -Actual $candidate.source -Expected 'everything-index' -Message 'Everything result must retain its source'
+    Assert-McTrue -Condition (-not $candidate.verified -and -not $candidate.promotion_eligible) -Message 'indexed filesystem hits must never be directly promoted'
+    Assert-McEqual -Actual $candidate.classification -Expected 'unknown-root' -Message 'indexed candidate must retain root classification'
+
+    $gitPattern = [pscustomobject][ordered]@{ query = '*.git'; kind = 'project-or-tool'; name = $null }
+    $gitCandidate = New-McEverythingCandidate -RawPath 'E:\Portable\repo\.git' -Pattern $gitPattern -Policy $policy
+    Assert-McEqual -Actual $gitCandidate.path -Expected 'E:\Portable\repo' -Message 'Everything Git fingerprint must point at its parent candidate root'
+    Assert-McTrue -Condition (-not $gitCandidate.promotion_eligible) -Message 'Everything Git fingerprints must still require verification'
+}
+
 Invoke-McTest -Name 'privacy guardrails' -Body {
     Assert-McTrue -Condition (-not (Test-McPrivacySafeText -Text 'https://user:secret@example.test/repo')) -Message 'credential-bearing URL must be rejected'
     Assert-McTrue -Condition (-not (Test-McPrivacySafeText -Text 'api_key=not-for-commit')) -Message 'credential assignment must be rejected'

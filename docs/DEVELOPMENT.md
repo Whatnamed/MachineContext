@@ -126,6 +126,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - G0-C：已接入 dedicated verifiers：Git-for-Windows/Git Bash 安装根、Windows normalized family、NVIDIA `nvidia-smi` VRAM、Visual Studio/vswhere + MSVC/Windows SDK、Codex CLI/Desktop、Supabase CLI、VS Code CLI 与 .NET SDK/runtime 列表；generic command probes 不再承担这些高价值 identity 的最终事实。
 - G0-D：已加入 `verified-present` / `unverified` / `stale` / `verified-absent` observation state；failed/timeout 通过 `.local` verification events 保留旧 observed，只有高置信度适用的成功 absence check 才能写 `present: false` + `last_known`；provider health 继续独立聚合，optional provider 不升级 whole-run failure。
 - G0-E：项目 fingerprint discovery 使用 project/workspace/developer/tool/sdk/cache root policy；只有 project-root 下的 `.git` directory/file 才具备自动晋级资格，manifest-only 与 SDK/cache/vendor/unknown candidates 保留在 `.local`；项目名称优先使用 curated、repository basename、manifest name、directory name。
+- G0-F：增加 bounded high-value executable fingerprint fallback；Everything/`es.exe` 仅在本机已有时查询项目与工具 patterns，所有结果保持低置信度 candidate/evidence，不直接写 canonical，并记录扫描预算与 optional provider health。
 - G0-C/G0-D 当前 gate：测试与 Quick/`sync -NoPublish` 闭环已运行；仍需继续处理旧 canonical validation pollution 后，才进入 G1 Initial Full Audit；当前不自动重写旧 canonical。
 - 每个 G0 子阶段先实现、测试、自审计；G0-A/G0-B gate 期间不执行 Full Audit，不自动重写当前 canonical。
 

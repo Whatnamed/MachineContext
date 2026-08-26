@@ -468,6 +468,18 @@ function Invoke-McCollection {
             }
         }
 
+        $bounded = Invoke-McSafeProvider -CollectionState $state -Provider 'bounded-filesystem-discovery' -Action {
+            Get-McBoundedDiscoveryCandidates -RepoRoot $RunContext.repo_root
+        } -Optional $true
+        foreach ($candidate in @($bounded.value)) {
+            if ($null -ne $candidate) {
+                Add-McCandidateListItem -CollectionState $state -Candidate $candidate
+            }
+        }
+        if ($null -ne $bounded.local) {
+            $state.local_diagnostics.bounded_filesystem_discovery = $bounded.local
+        }
+
         $everything = Invoke-McSafeProvider -CollectionState $state -Provider 'everything-index' -Action {
             Get-McEverythingCandidates -RepoRoot $RunContext.repo_root
         } -Optional $true
@@ -475,6 +487,9 @@ function Invoke-McCollection {
             if ($null -ne $candidate) {
                 Add-McCandidateListItem -CollectionState $state -Candidate $candidate
             }
+        }
+        if ($null -ne $everything.local) {
+            $state.local_diagnostics.everything_index = $everything.local
         }
     }
 
@@ -520,6 +535,7 @@ foreach ($collector in @(
         'network.ps1',
         'registry-apps.ps1',
         'projects.ps1',
+        'discovery-bounded.ps1',
         'discovery-everything.ps1'
     )) {
     $collectorPath = Join-Path $collectorRoot $collector
