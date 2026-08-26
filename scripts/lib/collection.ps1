@@ -527,6 +527,11 @@ function Invoke-McCollection {
             }
         }
 
+        $projectActivity = Invoke-McSafeProvider -CollectionState $state -Provider 'project-activity-local' -Action {
+            Get-McProjectActivityObservation -Candidates @($projects.value)
+        } -Optional $true
+        if ($null -ne $projectActivity.local) { $state.local_diagnostics.project_activity = $projectActivity.local }
+
         $bounded = Invoke-McSafeProvider -CollectionState $state -Provider 'bounded-filesystem-discovery' -Action {
             Get-McBoundedDiscoveryCandidates -RepoRoot $RunContext.repo_root
         } -Optional $true
@@ -605,6 +610,7 @@ foreach ($collector in @(
         'network.ps1',
         'registry-apps.ps1',
         'projects.ps1',
+        'project-activity.ps1',
         'discovery-bounded.ps1',
         'discovery-everything.ps1'
     )) {

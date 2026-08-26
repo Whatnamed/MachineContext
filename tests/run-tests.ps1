@@ -750,6 +750,32 @@ Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
     Assert-McEqual -Actual $unknown.local_address -Expected '::1' -Message 'local address evidence must remain local-only and deterministic'
 }
 
+Invoke-McTest -Name 'project activity remains local-only' -Body {
+    $activity = Get-McProjectActivityObservation -Candidates @([pscustomobject][ordered]@{
+            id = 'machinecontext-fixture'
+            path = $RepoRoot
+            verified = $true
+            promotion_eligible = $true
+        })
+    Assert-McEqual -Actual @($activity.value).Count -Expected 0 -Message 'project activity must not create canonical observations'
+    Assert-McEqual -Actual $activity.health -Expected 'success' -Message 'current repository activity probe health'
+    Assert-McEqual -Actual @($activity.local.project_activity).Count -Expected 1 -Message 'eligible project must produce one local activity record'
+    Assert-McEqual -Actual $activity.local.project_activity[0].verification -Expected 'verified' -Message 'project activity probes must verify the fixture repository'
+    Assert-McEqual -Actual $activity.local.project_activity[0].probe_status.tracked_status -Expected 'success' -Message 'tracked-only status probe must complete successfully'
+    Assert-McTrue -Condition ($activity.local.project_activity[0].tracked_dirty -is [bool]) -Message 'tracked-only status must produce an explicit Boolean'
+    Assert-McTrue -Condition (-not [string]::IsNullOrWhiteSpace([string]$activity.local.project_activity[0].last_commit_at)) -Message 'last commit timestamp must be normalized locally'
+
+    $missing = Get-McProjectActivityObservation -Candidates @([pscustomobject][ordered]@{
+            id = 'missing-project-fixture'
+            path = (Join-Path $RepoRoot 'tests\fixtures\__missing_project_activity__')
+            verified = $true
+            promotion_eligible = $true
+        })
+    Assert-McEqual -Actual $missing.health -Expected 'partial' -Message 'missing project activity must degrade optional provider health'
+    Assert-McEqual -Actual $missing.local.project_activity[0].verification -Expected 'unverified' -Message 'missing project activity must remain unverified'
+    Assert-McEqual -Actual $missing.local.project_activity[0].tracked_dirty -Expected $null -Message 'failed tracked status must remain unknown'
+}
+
 if ($failures.Count -gt 0) {
     Write-Host "FAILED $($failures.Count) assertion(s)"
     $failures | ForEach-Object { Write-Host " - $_" }
