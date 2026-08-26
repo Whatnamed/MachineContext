@@ -3,7 +3,7 @@
   "state": "verified",
   "published_verification": {
     "mode": "Full",
-    "verified_at": "2026-08-26T07:57:07.1263829Z",
+    "verified_at": "2026-08-26T08:43:51.2010267Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
@@ -31,6 +31,10 @@
       },
       {
         "provider": "nvidia-smi",
+        "health": "success"
+      },
+      {
+        "provider": "project-activity-local",
         "health": "success"
       },
       {

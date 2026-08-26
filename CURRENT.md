@@ -6,7 +6,7 @@
 
 - State: verified
 - Mode: Full
-- Verified at: 2026-08-26T07:57:07.1263829Z
+- Verified at: 2026-08-26T08:43:51.2010267Z
 - Providers:
   - `ai-tooling`: success
   - `bounded-filesystem-discovery`: partial
@@ -15,6 +15,7 @@
   - `host-authoritative-tools`: success
   - `network-local-services`: success
   - `nvidia-smi`: success
+  - `project-activity-local`: success
   - `project-fingerprints`: success
   - `registry-uninstall`: success
   - `runtimes-package-managers-toolchain`: success
@@ -37,8 +38,8 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (14.8/195.9 GiB free/total)
-  - `D:\` NTFS (43.8/279.3 GiB free/total)
+  - `C:\` NTFS (26.8/195.9 GiB free/total)
+  - `D:\` NTFS (49.5/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
 ## Development environment
