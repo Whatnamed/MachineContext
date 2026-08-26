@@ -4,15 +4,15 @@
 
 ## Verification
 
-- State: partial
+- State: verified
 - Mode: Full
-- Verified at: 2026-08-26T07:31:12.5757001Z
+- Verified at: 2026-08-26T07:57:07.1263829Z
 - Providers:
   - `ai-tooling`: success
   - `bounded-filesystem-discovery`: partial
   - `everything-index`: unavailable
   - `git-for-windows`: success
-  - `host-authoritative-tools`: partial
+  - `host-authoritative-tools`: success
   - `network-local-services`: success
   - `nvidia-smi`: success
   - `project-fingerprints`: success
@@ -49,6 +49,7 @@
 - **GitHub CLI** `gh` — 2.93.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.96.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Visual Studio** `visual-studio` — 17.13.35919.96 — `unknown`
+- **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.96.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
 - **pip** `pip` — 25.0.1 — `D:\Python\3.12.10\Scripts\pip.exe`

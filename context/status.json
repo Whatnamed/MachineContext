@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "state": "partial",
+  "state": "verified",
   "published_verification": {
     "mode": "Full",
-    "verified_at": "2026-08-26T07:31:12.5757001Z",
+    "verified_at": "2026-08-26T07:57:07.1263829Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
@@ -23,7 +23,7 @@
       },
       {
         "provider": "host-authoritative-tools",
-        "health": "partial"
+        "health": "success"
       },
       {
         "provider": "network-local-services",

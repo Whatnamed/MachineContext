@@ -80,6 +80,49 @@
     },
     {
       "schema_version": 1,
+      "id": "code",
+      "kind": "ide-cli",
+      "name": "Visual Studio Code",
+      "observed": {
+        "scope": "windows-host",
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "host-authoritative-tools",
+        "verification_reason": "success",
+        "version": "1.134.0",
+        "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
+            "command_type": "PersistentApplication",
+            "path_index": 29,
+            "source": "persistent-path"
+          }
+        ],
+        "install": {
+          "root": "D:\\VSCode\\Microsoft VS Code"
+        },
+        "evidence": [
+          {
+            "provider": "host-authoritative-tools",
+            "provider_key": "code",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "dart",
       "kind": "runtime",
       "name": "Dart",
