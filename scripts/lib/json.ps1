@@ -1,5 +1,63 @@
 Set-StrictMode -Version Latest
 
+function Test-McMapping {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject) {
+        return $false
+    }
+
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        return $true
+    }
+
+    if ($InputObject -is [System.Array] -or $InputObject -is [System.Collections.IList] -or $InputObject -is [System.Collections.IEnumerable]) {
+        return $false
+    }
+
+    return ($InputObject.GetType().FullName -eq 'System.Management.Automation.PSCustomObject')
+}
+
+function Test-McSequence {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject -or $InputObject -is [string] -or $InputObject -is [char]) {
+        return $false
+    }
+
+    if (Test-McMapping -InputObject $InputObject) {
+        return $false
+    }
+
+    if ($InputObject.GetType().IsPrimitive -or $InputObject -is [decimal] -or $InputObject -is [datetime] -or $InputObject -is [guid] -or $InputObject -is [uri]) {
+        return $false
+    }
+
+    return ($InputObject -is [System.Array] -or $InputObject -is [System.Collections.IList] -or $InputObject -is [System.Collections.IEnumerable])
+}
+
+function Test-McScalar {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject) {
+        return $true
+    }
+
+    return ($InputObject -is [string] -or $InputObject -is [char] -or $InputObject.GetType().IsPrimitive -or $InputObject -is [decimal] -or $InputObject -is [datetime] -or $InputObject -is [guid] -or $InputObject -is [uri])
+}
+
 function Get-McPropertyEntries {
     [CmdletBinding()]
     param(
@@ -11,11 +69,11 @@ function Get-McPropertyEntries {
         return @()
     }
 
-    if ($InputObject -is [string] -or $InputObject.GetType().IsPrimitive -or $InputObject -is [decimal] -or $InputObject -is [datetime]) {
+    if (Test-McScalar -InputObject $InputObject) {
         return @()
     }
 
-    if ($InputObject -is [System.Collections.IDictionary]) {
+    if ((Test-McMapping -InputObject $InputObject) -and $InputObject -is [System.Collections.IDictionary]) {
         return @(
             foreach ($key in $InputObject.Keys) {
                 [pscustomobject]@{
@@ -26,7 +84,7 @@ function Get-McPropertyEntries {
         )
     }
 
-    if ($InputObject -is [pscustomobject]) {
+    if ((Test-McMapping -InputObject $InputObject) -and $InputObject -is [pscustomobject]) {
         return @(
             foreach ($property in $InputObject.PSObject.Properties) {
                 [pscustomobject]@{
@@ -40,6 +98,52 @@ function Get-McPropertyEntries {
     return @()
 }
 
+function Copy-McValue {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject) {
+        return $null
+    }
+
+    if ($InputObject -is [datetime]) {
+        return $InputObject.ToUniversalTime().ToString('o', [Globalization.CultureInfo]::InvariantCulture)
+    }
+
+    if ($InputObject -is [guid] -or $InputObject -is [uri]) {
+        return [string]$InputObject
+    }
+
+    if (Test-McScalar -InputObject $InputObject) {
+        return $InputObject
+    }
+
+    if (Test-McMapping -InputObject $InputObject) {
+        $mapping = [ordered]@{}
+        foreach ($entry in (Get-McPropertyEntries -InputObject $InputObject)) {
+            $mapping[[string]$entry.Name] = Copy-McValue -InputObject $entry.Value
+        }
+
+        Write-Output -NoEnumerate -InputObject $mapping
+        return
+    }
+
+    if (Test-McSequence -InputObject $InputObject) {
+        $items = [System.Collections.Generic.List[object]]::new()
+        foreach ($item in $InputObject) {
+            [void]$items.Add((Copy-McValue -InputObject $item))
+        }
+
+        Write-Output -NoEnumerate -InputObject ([object[]]$items.ToArray())
+        return
+    }
+
+    throw ("Unsupported value type for MachineContext JSON: {0}" -f $InputObject.GetType().FullName)
+}
+
 function Get-McJsonPropertyRank {
     [CmdletBinding()]
     param(
@@ -49,7 +153,7 @@ function Get-McJsonPropertyRank {
 
     $preferred = @(
         'schema_version', 'id', 'kind', 'category', 'name', 'path', 'scope',
-        'meta', 'state', 'observed', 'curated', 'present', 'version',
+        'meta', 'state', 'observed', 'curated', 'present', 'verification', 'verification_provider', 'verification_reason', 'last_known', 'version',
         'executable', 'command_resolution', 'alternative_installations',
         'install', 'config_paths', 'data_paths', 'evidence', 'origin',
         'provider', 'provider_key', 'fields', 'confidence', 'health',
@@ -57,6 +161,7 @@ function Get-McJsonPropertyRank {
         'modules', 'software', 'projects', 'relationships', 'constraints',
         'directories', 'installation', 'updates', 'principles', 'system',
         'hardware', 'storage', 'shells', 'paths', 'environment',
+        'raw_product_name', 'normalized_family', 'vram_bytes', 'vram_source', 'vram_status',
         'primary_network', 'proxy', 'local_services', 'ports'
     )
 
@@ -83,11 +188,15 @@ function ConvertTo-McStableObject {
         return $InputObject.ToUniversalTime().ToString('o', [Globalization.CultureInfo]::InvariantCulture)
     }
 
-    if ($InputObject -is [string] -or $InputObject.GetType().IsPrimitive -or $InputObject -is [decimal]) {
+    if ($InputObject -is [guid] -or $InputObject -is [uri]) {
+        return [string]$InputObject
+    }
+
+    if (Test-McScalar -InputObject $InputObject) {
         return $InputObject
     }
 
-    if ($InputObject -is [System.Collections.IDictionary] -or $InputObject -is [pscustomobject]) {
+    if (Test-McMapping -InputObject $InputObject) {
         $ordered = [ordered]@{}
         $entries = Get-McPropertyEntries -InputObject $InputObject
         $entries = @(
@@ -105,7 +214,7 @@ function ConvertTo-McStableObject {
         return
     }
 
-    if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
+    if (Test-McSequence -InputObject $InputObject) {
         $items = [System.Collections.Generic.List[object]]::new()
         foreach ($item in $InputObject) {
             [void]$items.Add((ConvertTo-McStableObject -InputObject $item))
@@ -115,7 +224,7 @@ function ConvertTo-McStableObject {
         return
     }
 
-    return $InputObject
+    throw ("Unsupported value type for MachineContext JSON: {0}" -f $InputObject.GetType().FullName)
 }
 
 function ConvertTo-McJsonText {
@@ -182,22 +291,8 @@ function Copy-McJsonObject {
         [object]$InputObject
     )
 
-    if ($null -eq $InputObject) {
-        return $null
-    }
-
-    if ($InputObject -is [System.Array] -and $InputObject.Count -eq 0) {
-        Write-Output -NoEnumerate -InputObject ([object[]]@())
-        return
-    }
-
-    $parsed = (ConvertTo-McJsonText -InputObject $InputObject) | ConvertFrom-Json -Depth 100
-    if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
-        Write-Output -NoEnumerate -InputObject @($parsed)
-        return
-    }
-
-    return $parsed
+    $copy = Copy-McValue -InputObject $InputObject
+    Write-Output -NoEnumerate -InputObject $copy
 }
 
 function Get-McJsonString {

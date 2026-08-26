@@ -64,6 +64,7 @@ function New-McRunContext {
         observations_path    = Join-Path $runRoot 'observations.json'
         candidates_path      = Join-Path $runRoot 'candidates.json'
         diagnostics_path     = Join-Path $runRoot 'diagnostics.json'
+        local_diagnostics_path = Join-Path $runRoot 'local-diagnostics.json'
         state_path           = Join-Path $localRoot 'state.json'
         started_at           = (Get-Date).ToUniversalTime().ToString('o')
     }
@@ -107,12 +108,19 @@ function Write-McLocalRunArtifacts {
         [object]$Candidates,
 
         [Parameter(Mandatory)]
-        [object]$Diagnostics
+        [object]$Diagnostics,
+
+        [AllowNull()]
+        [object]$LocalDiagnostics
     )
 
     Write-McJson -Path $RunContext.observations_path -InputObject $Observations
     Write-McJson -Path $RunContext.candidates_path -InputObject $Candidates
     Write-McJson -Path $RunContext.diagnostics_path -InputObject $Diagnostics
+    if ($null -eq $LocalDiagnostics) {
+        $LocalDiagnostics = [pscustomobject][ordered]@{}
+    }
+    Write-McJson -Path $RunContext.local_diagnostics_path -InputObject $LocalDiagnostics
 }
 
 function Write-McLocalState {

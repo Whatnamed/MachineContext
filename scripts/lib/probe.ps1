@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-function Get-McExecutableCandidates {
+function Get-McProcessExecutableCandidates {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -63,14 +63,34 @@ function Get-McExecutableCandidates {
     )
 }
 
+function Get-McExecutableCandidates {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Executable,
+
+        [ValidateSet('windows-host', 'collector-process')]
+        [string]$Scope = 'windows-host'
+    )
+
+    if ($Scope -eq 'collector-process') {
+        return @(Get-McProcessExecutableCandidates -Executable $Executable)
+    }
+
+    return @(Resolve-McPersistentCommand -Executable $Executable)
+}
+
 function Resolve-McExecutable {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
-        [string]$Executable
+        [string]$Executable,
+
+        [ValidateSet('windows-host', 'collector-process')]
+        [string]$Scope = 'windows-host'
     )
 
-    return @(Get-McExecutableCandidates -Executable $Executable) | Select-Object -First 1
+    return @(Get-McExecutableCandidates -Executable $Executable -Scope $Scope) | Select-Object -First 1
 }
 
 function ConvertTo-McWindowsArgument {
@@ -234,10 +254,13 @@ function Invoke-McProbe {
 
         [string]$Provider = 'unknown',
         [string]$ProbeName = 'command',
-        [string]$WorkingDirectory
+        [string]$WorkingDirectory,
+
+        [ValidateSet('windows-host', 'collector-process')]
+        [string]$ResolutionScope = 'windows-host'
     )
 
-    $resolved = Resolve-McExecutable -Executable $Executable
+    $resolved = Resolve-McExecutable -Executable $Executable -Scope $ResolutionScope
     if ($null -eq $resolved) {
         return [pscustomobject][ordered]@{
             status              = 'unavailable'
@@ -257,24 +280,29 @@ function Invoke-McProbe {
         }
     }
 
-    $launchFile = [string]$resolved.path
+    $resolvedLaunchPath = [Environment]::ExpandEnvironmentVariables([string]$resolved.path)
+    $launchFile = $resolvedLaunchPath
     $launchArguments = @($Arguments)
     $usedShell = $false
     $launcher = 'direct'
     $extension = [System.IO.Path]::GetExtension($launchFile)
     if ($extension -in @('.cmd', '.bat')) {
-        $comSpec = [Environment]::GetEnvironmentVariable('ComSpec')
-        if ([string]::IsNullOrWhiteSpace($comSpec)) {
-            $comSpec = 'cmd.exe'
+        $comSpecCandidate = Resolve-McExecutable -Executable 'cmd.exe' -Scope $ResolutionScope
+        $comSpec = if ($null -ne $comSpecCandidate) {
+            [Environment]::ExpandEnvironmentVariables([string]$comSpecCandidate.path)
         }
+        else {
+            [Environment]::GetEnvironmentVariable('ComSpec')
+        }
+        if ([string]::IsNullOrWhiteSpace($comSpec)) { $comSpec = 'cmd.exe' }
 
         $launchFile = $comSpec
-        $launchArguments = @('/d', '/s', '/c', (ConvertTo-McWindowsCommandLine -Executable $resolved.path -Arguments $Arguments))
+        $launchArguments = @('/d', '/s', '/c', (ConvertTo-McWindowsCommandLine -Executable $resolvedLaunchPath -Arguments $Arguments))
         $usedShell = $true
         $launcher = 'cmd'
     }
     elseif ($extension -eq '.ps1') {
-        $pwsh = Resolve-McExecutable -Executable 'pwsh.exe'
+        $pwsh = Resolve-McExecutable -Executable 'pwsh.exe' -Scope $ResolutionScope
         if ($null -eq $pwsh) {
             return [pscustomobject][ordered]@{
                 status               = 'unavailable'
@@ -295,7 +323,7 @@ function Invoke-McProbe {
         }
 
         $launchFile = [string]$pwsh.path
-        $launchArguments = @('-NoLogo', '-NoProfile', '-File', $resolved.path) + @($Arguments)
+        $launchArguments = @('-NoLogo', '-NoProfile', '-File', $resolvedLaunchPath) + @($Arguments)
         $launcher = 'pwsh'
     }
 
