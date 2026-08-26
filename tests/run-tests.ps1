@@ -667,6 +667,67 @@ Invoke-McTest -Name 'dedicated verifiers and verification states' -Body {
     Assert-McEqual -Actual $absent.software[0].observed.verification -Expected 'verified-absent' -Message 'high-confidence absence state'
     Assert-McEqual -Actual $absent.software[0].observed.last_known.present -Expected $true -Message 'absence must retain last known observed state'
     Assert-McEqual -Actual $absent.software[0].curated.status -Expected 'active' -Message 'absence must preserve curated meaning'
+
+    $nestedBase = [pscustomobject][ordered]@{
+        schema_version = 1
+        meta = [pscustomobject][ordered]@{ state = 'observed' }
+        software = @([pscustomobject][ordered]@{
+                id = 'visual-studio'
+                kind = 'ide'
+                name = 'Visual Studio'
+                observed = [pscustomobject][ordered]@{
+                    present = $true
+                    verification = 'verified-present'
+                    desktop_cpp_workload = [pscustomobject][ordered]@{
+                        workload_id = 'Microsoft.VisualStudio.Workload.NativeDesktop'
+                        present = $true
+                        verification = 'verified-present'
+                        installation_paths = @('D:\Visual Studio\product')
+                        probe_status = 'success'
+                    }
+                }
+                curated = [pscustomobject][ordered]@{ status = 'active' }
+            })
+    }
+    $nestedTimeoutObservation = [pscustomobject][ordered]@{
+        id = 'visual-studio'
+        kind = 'ide'
+        name = 'Visual Studio'
+        observed = [pscustomobject][ordered]@{
+            desktop_cpp_workload = [pscustomobject][ordered]@{
+                workload_id = 'Microsoft.VisualStudio.Workload.NativeDesktop'
+                verification = 'unverified'
+                probe_status = 'timed_out'
+            }
+        }
+    }
+    $nestedTimeout = Merge-McSoftwareModule -Module (Copy-McJsonObject -InputObject $nestedBase) -ModuleName development -Observations @($nestedTimeoutObservation)
+    $nestedTimeoutWorkload = @($nestedTimeout.software | Where-Object id -eq 'visual-studio')[0].observed.desktop_cpp_workload
+    Assert-McEqual -Actual $nestedTimeoutWorkload.present -Expected $true -Message 'nested verifier timeout must preserve prior presence'
+    Assert-McEqual -Actual $nestedTimeoutWorkload.verification -Expected 'unverified' -Message 'nested verifier timeout must mark the workload unverified'
+    Assert-McEqual -Actual $nestedTimeoutWorkload.installation_paths[0] -Expected 'D:\Visual Studio\product' -Message 'nested verifier timeout must preserve prior installation paths'
+    Assert-McEqual -Actual $nestedTimeoutWorkload.probe_status -Expected 'timed_out' -Message 'nested verifier timeout must retain current probe status'
+
+    $nestedAbsentObservation = [pscustomobject][ordered]@{
+        id = 'visual-studio'
+        kind = 'ide'
+        name = 'Visual Studio'
+        observed = [pscustomobject][ordered]@{
+            desktop_cpp_workload = [pscustomobject][ordered]@{
+                workload_id = 'Microsoft.VisualStudio.Workload.NativeDesktop'
+                present = $false
+                verification = 'verified-absent'
+                installation_paths = @()
+                probe_status = 'success'
+            }
+        }
+    }
+    $nestedAbsent = Merge-McSoftwareModule -Module (Copy-McJsonObject -InputObject $nestedBase) -ModuleName development -Observations @($nestedAbsentObservation)
+    $nestedAbsentWorkload = @($nestedAbsent.software | Where-Object id -eq 'visual-studio')[0].observed.desktop_cpp_workload
+    Assert-McEqual -Actual $nestedAbsentWorkload.present -Expected $false -Message 'nested verified absence must expose present=false'
+    Assert-McEqual -Actual $nestedAbsentWorkload.verification -Expected 'verified-absent' -Message 'nested verified absence state'
+    Assert-McEqual -Actual $nestedAbsentWorkload.last_known.present -Expected $true -Message 'nested verified absence must retain last known presence'
+    Assert-McEqual -Actual $nestedAbsentWorkload.last_known.installation_paths[0] -Expected 'D:\Visual Studio\product' -Message 'nested verified absence must retain last known paths'
 }
 
 Invoke-McTest -Name 'project root classification and promotion' -Body {

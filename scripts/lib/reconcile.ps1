@@ -166,7 +166,29 @@ function Merge-McObservedObject {
             Set-McObjectProperty -InputObject $merged -Name $property.Name -Value @($unique)
         }
         else {
-            Set-McObjectProperty -InputObject $merged -Name $property.Name -Value (Copy-McJsonObject -InputObject $value)
+            $previousValue = Get-McObjectPropertyOrNull -InputObject $merged -Name $property.Name
+            $valueVerification = [string](Get-McObjectPropertyOrNull -InputObject $value -Name 'verification')
+            if ((Test-McMapping -InputObject $value) -and $valueVerification -in @('unverified', 'stale') -and (Test-McMapping -InputObject $previousValue)) {
+                $safeValue = Copy-McJsonObject -InputObject $value
+                $currentPresent = Get-McObjectPropertyOrNull -InputObject $safeValue -Name 'present'
+                $previousPresent = Get-McObjectPropertyOrNull -InputObject $previousValue -Name 'present'
+                if ($currentPresent -eq $false -and $previousPresent -eq $true) {
+                    Remove-McObjectProperty -InputObject $safeValue -Name 'present'
+                }
+                Set-McObjectProperty -InputObject $merged -Name $property.Name -Value (Merge-McObservedObject -Previous $previousValue -Current $safeValue)
+            }
+            elseif ((Test-McMapping -InputObject $value) -and $valueVerification -eq 'verified-absent' -and (Test-McMapping -InputObject $previousValue)) {
+                $safeValue = Copy-McJsonObject -InputObject $value
+                if ($null -eq (Get-McObjectPropertyOrNull -InputObject $safeValue -Name 'last_known')) {
+                    $lastKnown = Copy-McJsonObject -InputObject $previousValue
+                    Remove-McObjectProperty -InputObject $lastKnown -Name 'last_known'
+                    Set-McObjectProperty -InputObject $safeValue -Name 'last_known' -Value $lastKnown
+                }
+                Set-McObjectProperty -InputObject $merged -Name $property.Name -Value $safeValue
+            }
+            else {
+                Set-McObjectProperty -InputObject $merged -Name $property.Name -Value (Copy-McJsonObject -InputObject $value)
+            }
         }
     }
 
