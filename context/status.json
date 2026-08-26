@@ -4,7 +4,7 @@
   "provider_state": "verified",
   "published_verification": {
     "mode": "Full",
-    "verified_at": "2026-08-26T12:33:45.4118790Z",
+    "verified_at": "2026-08-26T12:52:05.7370164Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
@@ -78,7 +78,7 @@
       "open_unknown_count": 3,
       "unresolved_entry_count": 1
     },
-    "generated_at": "2026-08-26T12:22:41.6862960Z",
+    "generated_at": "2026-08-26T12:48:08.2667294Z",
     "reason": "blocking_findings",
     "source": ".local/audit-closure.json"
   }
