@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，重复 Full proposal 已达到逐文件字节稳定，Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate、provider partial 和项目语义得到明确审查。
+当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，VS Code `.cmd` host probe 已修复并重新验证，重复 Full proposal 已达到逐文件字节稳定，Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate 和项目语义得到明确审查。
 
 开始实现前必须阅读：
 
@@ -137,8 +137,9 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 当前进度（2026-08-26）：
 
 - Full Audit #1 已发布，provider aggregate 为 `partial`；structured canonical、项目 registry、relationships 和 `CURRENT.md` 已更新。
-- Full Audit #3 的 19 个 canonical/Markdown proposal 文件与当前仓库逐字节一致，`changed_files=[]`，validation 通过。
-- Quick #1/#2 的 canonical context 除允许的 `status.json` verification metadata 外完全一致；两次均未发布。
+- VS Code `1.134.0` 已通过带空格路径的 `.cmd` safe probe，写入 canonical `code` entity；host-authoritative provider 随之从 `partial` 变为 `success`。
+- VS Code 修复后的 Full repeat（20 个 canonical/Markdown proposal 文件）与当前仓库逐字节一致，`changed_files=[]`，validation 通过。
+- VS Code 修复后的 Quick #1/#2 的 canonical context 除允许的 `status.json` verification metadata 外完全一致；两次均未发布。
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。
 - G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 
