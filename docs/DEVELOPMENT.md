@@ -143,6 +143,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - 只读 listener check 将当前 `127.0.0.1:7988` 关联到 `FlClashCore -> FlClashHelperService.exe`（`Running/Auto`）；历史 `10808`、`10100`、`18080` 无 listener，但尚不足以自动决定 proxy primary 或 FlClash project lifecycle。
 - Full/Discover 现通过 optional `project-activity-local` provider 将八个 promotion-eligible Git project 的 branch、latest commit time、tracked dirty Boolean 和 probe status 保存在 `.local`；这些证据不自动写入 lifecycle/purpose 等 `curated` 语义。
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。
+- `scripts/audit.ps1` 提供只读 closure contract/projection review；默认允许当前 `partial` closure，`-RequireVerified` 可作为进入后续阶段前的显式 gate，命令不写入 `.local` 或 canonical。
 - `context/status.json` 现明确区分 `provider_state` 与 `audit_closure`；audit closure 可显式记录按设计接受的 unknown，只有 open unknown/conflict/unresolved 才阻塞顶层 `state=verified`，因此当前仍因 pnpm、项目语义和 bridge/proxy 语义保持 `partial`。
 - G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 

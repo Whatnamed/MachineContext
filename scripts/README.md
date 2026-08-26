@@ -8,6 +8,7 @@ V1 uses small Windows-first PowerShell entry points plus source-specific collect
 - `verify.ps1` — targeted re-verification of known entities/providers;
 - `render.ps1` — deterministic regeneration of `CURRENT.md` from canonical JSON;
 - `validate.ps1` — JSON/reference/privacy/invariant checks;
+- `audit.ps1` — read-only structural review and closure projection of ignored `.local/audit-closure.json`;
 - `sync.ps1` — staging -> collect/discover -> reconcile/verify -> validate/privacy -> render -> atomic publish -> git diff.
 
 The entry points now implement the first Windows-first V1 pipeline. They remain deliberately small and require PowerShell 7 (`pwsh.exe`). `sync.ps1` stops on a dirty tree by default, writes raw candidates/diagnostics only under ignored `.local/`, and never commits or pushes automatically.
@@ -18,6 +19,7 @@ Examples:
 pwsh.exe -File .\scripts\collect.ps1 -Mode Quick
 pwsh.exe -File .\scripts\sync.ps1 -Mode Full
 pwsh.exe -File .\scripts\validate.ps1
+pwsh.exe -File .\scripts\audit.ps1
 pwsh.exe -File .\tests\run-tests.ps1
 ```
 
