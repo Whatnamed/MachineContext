@@ -53,6 +53,53 @@ function Get-McWindowsSdkVersions {
     return @($versions | Sort-Object)
 }
 
+function ConvertTo-McVisualStudioDesktopCppObservation {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$ProbeStatus,
+
+        [AllowNull()]
+        [string]$ProbeText
+    )
+
+    $workloadId = 'Microsoft.VisualStudio.Workload.NativeDesktop'
+    $result = [ordered]@{
+        workload_id = $workloadId
+        verification = 'unverified'
+        probe_status = $ProbeStatus
+    }
+    if ($ProbeStatus -ne 'success') {
+        return [pscustomobject]$result
+    }
+
+    try {
+        $instances = @(ConvertFrom-McVsWhereJson -Text ([string]$ProbeText))
+    }
+    catch {
+        $result.reason = 'invalid-json'
+        return [pscustomobject]$result
+    }
+
+    $paths = @(
+        $instances |
+            ForEach-Object { [string]$_.installation_path } |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+            ForEach-Object { ConvertTo-McNormalizedPath -Path $_ } |
+            Sort-Object -Unique
+    )
+    $result.installation_paths = @($paths)
+    if ($paths.Count -gt 0) {
+        $result.present = $true
+        $result.verification = 'verified-present'
+    }
+    else {
+        $result.present = $false
+        $result.verification = 'verified-absent'
+    }
+    return [pscustomobject]$result
+}
+
 function Get-McVisualStudioObservation {
     [CmdletBinding()]
     param()
@@ -148,6 +195,14 @@ function Get-McVisualStudioObservation {
             }) -Health 'success' -Warnings @($warnings) -Optional $true -CoverageComplete $true -VerificationEvents @($verificationEvents)
     }
 
+    $desktopCppProbe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @(
+        '-all', '-prerelease', '-products', '*', '-requires', 'Microsoft.VisualStudio.Workload.NativeDesktop', '-format', 'json'
+    ) -Provider 'visual-studio-msvc-sdk' -ProbeName 'vswhere-native-desktop-workload' -TimeoutMs 10000 -OutputCapBytes 65536 -ResolutionScope 'windows-host'
+    $desktopCpp = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus ([string]$desktopCppProbe.status) -ProbeText ([string]$desktopCppProbe.stdout)
+    if ([string]$desktopCpp.verification -eq 'unverified') {
+        [void]$warnings.Add("Visual Studio Native Desktop workload verifier status: $($desktopCpp.probe_status)")
+    }
+
     $first = $installations[0]
     $firstVersion = if ($null -ne $first.PSObject.Properties['version']) { [string]$first.version } else { $null }
     $observed = [ordered]@{
@@ -161,10 +216,11 @@ function Get-McVisualStudioObservation {
         }
         msvc_toolsets = @($toolsets | Sort-Object)
         windows_sdk_versions = @($sdkVersions)
+        desktop_cpp_workload = $desktopCpp
         evidence = @([pscustomobject][ordered]@{
                 provider = 'visual-studio-msvc-sdk'
                 provider_key = 'vswhere'
-                fields = @('present', 'version', 'install', 'msvc_toolsets', 'windows_sdk_versions')
+                fields = @('present', 'version', 'install', 'msvc_toolsets', 'windows_sdk_versions', 'desktop_cpp_workload')
                 confidence = 'high'
             })
     }

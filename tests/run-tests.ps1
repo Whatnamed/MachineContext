@@ -12,6 +12,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\validation.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\curation.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\rendering.ps1')
+. (Join-Path $RepoRoot 'scripts\collectors\visual-studio.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -153,6 +154,18 @@ Invoke-McTest -Name 'CURRENT rendering falls back to verified install locations'
     $desktopObserved = [pscustomobject][ordered]@{ install_location = '%LOCALAPPDATA%\\Packages\\OpenAI.Codex\\Install' }
     Assert-McEqual -Actual (Get-McRenderLocation -Observed $visualStudioObserved) -Expected 'D:\\Visual Studio\\product' -Message 'renderer should use verified install root when executable is absent'
     Assert-McEqual -Actual (Get-McRenderLocation -Observed $desktopObserved) -Expected '%LOCALAPPDATA%\\Packages\\OpenAI.Codex\\Install' -Message 'renderer should use verified package install location'
+}
+
+Invoke-McTest -Name 'Visual Studio Native Desktop workload preserves verification states' -Body {
+    $present = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus 'success' -ProbeText '[{"installationPath":"D:\\Visual Studio\\product"}]'
+    $absent = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus 'success' -ProbeText '[]'
+    $failed = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus 'timed_out' -ProbeText ''
+    Assert-McEqual -Actual $present.verification -Expected 'verified-present' -Message 'Native Desktop workload should be present when vswhere returns an installation'
+    Assert-McEqual -Actual $present.installation_paths[0] -Expected 'D:\Visual Studio\product' -Message 'workload installation paths must be normalized'
+    Assert-McEqual -Actual $absent.verification -Expected 'verified-absent' -Message 'successful empty workload query should be verified-absent'
+    Assert-McEqual -Actual $absent.present -Expected $false -Message 'verified-absent workload must expose present=false'
+    Assert-McEqual -Actual $failed.verification -Expected 'unverified' -Message 'workload timeout must remain unverified'
+    Assert-McTrue -Condition ($null -eq $failed.PSObject.Properties['present']) -Message 'unverified workload must not expose an absent claim'
 }
 
 Invoke-McTest -Name 'recursive JSON type contract' -Body {
