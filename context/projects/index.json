@@ -3,19 +3,13 @@
   "projects": [
     {
       "id": "project-e:-projects-axisui-axisui",
-      "name": "AXISUI",
+      "name": "axis-ui",
       "path": "E:\\Projects\\AXISUI\\AXISUI",
       "context_file": "context/projects/project-b431bf355ea3e6946d0f.json"
     },
     {
-      "id": "project-github.com-flutter-flutter",
-      "name": "flutter",
-      "path": "E:\\Dev\\flutter",
-      "context_file": "context/projects/project-github.com-flutter-flutter.json"
-    },
-    {
       "id": "project-github.com-hotchpotch-openai-api-server-via-codex",
-      "name": "monitor",
+      "name": "openai-api-server-via-codex",
       "path": "E:\\Projects\\agent-bridge-legacy\\monitor",
       "context_file": "context/projects/project-github.com-hotchpotch-openai-api-server-via-codex.json"
     },
@@ -27,13 +21,13 @@
     },
     {
       "id": "project-github.com-whatnamed-bath-adaptation",
-      "name": "app",
+      "name": "bath-adaptation",
       "path": "E:\\Projects\\Bath\\Bath\\app",
       "context_file": "context/projects/project-github.com-whatnamed-bath-adaptation.json"
     },
     {
       "id": "project-github.com-whatnamed-codex-bridge-tray-controller",
-      "name": "controller",
+      "name": "codex-bridge-tray-controller",
       "path": "E:\\Projects\\agent-bridge-legacy\\controller",
       "context_file": "context/projects/project-github.com-whatnamed-codex-bridge-tray-controller.json"
     },
@@ -45,7 +39,7 @@
     },
     {
       "id": "project-github.com-whatnamed-paste-as-file-for-chatgpt",
-      "name": "GPTPaste",
+      "name": "Paste-as-File-for-ChatGPT",
       "path": "E:\\Projects\\GPTPaste\\GPTPaste",
       "context_file": "context/projects/project-github.com-whatnamed-paste-as-file-for-chatgpt.json"
     },

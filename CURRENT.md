@@ -6,21 +6,26 @@
 
 - State: partial
 - Mode: Full
-- Verified at: 2026-08-25T18:59:53.6705479Z
+- Verified at: 2026-08-26T07:31:12.5757001Z
 - Providers:
   - `ai-tooling`: success
+  - `bounded-filesystem-discovery`: partial
   - `everything-index`: unavailable
+  - `git-for-windows`: success
+  - `host-authoritative-tools`: partial
   - `network-local-services`: success
+  - `nvidia-smi`: success
   - `project-fingerprints`: success
   - `registry-uninstall`: success
-  - `runtimes-package-managers-toolchain`: partial
+  - `runtimes-package-managers-toolchain`: success
   - `shells-path-resolution`: success
   - `system-hardware-storage`: success
+  - `visual-studio-msvc-sdk`: success
   - `winget-export`: success
 
 ## Machine
 
-- OS: Windows 10 Home Core 25H2
+- OS: Windows 11 Core 25H2
 - Build: 26200
 - Architecture: 64 位
 - Locale / UI: zh-CN / zh-CN
@@ -28,40 +33,44 @@
 - CPU: 12th Gen Intel(R) Core(TM) i5-12400
 - Memory: 16.0 GiB
 - GPUs:
-  - NVIDIA GeForce RTX 3070 Laptop GPU (32.0.16.1088)
   - GameViewer Virtual Display Adapter (15.6.5.199)
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
+  - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (25.8/195.9 GiB free/total)
-  - `D:\` NTFS (51.8/279.3 GiB free/total)
+  - `C:\` NTFS (14.8/195.9 GiB free/total)
+  - `D:\` NTFS (43.8/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
 ## Development environment
 
-- **Git** `git` — git version 2.53.0.windows.3 — `%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe`
-- **Git LFS** `git-lfs` — git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384) — `D:\Git\Git\cmd\git-lfs.exe`
-- **GitHub CLI** `gh` — gh version 2.93.0 (2026-05-27) — `%PROGRAMFILES%\GitHub CLI\gh.exe`
-- **Rust compiler** `rustc` — rustc 1.96.0 (ac68faa20 2026-05-25) — `%USERPROFILE%\.cargo\bin\rustc.exe`
-- **Cargo** `cargo` — cargo 1.96.0 (30a34c682 2026-05-25) — `%USERPROFILE%\.cargo\bin\cargo.exe`
+- **Git** `git` — 2.54.0 — `D:\Git\Git\cmd\git.exe`
+- **Git LFS** `git-lfs` — 3.7.1 — `D:\Git\Git\cmd\git-lfs.exe`
+- **Supabase CLI** `supabase` — 2.109.1 — `D:\Tools\SupabaseCLI\2.109.1\node_modules\.bin\supabase.cmd`
+- **GitHub CLI** `gh` — 2.93.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
+- **Rust compiler** `rustc` — 1.96.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
+- **Visual Studio** `visual-studio` — 17.13.35919.96 — `unknown`
+- **Cargo** `cargo` — 1.96.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
-- **pip** `pip` — pip 25.0.1 from C:\Users\hasee\.agent-reach-venv\Lib\site-packages\pip (python 3.12) — `%USERPROFILE%\.agent-reach-venv\Scripts\pip.exe`
-- **pnpm** `pnpm` — 11.19.0 — `%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd`
-- **uv** `uv` — uv 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc) — `E:\Dev\uv\uv.exe`
-- **uvx** `uvx` — uvx 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc) — `E:\Dev\uv\uvx.exe`
-- **winget** `winget` — v1.29.290 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
+- **pip** `pip` — 25.0.1 — `D:\Python\3.12.10\Scripts\pip.exe`
+- **uv** `uv` — 0.12.5 — `E:\Dev\uv\uv.exe`
+- **uvx** `uvx` — 0.12.5 — `E:\Dev\uv\uvx.exe`
+- **winget** `winget` — 1.29.290 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
+- **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
 - **Bun** `bun` — 1.3.3 — `%USERPROFILE%\.bun\bin\bun.exe`
-- **Dart** `dart` — Dart SDK version: 3.11.5 (stable) (Wed Apr 15 00:36:32 2026 -0700) on "windows_x64" — `E:\dev\flutter\bin\dart.bat`
-- **Go** `go` — go version go1.24.11 windows/amd64 — `D:\Go\bin\go.exe`
-- **Node.js** `node` — v22.23.2 — `D:\Node.js\Node.js\node.exe`
-- **Python** `python` — Python 3.12.10 — `%USERPROFILE%\.agent-reach-venv\Scripts\python.exe`
-- **Python Launcher** `python-launcher` — Python 3.12.10 — `%SYSTEMROOT%\py.exe`
-- **Flutter** `flutter` — Flutter 3.41.9 • channel stable • https://github.com/flutter/flutter.git — `E:\dev\flutter\bin\flutter.bat`
-- **rustup** `rustup` — rustup 1.29.0 (28d1352db 2026-03-05) — `%USERPROFILE%\.cargo\bin\rustup.exe`
+- **Dart** `dart` — 3.11.5 — `E:\dev\flutter\bin\dart.bat`
+- **Go** `go` — 1.24.11 — `D:\Go\bin\go.exe`
+- **Node.js** `node` — 22.23.2 — `D:\Node.js\Node.js\node.exe`
+- **Python** `python` — 3.12.10 — `D:\Python\3.12.10\python.exe`
+- **Python Launcher** `python-launcher` — 3.12.10 — `%SYSTEMROOT%\py.exe`
+- **Flutter** `flutter` — 3.41.9 — `E:\dev\flutter\bin\flutter.bat`
+- **rustup** `rustup` — 1.29.0 — `%USERPROFILE%\.cargo\bin\rustup.exe`
 
 ## AI and agent tooling
 
 - **Agy** `agy` — 1.1.20 — `%LOCALAPPDATA%\agy\bin\agy.exe`
-- **Claude Code** `claude-code` — 2.1.241 (Claude Code) — `D:\Claude\cli\claude.cmd`
+- **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
+- **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
+- **Codex Desktop** `codex-desktop` — 26.820.7780.0 — `unknown`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **DSH** `dsh` — 0.1.0-rc.6 — `D:\DSH\dsh.cmd`
 
@@ -76,13 +85,12 @@
 ## Projects
 
 - **agent-bridge** — `E:\Projects\agent-bridge\agent-bridge` — status: see project record
-- **app** — `E:\Projects\Bath\Bath\app` — status: see project record
-- **AXISUI** — `E:\Projects\AXISUI\AXISUI` — status: see project record
-- **controller** — `E:\Projects\agent-bridge-legacy\controller` — status: see project record
-- **flutter** — `E:\Dev\flutter` — status: see project record
-- **GPTPaste** — `E:\Projects\GPTPaste\GPTPaste` — status: see project record
-- **monitor** — `E:\Projects\agent-bridge-legacy\monitor` — status: see project record
+- **axis-ui** — `E:\Projects\AXISUI\AXISUI` — status: see project record
+- **bath-adaptation** — `E:\Projects\Bath\Bath\app` — status: see project record
+- **codex-bridge-tray-controller** — `E:\Projects\agent-bridge-legacy\controller` — status: see project record
 - **Morpho** — `D:\Morpho` — status: see project record
+- **openai-api-server-via-codex** — `E:\Projects\agent-bridge-legacy\monitor` — status: see project record
+- **Paste-as-File-for-ChatGPT** — `E:\Projects\GPTPaste\GPTPaste` — status: see project record
 - **ProxyLens** — `E:\Projects\ProxyLens\ProxyLens` — status: see project record
 
 ## Installation conventions

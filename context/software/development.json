@@ -6,231 +6,88 @@
   "software": [
     {
       "schema_version": 1,
-      "id": "bun",
+      "id": "dotnet",
       "kind": "runtime",
-      "name": "Bun",
+      "name": ".NET",
       "observed": {
+        "scope": "windows-host",
         "present": true,
-        "version": "1.3.3",
-        "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.bun\\bin"
-            }
-          ]
-        },
-        "evidence": [
+        "verification": "verified-present",
+        "verification_provider": "host-authoritative-tools",
+        "verification_reason": "success",
+        "executable": "%PROGRAMFILES%\\dotnet\\dotnet.exe",
+        "command_resolution": [
           {
-            "provider": "command",
-            "provider_key": "bun",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "cargo",
-      "kind": "package-manager",
-      "name": "Cargo",
-      "observed": {
-        "present": true,
-        "version": "cargo 1.96.0 (30a34c682 2026-05-25)",
-        "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.cargo\\bin"
-            }
-          ]
-        },
-        "evidence": [
+            "scope": "windows-host",
+            "executable": "%PROGRAMFILES%\\dotnet\\dotnet.exe",
+            "command_type": "PersistentApplication",
+            "path_index": 10,
+            "source": "persistent-path"
+          },
           {
-            "provider": "command",
-            "provider_key": "cargo",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
+            "scope": "windows-host",
+            "executable": "%PROGRAMFILES%\\dotnet\\dotnet.exe",
+            "command_type": "KnownInstallPath",
+            "path_index": null,
+            "source": "known-install-path"
           }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "dart",
-      "kind": "runtime",
-      "name": "Dart",
-      "observed": {
-        "present": true,
-        "version": "Dart SDK version: 3.11.5 (stable) (Wed Apr 15 00:36:32 2026 -0700) on \"windows_x64\"",
-        "executable": "E:\\dev\\flutter\\bin\\dart.bat",
-        "command_resolution": {
-          "Count": 2,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 2,
-          "LongLength": 2,
-          "Rank": 1,
-          "SyncRoot": [
+        ],
+        "install": {
+          "root": "%PROGRAMFILES%\\dotnet",
+          "runtimes": [
             {
-              "executable": "E:\\dev\\flutter\\bin\\dart.bat",
-              "command_type": "Application"
+              "name": "Microsoft.AspNetCore.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.AspNetCore.App",
+              "version": "8.0.21"
             },
             {
-              "executable": "E:\\dev\\flutter\\bin\\dart",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "E:\\dev\\flutter\\bin"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "dart",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "flutter",
-      "kind": "sdk",
-      "name": "Flutter",
-      "observed": {
-        "present": true,
-        "version": "Flutter 3.41.9 • channel stable • https://github.com/flutter/flutter.git",
-        "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
-        "command_resolution": {
-          "Count": 2,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 2,
-          "LongLength": 2,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
-              "command_type": "Application"
+              "name": "Microsoft.NETCore.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.NETCore.App",
+              "version": "6.0.26"
             },
             {
-              "executable": "E:\\dev\\flutter\\bin\\flutter",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
+              "name": "Microsoft.NETCore.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.NETCore.App",
+              "version": "7.0.0"
+            },
             {
-              "root": "E:\\dev\\flutter\\bin"
+              "name": "Microsoft.NETCore.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.NETCore.App",
+              "version": "8.0.21"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.WindowsDesktop.App",
+              "version": "6.0.26"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.WindowsDesktop.App",
+              "version": "7.0.0"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App",
+              "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.WindowsDesktop.App",
+              "version": "8.0.21"
             }
-          ]
+          ],
+          "sdks": []
         },
         "evidence": [
           {
-            "provider": "command",
-            "provider_key": "flutter",
+            "provider": "host-authoritative-tools",
+            "provider_key": "dotnet",
             "fields": [
               "present",
               "version",
               "executable",
               "command_resolution"
             ],
-            "confidence": "high"
+            "confidence": "medium"
           }
-        ]
+        ],
+        "sdk_state": "absent",
+        "verification_note": "dotnet --version is unavailable because no .NET SDK is installed; runtimes were checked separately"
       },
       "curated": {
         "status": "unknown"
@@ -238,106 +95,33 @@
     },
     {
       "schema_version": 1,
-      "id": "gh",
-      "kind": "cloud-cli",
-      "name": "GitHub CLI",
-      "observed": {
-        "present": true,
-        "version": "gh version 2.93.0 (2026-05-27)",
-        "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%PROGRAMFILES%\\GitHub CLI"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "gh",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "git",
+      "id": "supabase",
       "kind": "cli",
-      "name": "Git",
+      "name": "Supabase CLI",
       "observed": {
+        "scope": "windows-host",
         "present": true,
-        "version": "git version 2.53.0.windows.3",
-        "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe",
-        "command_resolution": {
-          "Count": 2,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 2,
-          "LongLength": 2,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\Git\\Git\\cmd\\git.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "verification": "verified-present",
+        "verification_provider": "host-authoritative-tools",
+        "verification_reason": "success",
+        "version": "2.109.1",
+        "executable": "D:\\Tools\\SupabaseCLI\\2.109.1\\node_modules\\.bin\\supabase.cmd",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "D:\\Tools\\SupabaseCLI\\2.109.1\\node_modules\\.bin\\supabase.cmd",
+            "command_type": "KnownInstallPath",
+            "path_index": null,
+            "source": "known-install-path"
+          }
+        ],
         "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd"
-            }
-          ]
+          "root": "D:\\Tools\\SupabaseCLI\\2.109.1"
         },
         "evidence": [
           {
-            "provider": "command",
-            "provider_key": "git",
+            "provider": "host-authoritative-tools",
+            "provider_key": "supabase",
             "fields": [
               "present",
               "version",
@@ -354,54 +138,50 @@
     },
     {
       "schema_version": 1,
-      "id": "git-lfs",
-      "kind": "cli",
-      "name": "Git LFS",
+      "id": "visual-studio",
+      "kind": "ide",
+      "name": "Visual Studio",
       "observed": {
+        "scope": "windows-host",
         "present": true,
-        "version": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)",
-        "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "verification": "verified-present",
+        "verification_provider": "visual-studio-msvc-sdk",
+        "verification_reason": "vswhere-installation-found",
+        "version": "17.13.35919.96",
         "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
+          "installations": [
             {
-              "root": "D:\\Git\\Git\\cmd"
+              "version": "17.13.35919.96",
+              "display_name": "Visual Studio Community 2022",
+              "installation_path": "D:\\Visual Studio\\product",
+              "is_complete": true,
+              "msvc_toolsets": [
+                "D:\\Visual Studio\\product\\VC\\Tools\\MSVC\\14.43.34808"
+              ],
+              "product_id": "Microsoft.VisualStudio.Product.Community"
             }
-          ]
+          ],
+          "root": "D:\\Visual Studio\\product"
         },
         "evidence": [
           {
-            "provider": "command",
-            "provider_key": "git-lfs",
+            "provider": "visual-studio-msvc-sdk",
+            "provider_key": "vswhere",
             "fields": [
               "present",
               "version",
-              "executable",
-              "command_resolution"
+              "install",
+              "msvc_toolsets",
+              "windows_sdk_versions"
             ],
             "confidence": "high"
           }
+        ],
+        "msvc_toolsets": [
+          "D:\\Visual Studio\\product\\VC\\Tools\\MSVC\\14.43.34808"
+        ],
+        "windows_sdk_versions": [
+          "10.0.22621.0"
         ]
       },
       "curated": {
@@ -410,573 +190,27 @@
     },
     {
       "schema_version": 1,
-      "id": "go",
-      "kind": "runtime",
-      "name": "Go",
-      "observed": {
-        "present": true,
-        "version": "go version go1.24.11 windows/amd64",
-        "executable": "D:\\Go\\bin\\go.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\Go\\bin\\go.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "D:\\Go\\bin"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "go",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "node",
-      "kind": "runtime",
-      "name": "Node.js",
-      "observed": {
-        "present": true,
-        "version": "v22.23.2",
-        "executable": "D:\\Node.js\\Node.js\\node.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\Node.js\\Node.js\\node.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "D:\\Node.js\\Node.js"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "node",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "npm",
+      "id": "winget",
       "kind": "package-manager",
-      "name": "npm",
+      "name": "winget",
       "observed": {
         "present": true,
-        "version": "10.9.8",
-        "executable": "D:\\Node.js\\Node.js\\npm.cmd",
-        "command_resolution": {
-          "Count": 3,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 3,
-          "LongLength": 3,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\Node.js\\Node.js\\npm.cmd",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\Node.js\\Node.js\\npm.ps1",
-              "command_type": "ExternalScript"
-            },
-            {
-              "executable": "D:\\Node.js\\Node.js\\npm",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "cache": "E:\\Dev\\npm-cache",
-              "prefix": "E:\\Dev\\npm-global",
-              "root": "D:\\Node.js\\Node.js"
-            }
-          ]
-        },
-        "evidence": [
+        "verification": "verified-present",
+        "version": "1.29.290",
+        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\winget.exe",
+        "command_resolution": [
           {
-            "provider": "command",
-            "provider_key": "npm",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\winget.exe",
+            "command_type": "PersistentApplication"
           }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "pip",
-      "kind": "package-manager",
-      "name": "pip",
-      "observed": {
-        "present": true,
-        "version": "pip 25.0.1 from C:\\Users\\hasee\\.agent-reach-venv\\Lib\\site-packages\\pip (python 3.12)",
-        "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\pip.exe",
-        "command_resolution": {
-          "Count": 2,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 2,
-          "LongLength": 2,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\pip.exe",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        ],
         "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "cache": "%LOCALAPPDATA%\\pip\\cache",
-              "root": "%USERPROFILE%\\.agent-reach-venv\\Scripts"
-            }
-          ]
+          "root": "%LOCALAPPDATA%\\Microsoft\\WindowsApps"
         },
         "evidence": [
           {
             "provider": "command",
-            "provider_key": "pip",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "pnpm",
-      "kind": "package-manager",
-      "name": "pnpm",
-      "observed": {
-        "present": true,
-        "version": "11.19.0",
-        "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback\\pnpm.cmd",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback\\pnpm.cmd",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "pnpm",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "python",
-      "kind": "runtime",
-      "name": "Python",
-      "observed": {
-        "present": true,
-        "version": "Python 3.12.10",
-        "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\python.exe",
-        "command_resolution": {
-          "Count": 3,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 3,
-          "LongLength": 3,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\python.exe",
-              "command_type": "Application"
-            },
-            {
-              "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\python.exe",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\Python\\3.12.10\\python.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.agent-reach-venv\\Scripts"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "python",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "python-launcher",
-      "kind": "runtime",
-      "name": "Python Launcher",
-      "observed": {
-        "present": true,
-        "version": "Python 3.12.10",
-        "executable": "%SYSTEMROOT%\\py.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%SYSTEMROOT%\\py.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%SYSTEMROOT%"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "py",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "rustc",
-      "kind": "compiler",
-      "name": "Rust compiler",
-      "observed": {
-        "present": true,
-        "version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
-        "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.cargo\\bin"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "rustc",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "rustup",
-      "kind": "version-manager",
-      "name": "rustup",
-      "observed": {
-        "present": true,
-        "version": "rustup 1.29.0 (28d1352db 2026-03-05)",
-        "executable": "%USERPROFILE%\\.cargo\\bin\\rustup.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%USERPROFILE%\\.cargo\\bin\\rustup.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%USERPROFILE%\\.cargo\\bin"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "rustup",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "status": "unknown"
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "uv",
-      "kind": "package-manager",
-      "name": "uv",
-      "observed": {
-        "present": true,
-        "version": "uv 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc)",
-        "executable": "E:\\Dev\\uv\\uv.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "E:\\Dev\\uv\\uv.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
-        "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "E:\\Dev\\uv"
-            }
-          ]
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "uv",
+            "provider_key": "winget",
             "fields": [
               "present",
               "version",
@@ -998,36 +232,17 @@
       "name": "uvx",
       "observed": {
         "present": true,
-        "version": "uvx 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc)",
+        "verification": "verified-present",
+        "version": "0.12.5",
         "executable": "E:\\Dev\\uv\\uvx.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "E:\\Dev\\uv\\uvx.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\uv\\uvx.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "E:\\Dev\\uv"
-            }
-          ]
+          "root": "E:\\Dev\\uv"
         },
         "evidence": [
           {
@@ -1049,46 +264,618 @@
     },
     {
       "schema_version": 1,
-      "id": "winget",
+      "id": "uv",
       "kind": "package-manager",
-      "name": "winget",
+      "name": "uv",
       "observed": {
         "present": true,
-        "version": "v1.29.290",
-        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\winget.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\winget.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "verification": "verified-present",
+        "version": "0.12.5",
+        "executable": "E:\\Dev\\uv\\uv.exe",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\uv\\uv.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "install": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "root": "%LOCALAPPDATA%\\Microsoft\\WindowsApps"
-            }
-          ]
+          "root": "E:\\Dev\\uv"
         },
         "evidence": [
           {
             "provider": "command",
-            "provider_key": "winget",
+            "provider_key": "uv",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "rustup",
+      "kind": "version-manager",
+      "name": "rustup",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.29.0",
+        "executable": "%USERPROFILE%\\.cargo\\bin\\rustup.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.cargo\\bin\\rustup.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%USERPROFILE%\\.cargo\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "rustup",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "rustc",
+      "kind": "compiler",
+      "name": "Rust compiler",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.96.0",
+        "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%USERPROFILE%\\.cargo\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "rustc",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "python-launcher",
+      "kind": "runtime",
+      "name": "Python Launcher",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.12.10",
+        "executable": "%SYSTEMROOT%\\py.exe",
+        "command_resolution": [
+          {
+            "executable": "%SYSTEMROOT%\\py.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%SYSTEMROOT%"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "py",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "python",
+      "kind": "runtime",
+      "name": "Python",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.12.10",
+        "executable": "D:\\Python\\3.12.10\\python.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\Python\\3.12.10\\python.exe",
+            "command_type": "PersistentApplication"
+          },
+          {
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\python.exe",
+            "command_type": "PersistentApplication"
+          },
+          {
+            "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\python.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "D:\\Python\\3.12.10"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "python",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "pnpm",
+      "kind": "package-manager",
+      "name": "pnpm",
+      "observed": {
+        "verification": "unverified",
+        "verification_provider": "runtimes-package-managers-toolchain",
+        "verification_reason": "persistent-command-not-found",
+        "command_resolution": []
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "pip",
+      "kind": "package-manager",
+      "name": "pip",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "25.0.1",
+        "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
+            "command_type": "PersistentApplication"
+          },
+          {
+            "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\pip.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "cache": "%LOCALAPPDATA%\\pip\\cache",
+          "root": "D:\\Python\\3.12.10\\Scripts"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "pip",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "node",
+      "kind": "runtime",
+      "name": "Node.js",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "22.23.2",
+        "executable": "D:\\Node.js\\Node.js\\node.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\Node.js\\Node.js\\node.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "D:\\Node.js\\Node.js"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "node",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "go",
+      "kind": "runtime",
+      "name": "Go",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.24.11",
+        "executable": "D:\\Go\\bin\\go.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\Go\\bin\\go.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "D:\\Go\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "go",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "git-lfs",
+      "kind": "cli",
+      "name": "Git LFS",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.7.1",
+        "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "D:\\Git\\Git\\cmd"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "git-lfs",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "git",
+      "kind": "cli",
+      "name": "Git",
+      "observed": {
+        "scope": "windows-host",
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "git-for-windows",
+        "verification_reason": "version-probe-success",
+        "version": "2.54.0",
+        "executable": "D:\\Git\\Git\\cmd\\git.exe",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "D:\\Git\\Git\\cmd\\git.exe",
+            "command_type": "PersistentApplication",
+            "path_index": 15,
+            "source": "persistent-path"
+          }
+        ],
+        "install": {
+          "root": "D:\\Git\\Git"
+        },
+        "evidence": [
+          {
+            "provider": "git-for-windows",
+            "provider_key": "git.exe",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "gh",
+      "kind": "cloud-cli",
+      "name": "GitHub CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.93.0",
+        "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
+        "command_resolution": [
+          {
+            "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%PROGRAMFILES%\\GitHub CLI"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "gh",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "flutter",
+      "kind": "sdk",
+      "name": "Flutter",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.41.9",
+        "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
+        "command_resolution": [
+          {
+            "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "E:\\dev\\flutter\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "flutter",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dart",
+      "kind": "runtime",
+      "name": "Dart",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.11.5",
+        "executable": "E:\\dev\\flutter\\bin\\dart.bat",
+        "command_resolution": [
+          {
+            "executable": "E:\\dev\\flutter\\bin\\dart.bat",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "E:\\dev\\flutter\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "dart",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "cargo",
+      "kind": "package-manager",
+      "name": "Cargo",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.96.0",
+        "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%USERPROFILE%\\.cargo\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "cargo",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "npm",
+      "kind": "package-manager",
+      "name": "npm",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "10.9.8",
+        "executable": "D:\\Node.js\\Node.js\\npm.cmd",
+        "command_resolution": [
+          {
+            "executable": "D:\\Node.js\\Node.js\\npm.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "cache": "E:\\Dev\\npm-cache",
+          "prefix": "E:\\Dev\\npm-global",
+          "root": "D:\\Node.js\\Node.js"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "npm",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "bun",
+      "kind": "runtime",
+      "name": "Bun",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.3.3",
+        "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%USERPROFILE%\\.bun\\bin"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "bun",
             "fields": [
               "present",
               "version",

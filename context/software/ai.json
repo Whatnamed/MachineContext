@@ -6,28 +6,96 @@
   "software": [
     {
       "schema_version": 1,
+      "id": "codex-cli",
+      "kind": "ai-tool",
+      "name": "Codex CLI",
+      "observed": {
+        "scope": "windows-host",
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "host-authoritative-tools",
+        "verification_reason": "success",
+        "version": "0.149.1",
+        "executable": "E:\\Codex\\codex-cli\\codex.cmd",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "E:\\Codex\\codex-cli\\codex.cmd",
+            "command_type": "PersistentApplication",
+            "path_index": 20,
+            "source": "persistent-path"
+          }
+        ],
+        "install": {
+          "root": "E:\\Codex\\codex-cli"
+        },
+        "evidence": [
+          {
+            "provider": "host-authoritative-tools",
+            "provider_key": "codex-cli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "codex-desktop",
+      "kind": "ai-tool",
+      "name": "Codex Desktop",
+      "observed": {
+        "scope": "windows-host",
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "host-authoritative-tools",
+        "verification_reason": "success",
+        "version": "26.820.7780.0",
+        "evidence": [
+          {
+            "provider": "host-authoritative-tools",
+            "provider_key": "codex-desktop-appx",
+            "fields": [
+              "present",
+              "package_name",
+              "version",
+              "install_location"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.820.7780.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.820.7780.0_x64__2p2nqsd0c76g0",
+        "package_name": "OpenAI.Codex"
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "agy",
       "kind": "ai-tool",
       "name": "Agy",
       "observed": {
         "present": true,
+        "verification": "verified-present",
         "version": "1.1.20",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
-        "command_resolution": {
-          "Count": 1,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 1,
-          "LongLength": 1,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "command_resolution": [
+          {
+            "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -53,31 +121,15 @@
       "name": "Claude Code",
       "observed": {
         "present": true,
-        "version": "2.1.241 (Claude Code)",
+        "verification": "verified-present",
+        "version": "2.1.241",
         "executable": "D:\\Claude\\cli\\claude.cmd",
-        "command_resolution": {
-          "Count": 3,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 3,
-          "LongLength": 3,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\Claude\\cli\\claude.cmd",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\Claude\\cli\\claude.ps1",
-              "command_type": "ExternalScript"
-            },
-            {
-              "executable": "D:\\Claude\\cli\\claude",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "command_resolution": [
+          {
+            "executable": "D:\\Claude\\cli\\claude.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -103,27 +155,15 @@
       "name": "Cursor CLI",
       "observed": {
         "present": true,
+        "verification": "verified-present",
         "version": "3.8.11",
         "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor.cmd",
-        "command_resolution": {
-          "Count": 2,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 2,
-          "LongLength": 2,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor.cmd",
-              "command_type": "Application"
-            },
-            {
-              "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "command_resolution": [
+          {
+            "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -149,31 +189,15 @@
       "name": "DSH",
       "observed": {
         "present": true,
+        "verification": "verified-present",
         "version": "0.1.0-rc.6",
         "executable": "D:\\DSH\\dsh.cmd",
-        "command_resolution": {
-          "Count": 3,
-          "IsFixedSize": true,
-          "IsReadOnly": false,
-          "IsSynchronized": false,
-          "Length": 3,
-          "LongLength": 3,
-          "Rank": 1,
-          "SyncRoot": [
-            {
-              "executable": "D:\\DSH\\dsh.cmd",
-              "command_type": "Application"
-            },
-            {
-              "executable": "D:\\DSH\\dsh.ps1",
-              "command_type": "ExternalScript"
-            },
-            {
-              "executable": "D:\\DSH\\dsh",
-              "command_type": "Application"
-            }
-          ]
-        },
+        "command_resolution": [
+          {
+            "executable": "D:\\DSH\\dsh.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
         "evidence": [
           {
             "provider": "command",

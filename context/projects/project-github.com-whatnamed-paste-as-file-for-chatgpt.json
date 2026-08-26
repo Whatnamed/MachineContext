@@ -1,77 +1,30 @@
 {
   "schema_version": 1,
   "id": "project-github.com-whatnamed-paste-as-file-for-chatgpt",
-  "name": "GPTPaste",
+  "name": "Paste-as-File-for-ChatGPT",
   "observed": {
     "evidence": [
       {
         "path": "E:\\Projects\\GPTPaste\\GPTPaste\\.git",
         "type": "git_fingerprint"
+      },
+      {
+        "classification": "canonical-project",
+        "root": "E:\\Projects\\GPTPaste\\GPTPaste",
+        "source": "canonical-project-index",
+        "type": "root_policy"
       }
     ],
     "commands": {},
-    "local_endpoints": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "local_endpoints": [],
     "local_path": "E:\\Projects\\GPTPaste\\GPTPaste",
-    "manifests": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "package_manager_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "manifests": [],
+    "package_manager_refs": [],
     "repository": "github.com/Whatnamed/Paste-as-File-for-ChatGPT",
-    "runtime_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "service_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "tool_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "runtime_refs": [],
+    "service_refs": [],
+    "tool_refs": [],
+    "workspace_refs": [],
     "workspace_type": "git-repository"
   },
   "curated": {

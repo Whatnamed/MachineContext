@@ -3,18 +3,34 @@
   "state": "partial",
   "published_verification": {
     "mode": "Full",
-    "verified_at": "2026-08-25T18:59:53.6705479Z",
+    "verified_at": "2026-08-26T07:31:12.5757001Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
         "health": "success"
       },
       {
+        "provider": "bounded-filesystem-discovery",
+        "health": "partial"
+      },
+      {
         "provider": "everything-index",
         "health": "unavailable"
       },
       {
+        "provider": "git-for-windows",
+        "health": "success"
+      },
+      {
+        "provider": "host-authoritative-tools",
+        "health": "partial"
+      },
+      {
         "provider": "network-local-services",
+        "health": "success"
+      },
+      {
+        "provider": "nvidia-smi",
         "health": "success"
       },
       {
@@ -27,7 +43,7 @@
       },
       {
         "provider": "runtimes-package-managers-toolchain",
-        "health": "partial"
+        "health": "success"
       },
       {
         "provider": "shells-path-resolution",
@@ -35,6 +51,10 @@
       },
       {
         "provider": "system-hardware-storage",
+        "health": "success"
+      },
+      {
+        "provider": "visual-studio-msvc-sdk",
         "health": "success"
       },
       {

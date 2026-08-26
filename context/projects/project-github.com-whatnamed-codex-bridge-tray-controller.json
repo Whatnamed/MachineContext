@@ -1,77 +1,30 @@
 {
   "schema_version": 1,
   "id": "project-github.com-whatnamed-codex-bridge-tray-controller",
-  "name": "controller",
+  "name": "codex-bridge-tray-controller",
   "observed": {
     "evidence": [
       {
         "path": "E:\\Projects\\agent-bridge-legacy\\controller\\.git",
         "type": "git_fingerprint"
+      },
+      {
+        "classification": "canonical-project",
+        "root": "E:\\Projects\\agent-bridge-legacy\\controller",
+        "source": "canonical-project-index",
+        "type": "root_policy"
       }
     ],
     "commands": {},
-    "local_endpoints": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "local_endpoints": [],
     "local_path": "E:\\Projects\\agent-bridge-legacy\\controller",
-    "manifests": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "package_manager_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "manifests": [],
+    "package_manager_refs": [],
     "repository": "github.com/Whatnamed/codex-bridge-tray-controller",
-    "runtime_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "service_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
-    "tool_refs": {
-      "Count": 0,
-      "IsFixedSize": true,
-      "IsReadOnly": false,
-      "IsSynchronized": false,
-      "Length": 0,
-      "LongLength": 0,
-      "Rank": 1,
-      "SyncRoot": []
-    },
+    "runtime_refs": [],
+    "service_refs": [],
+    "tool_refs": [],
+    "workspace_refs": [],
     "workspace_type": "git-repository"
   },
   "curated": {

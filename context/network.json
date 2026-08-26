@@ -35,6 +35,7 @@
   ],
   "wsl": {
     "present": true,
+    "verification": "verified-present",
     "distros": [
       "Ubuntu-24.04"
     ]

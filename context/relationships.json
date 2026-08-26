@@ -3,5 +3,155 @@
   "meta": {
     "state": "bootstrap"
   },
-  "relationships": []
+  "relationships": [
+    {
+      "evidence": [
+        {
+          "provider": "git-for-windows",
+          "fields": [
+            "git_root",
+            "git_executable",
+            "executable"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "shell-git-bash",
+      "relation": "provided_by",
+      "to": "git"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "runtimes-package-managers-toolchain",
+          "fields": [
+            "executable",
+            "install.root"
+          ],
+          "paths": [
+            "D:\\Node.js\\Node.js\\npm.cmd",
+            "D:\\Node.js\\Node.js\\node.exe"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "npm",
+      "relation": "provided_by",
+      "to": "node"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "runtimes-package-managers-toolchain",
+          "fields": [
+            "executable",
+            "install.root"
+          ],
+          "paths": [
+            "E:\\dev\\flutter\\bin\\dart.bat",
+            "E:\\dev\\flutter\\bin"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "dart",
+      "relation": "provided_by",
+      "to": "flutter"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "project-fingerprints",
+          "fields": [
+            "manifests",
+            "package_manager_refs"
+          ],
+          "manifests": [
+            "E:\\Projects\\AXISUI\\AXISUI\\package-lock.json",
+            "E:\\Projects\\AXISUI\\AXISUI\\package.json"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "project-e:-projects-axisui-axisui",
+      "relation": "uses_package_manager",
+      "to": "npm"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "project-fingerprints",
+          "fields": [
+            "manifests",
+            "runtime_refs"
+          ],
+          "manifests": [
+            "E:\\Projects\\agent-bridge-legacy\\monitor\\go.mod",
+            "E:\\Projects\\agent-bridge-legacy\\monitor\\pyproject.toml"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "project-github.com-hotchpotch-openai-api-server-via-codex",
+      "relation": "uses_runtime",
+      "to": "go"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "project-fingerprints",
+          "fields": [
+            "manifests",
+            "runtime_refs"
+          ],
+          "manifests": [
+            "E:\\Projects\\agent-bridge-legacy\\monitor\\go.mod",
+            "E:\\Projects\\agent-bridge-legacy\\monitor\\pyproject.toml"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "project-github.com-hotchpotch-openai-api-server-via-codex",
+      "relation": "uses_runtime",
+      "to": "python"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "project-fingerprints",
+          "fields": [
+            "manifests",
+            "package_manager_refs"
+          ],
+          "manifests": [
+            "E:\\Projects\\Bath\\Bath\\app\\package-lock.json",
+            "E:\\Projects\\Bath\\Bath\\app\\package.json"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "project-github.com-whatnamed-bath-adaptation",
+      "relation": "uses_package_manager",
+      "to": "npm"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "project-fingerprints",
+          "fields": [
+            "manifests",
+            "package_manager_refs"
+          ],
+          "manifests": [
+            "D:\\Morpho\\package-lock.json",
+            "D:\\Morpho\\package.json"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "project-github.com-whatnamed-morpho",
+      "relation": "uses_package_manager",
+      "to": "npm"
+    }
+  ]
 }
