@@ -52,7 +52,7 @@
 - **Supabase CLI** `supabase` — 2.109.1 — `D:\Tools\SupabaseCLI\2.109.1\node_modules\.bin\supabase.cmd`
 - **GitHub CLI** `gh` — 2.93.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.96.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
-- **Visual Studio** `visual-studio` — 17.13.35919.96 — `unknown`
+- **Visual Studio** `visual-studio` — 17.13.35919.96 — `D:\Visual Studio\product`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.96.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
@@ -75,7 +75,7 @@
 - **Agy** `agy` — 1.1.20 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.820.7780.0 — `unknown`
+- **Codex Desktop** `codex-desktop` — 26.820.7780.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.820.7780.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **DSH** `dsh` — 0.1.0-rc.6 — `D:\DSH\dsh.cmd`
 

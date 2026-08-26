@@ -23,6 +23,37 @@ function Get-McRenderProperty {
     return $property.Value
 }
 
+function Get-McRenderLocation {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Observed
+    )
+
+    foreach ($field in @('executable', 'install_location')) {
+        $value = Get-McRenderProperty -InputObject $Observed -Name $field
+        if ($null -ne $value -and -not [string]::IsNullOrWhiteSpace([string]$value)) {
+            return [string]$value
+        }
+    }
+
+    $install = Get-McRenderProperty -InputObject $Observed -Name 'install'
+    $root = Get-McRenderProperty -InputObject $install -Name 'root'
+    if ($null -ne $root -and -not [string]::IsNullOrWhiteSpace([string]$root)) {
+        return [string]$root
+    }
+
+    $installations = @(Get-McRenderProperty -InputObject $install -Name 'installations' -Default @())
+    foreach ($installation in @($installations | Sort-Object { [string](Get-McRenderProperty -InputObject $_ -Name 'installation_path') })) {
+        $path = Get-McRenderProperty -InputObject $installation -Name 'installation_path'
+        if ($null -ne $path -and -not [string]::IsNullOrWhiteSpace([string]$path)) {
+            return [string]$path
+        }
+    }
+
+    return $null
+}
+
 function ConvertTo-McMarkdownValue {
     [CmdletBinding()]
     param(
@@ -168,8 +199,8 @@ function Invoke-McRender {
     else {
         foreach ($item in $developmentItems) {
             $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
-            $itemExecutable = Get-McRenderProperty -InputObject $item.observed -Name 'executable'
-            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemExecutable)))
+            $itemLocation = Get-McRenderLocation -Observed $item.observed
+            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
         }
     }
 
@@ -183,8 +214,8 @@ function Invoke-McRender {
     else {
         foreach ($item in $aiItems) {
             $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
-            $itemExecutable = Get-McRenderProperty -InputObject $item.observed -Name 'executable'
-            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemExecutable)))
+            $itemLocation = Get-McRenderLocation -Observed $item.observed
+            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
         }
     }
 

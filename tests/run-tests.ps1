@@ -11,6 +11,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\review.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\validation.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\curation.ps1')
+. (Join-Path $RepoRoot 'scripts\lib\rendering.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -139,6 +140,19 @@ Invoke-McTest -Name 'legacy Codex identity migrates to split CLI record' -Body {
     Assert-McEqual -Actual $codexCli.observed.version -Expected '0.149.1' -Message 'split Codex CLI observation must win for current facts'
     Assert-McEqual -Actual $codexCli.observed.config_paths[0].path -Expected '%USERPROFILE%\\.codex\\auth.json' -Message 'legacy Codex evidence must be retained'
     Assert-McEqual -Actual $codexCli.curated.role -Expected 'primary' -Message 'legacy Codex curated intent must be retained'
+}
+
+Invoke-McTest -Name 'CURRENT rendering falls back to verified install locations' -Body {
+    $visualStudioObserved = [pscustomobject][ordered]@{
+        version = '17.13.35919.96'
+        install = [pscustomobject][ordered]@{
+            root = 'D:\\Visual Studio\\product'
+            installations = @([pscustomobject][ordered]@{ installation_path = 'D:\\Visual Studio\\product' })
+        }
+    }
+    $desktopObserved = [pscustomobject][ordered]@{ install_location = '%LOCALAPPDATA%\\Packages\\OpenAI.Codex\\Install' }
+    Assert-McEqual -Actual (Get-McRenderLocation -Observed $visualStudioObserved) -Expected 'D:\\Visual Studio\\product' -Message 'renderer should use verified install root when executable is absent'
+    Assert-McEqual -Actual (Get-McRenderLocation -Observed $desktopObserved) -Expected '%LOCALAPPDATA%\\Packages\\OpenAI.Codex\\Install' -Message 'renderer should use verified package install location'
 }
 
 Invoke-McTest -Name 'recursive JSON type contract' -Body {
