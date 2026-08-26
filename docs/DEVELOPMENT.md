@@ -2,7 +2,13 @@
 
 ## 当前阶段
 
-当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，VS Code `.cmd` host probe 已修复并重新验证。当前重复 Full 的 canonical proposal 在排除允许变化的 `status.json` heartbeat 后保持 semantic/逐文件稳定；`.local` raw diagnostics 与 live volatile facts 可变化。Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate 和项目语义得到明确审查。
+当前处于 **V1 Simplification & Inventory Integration 阶段（开发收口与实机使用基线）**。
+- 核心开发环境、AI/Agent 体系、已选创意设计（`creative.json`）与生产力工具（`productivity.json`）已完成全量实机核验并结构化入库；
+- 明确划分了 routine core scan 与 supplemental user-confirmed broad inventory 的刷新与来源边界；
+- 去除了软件与项目的冗余 `status` / 百科式 `purpose`；项目目的基于本地真实验收保留，生命周期不再强制要求维护；
+- 整理了目录角色与非硬性磁盘倾向（`conventions.json`）；
+- `CURRENT.md` 已收敛为紧凑、高信号的 AI 快速入口；
+- V1 整体进入 **Feature-Frozen for normal use** 阶段，停止架构性重构，转入日常实际使用。
 
 开始实现前必须阅读：
 

@@ -33,16 +33,16 @@ curated            user/agent-owned semantics
 - `evidence`：Registry/winget/command/config/filesystem 等安全来源摘要；
 - 环境 scope（Windows host / WSL / project-local 等需要区分时）。
 
-### 常见 curated fields
+### 常见 curated fields（按需填写，均为可选）
 
-- 软件/AI 的 `status`：active / inactive / legacy / testing / broken / unknown；
-- project lifecycle 的 `status`：由 `context/projects/index.json.project_policy.statuses` 声明，当前为 active / paused / maintenance / archived / experimental / unknown；
-- `role`：primary / secondary / project-only / optional；
-- `purpose`；
+- 软件/AI 的 `status`：仅在用户明确指定特殊状态（如 legacy / compatibility-only / primary）时记录；普通已安装工具无需默认写入 `active` 或 `unknown`；
+- project lifecycle 的 `status`：非强制字段，项目存在本身即表达其长期项目地位，仅在明确为 legacy / archived / throwaway 时记录；
+- `role`：primary / secondary / project-only / optional（仅在有明确比较意义时使用）；
+- `purpose`：项目或非显而易见的 AI/CLI 工具记录简短定位；普通知名软件无需重复百科解释；
 - `constraints`；
 - 少量 notes。
 
-不相关字段可以省略。不要为了 schema 对齐制造大量 null。
+不相关字段完全省略。不要为了 schema 对齐制造大量空值或无意义默认标签。
 
 **Routine collector 只更新 observed，不得覆盖 curated。**
 

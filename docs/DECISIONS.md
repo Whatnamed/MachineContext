@@ -303,3 +303,16 @@ Decision: software/AI confirmation patches use the generic curated status set (`
 Reason: project lifecycle and software operational state are different meanings. Keeping the project policy as the project-status source prevents the G2 confirmation manifest from rejecting documented project states or silently broadening software semantics.
 
 Status: accepted.
+
+## D038 — V1 Simplification, Supplemental Inventory Provenance, and Optional Lifecycle
+
+Decision:
+1. Curated `status` is optional for software and projects. Canonical presence already indicates that software/projects exist; do not maintain redundant `active` or `unknown` fields without distinct user-curated intent (e.g. `legacy`, `compatibility-only`).
+2. Selective `creative` and `productivity` software inventories are integrated into V1 ahead of schedule as supplemental modules (`user-confirmed-broad-inventory` with `manual-broad-scan` refresh policy) rather than requiring a delayed Phase 3.
+3. Generic encyclopedia-style purposes for common software are omitted; project and specific AI/CLI purposes are preserved.
+4. Conventions express directory roles, system-managed roots, and non-strict drive tendencies rather than rigid directory taxonomies.
+5. Confirmation manifests remain an optional tool for batch/unsupervised curation rather than a daily scan gate. User dialogue confirmation is fully authoritative.
+
+Reason: Avoid semantic over-engineering, unnecessary user questioning, and false equivalence between routine core provider scans and user-confirmed broad inventories.
+
+Status: accepted.
