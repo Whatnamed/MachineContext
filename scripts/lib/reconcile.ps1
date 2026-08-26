@@ -559,6 +559,116 @@ function Merge-McRelationships {
         @{ Expression = { [string]$_.to } })
 }
 
+function Get-McAuditClosureCount {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject) { return 0 }
+    if ($InputObject -is [byte] -or
+        $InputObject -is [sbyte] -or
+        $InputObject -is [int16] -or
+        $InputObject -is [uint16] -or
+        $InputObject -is [int32] -or
+        $InputObject -is [uint32] -or
+        $InputObject -is [int64] -or
+        $InputObject -is [uint64] -or
+        $InputObject -is [single] -or
+        $InputObject -is [double] -or
+        $InputObject -is [decimal]) {
+        $number = 0L
+        if ([long]::TryParse([string]$InputObject, [ref]$number)) {
+            return [Math]::Max(0L, $number)
+        }
+        return 0
+    }
+    if ($InputObject -is [string]) {
+        if ([string]::IsNullOrWhiteSpace($InputObject)) { return 0 }
+        return 1
+    }
+    return @($InputObject | Where-Object { $null -ne $_ }).Count
+}
+
+function ConvertTo-McAuditClosureProjection {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject,
+
+        [string]$Source = 'unknown',
+
+        [string]$UnavailableReason
+    )
+
+    $summary = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'summary'
+    $declaredState = [string](Get-McObjectPropertyOrNull -InputObject $summary -Name 'state')
+    $conflictCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'conflicts')
+    $canonicalUnknownCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'canonical_unknowns')
+    $candidateUnknownCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'local_candidate_unknowns')
+    $unresolvedCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'unresolved')
+    $entries = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'entries'
+    foreach ($entry in @($entries | Where-Object { $null -ne $_ })) {
+        if ([string](Get-McObjectPropertyOrNull -InputObject $entry -Name 'status') -ieq 'unresolved') {
+            $unresolvedCount++
+        }
+    }
+
+    $hasInput = $null -ne $InputObject
+    $hasBlockingFindings = ($conflictCount -gt 0) -or ($canonicalUnknownCount -gt 0) -or ($unresolvedCount -gt 0)
+    $state = if ($hasInput -and $declaredState -ieq 'verified' -and -not $hasBlockingFindings) { 'verified' } else { 'partial' }
+    $reason = if (-not [string]::IsNullOrWhiteSpace($UnavailableReason)) {
+        $UnavailableReason
+    }
+    elseif (-not $hasInput) {
+        'missing'
+    }
+    elseif ($state -eq 'verified') {
+        $null
+    }
+    elseif ($hasBlockingFindings) {
+        'blocking_findings'
+    }
+    else {
+        'declared_partial'
+    }
+
+    return [pscustomobject][ordered]@{
+        state = $state
+        source = $Source
+        generated_at = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'generated_at'
+        reason = $reason
+        blocking = [pscustomobject][ordered]@{
+            conflict_count = $conflictCount
+            canonical_unknown_count = $canonicalUnknownCount
+            unresolved_entry_count = $unresolvedCount
+            local_candidate_unknown_count = $candidateUnknownCount
+        }
+    }
+}
+
+function Get-McAuditClosureProjection {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $path = Join-Path $RepoRoot '.local\audit-closure.json'
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        return ConvertTo-McAuditClosureProjection -Source '.local/audit-closure.json' -UnavailableReason 'missing'
+    }
+
+    try {
+        $closure = Read-McJson -Path $path
+        return ConvertTo-McAuditClosureProjection -InputObject $closure -Source '.local/audit-closure.json'
+    }
+    catch {
+        return ConvertTo-McAuditClosureProjection -Source '.local/audit-closure.json' -UnavailableReason 'invalid'
+    }
+}
+
 function Update-McPublishedStatus {
     [CmdletBinding()]
     param(
@@ -569,7 +679,10 @@ function Update-McPublishedStatus {
         [object]$Diagnostics,
 
         [Parameter(Mandatory)]
-        [string]$Mode
+        [string]$Mode,
+
+        [AllowNull()]
+        [object]$AuditClosure
     )
 
     $summary = ConvertTo-McPublishedProviderSummary -Providers $Diagnostics.providers
@@ -600,7 +713,17 @@ function Update-McPublishedStatus {
             [string]$previousVerifiedAt
         }
     }
-    $Status.state = if ($Diagnostics.overall_health -eq 'success') { 'verified' } else { 'partial' }
+    $providerState = if ($Diagnostics.overall_health -eq 'success') { 'verified' } else { 'partial' }
+    $auditProjection = if ($null -ne $AuditClosure) {
+        $AuditClosure
+    }
+    else {
+        ConvertTo-McAuditClosureProjection -Source '.local/audit-closure.json' -UnavailableReason 'not_supplied'
+    }
+    $publishedState = if ($providerState -eq 'verified' -and $auditProjection.state -eq 'verified') { 'verified' } else { 'partial' }
+    Set-McObjectProperty -InputObject $Status -Name 'provider_state' -Value $providerState
+    Set-McObjectProperty -InputObject $Status -Name 'audit_closure' -Value $auditProjection
+    Set-McObjectProperty -InputObject $Status -Name 'state' -Value $publishedState
     $Status.published_verification = [pscustomobject][ordered]@{
         mode = $Mode
         verified_at = $verifiedAt
@@ -706,7 +829,8 @@ function Invoke-McReconciliation {
 
     $statusPath = Join-Path $contextRoot 'status.json'
     $status = Read-McJson -Path $statusPath
-    $status = Update-McPublishedStatus -Status $status -Diagnostics $CollectionResult.diagnostics -Mode $RunContext.mode
+    $auditClosure = Get-McAuditClosureProjection -RepoRoot $RunContext.repo_root
+    $status = Update-McPublishedStatus -Status $status -Diagnostics $CollectionResult.diagnostics -Mode $RunContext.mode -AuditClosure $auditClosure
     Write-McJson -Path $statusPath -InputObject $status
 
     return [pscustomobject][ordered]@{

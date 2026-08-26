@@ -180,7 +180,7 @@ Status: accepted.
 
 ## D023 — Optional provider degradation stays local
 
-Decision: optional discovery accelerators and enrichment providers retain exact `unavailable`, `timed_out`, or `failed` health in `.local` diagnostics, but do not determine the aggregate health of an otherwise usable audit. Required providers still determine the published overall state.
+Decision: optional discovery accelerators and enrichment providers retain exact `unavailable`, `timed_out`, or `failed` health in `.local` diagnostics, but do not determine the provider aggregate health of an otherwise usable audit. Required providers determine the published `provider_state`; the top-level published `state` is additionally gated by the explicit Initial Audit closure.
 
 Reason: optional providers such as Everything or winget enrichment improve coverage but are not prerequisites for trustworthy structured observations. Their exact failures must remain visible without turning a bounded fallback or a slow external source into a whole-run failure.
 
@@ -245,5 +245,13 @@ Status: accepted.
 Decision: Discover/Full may run bounded read-only Git activity probes for verified, promotion-eligible project candidates. Branch, latest commit timestamp, tracked-file dirty Boolean, and probe status remain in ignored `.local` diagnostics. The provider is optional and never writes canonical observations or infers `curated.status`, purpose, role, or active/legacy meaning.
 
 Reason: Git activity is useful evidence for an Initial Audit review, but recency and dirty state are not reliable proof of lifecycle or user intent. Keeping the evidence local avoids canonical churn and preserves explicit semantic ownership.
+
+Status: accepted.
+
+## D031 — Published trust state requires provider health and audit closure
+
+Decision: `context/status.json` exposes separate `provider_state` and `audit_closure` axes. `provider_state` is the required-provider aggregate from the current run. `audit_closure` is a compact projection of ignored `.local/audit-closure.json`, containing only its state, source, timestamp, and finding counts. The top-level `state` is `verified` only when both axes are `verified`; missing or invalid local closure evidence, canonical unknowns, conflicts, or unresolved entries keep it `partial`. Local candidate unknowns remain visible as counts but do not by themselves block closure.
+
+Reason: a successful provider run proves that the configured checks completed; it does not prove that the documented Initial Audit has no unresolved canonical meaning. Keeping both axes makes that distinction explicit to AI readers while preserving provider failure semantics and keeping raw closure evidence out of Git.
 
 Status: accepted.

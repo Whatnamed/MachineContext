@@ -223,7 +223,7 @@ function Get-McJsonPropertyRank {
         'executable', 'command_resolution', 'alternative_installations',
         'install', 'config_paths', 'data_paths', 'evidence', 'origin',
         'provider', 'provider_key', 'fields', 'confidence', 'health',
-        'status', 'mode', 'verified_at', 'published_verification',
+        'status', 'provider_state', 'mode', 'verified_at', 'published_verification', 'audit_closure',
         'modules', 'software', 'projects', 'relationships', 'constraints',
         'directories', 'installation', 'updates', 'principles', 'system',
         'hardware', 'storage', 'shells', 'paths', 'environment',

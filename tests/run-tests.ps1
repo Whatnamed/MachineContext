@@ -705,6 +705,33 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
     [void](Add-McProviderDiagnostic -Diagnostics $diagnostics -Provider 'fixture-optional-timeout' -Health timed_out -Optional $true)
     Assert-McEqual -Actual (Get-McOverallProviderHealth -Providers $diagnostics.providers) -Expected 'success' -Message 'optional unavailable provider should not make the whole scan partial'
 
+    $partialAudit = ConvertTo-McAuditClosureProjection -InputObject ([pscustomobject][ordered]@{
+            generated_at = '2026-08-26T00:00:00Z'
+            summary = [pscustomobject][ordered]@{
+                state = 'partial'
+                conflicts = @()
+                canonical_unknowns = @('fixture unknown')
+                local_candidate_unknowns = @('fixture candidate')
+            }
+            entries = @([pscustomobject][ordered]@{ status = 'unresolved' })
+        }) -Source '.local/audit-closure.json'
+    Assert-McEqual -Actual $partialAudit.state -Expected 'partial' -Message 'audit closure with canonical unknowns must remain partial'
+    Assert-McEqual -Actual $partialAudit.blocking.canonical_unknown_count -Expected 1 -Message 'audit closure canonical unknown count'
+    Assert-McEqual -Actual $partialAudit.blocking.unresolved_entry_count -Expected 1 -Message 'audit closure unresolved entry count'
+    Assert-McEqual -Actual $partialAudit.blocking.local_candidate_unknown_count -Expected 1 -Message 'audit closure candidate unknown count'
+
+    $verifiedAudit = ConvertTo-McAuditClosureProjection -InputObject ([pscustomobject][ordered]@{
+            generated_at = '2026-08-26T00:00:00Z'
+            summary = [pscustomobject][ordered]@{
+                state = 'verified'
+                conflicts = @()
+                canonical_unknowns = @()
+                local_candidate_unknowns = @('candidate evidence is allowed')
+            }
+            entries = @()
+        }) -Source '.local/audit-closure.json'
+    Assert-McEqual -Actual $verifiedAudit.state -Expected 'verified' -Message 'closed audit with no blockers must be verified'
+
     $diagnostics.overall_health = 'success'
     $status = [pscustomobject][ordered]@{
         schema_version = 1
@@ -715,7 +742,12 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
             provider_summary = ConvertTo-McPublishedProviderSummary -Providers $diagnostics.providers
         }
     }
-    $status = Update-McPublishedStatus -Status $status -Diagnostics $diagnostics -Mode 'Quick'
+    $status = Update-McPublishedStatus -Status $status -Diagnostics $diagnostics -Mode 'Quick' -AuditClosure $partialAudit
+    Assert-McEqual -Actual $status.provider_state -Expected 'verified' -Message 'provider state must reflect provider aggregate health'
+    Assert-McEqual -Actual $status.state -Expected 'partial' -Message 'published state must remain partial until audit closure is verified'
+    Assert-McEqual -Actual $status.audit_closure.state -Expected 'partial' -Message 'published status must expose audit closure state'
+    $status = Update-McPublishedStatus -Status $status -Diagnostics $diagnostics -Mode 'Quick' -AuditClosure $verifiedAudit
+    Assert-McEqual -Actual $status.state -Expected 'verified' -Message 'published state may be verified after both gates pass'
     Assert-McTrue -Condition ([string]$status.published_verification.verified_at -match '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$') -Message 'published verification timestamps must remain invariant ISO'
 
     $testLocalRoot = Join-Path $RepoRoot '.local\test-runtime'

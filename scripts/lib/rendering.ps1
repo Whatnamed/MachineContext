@@ -83,9 +83,20 @@ function Invoke-McRender {
     [void]$lines.Add('## Verification')
     [void]$lines.Add('')
     [void]$lines.Add(('- State: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $status -Name 'state'))))
+    $providerState = Get-McRenderProperty -InputObject $status -Name 'provider_state' -Default (Get-McRenderProperty -InputObject $status -Name 'state')
+    [void]$lines.Add(('- Provider state: {0}' -f (ConvertTo-McMarkdownValue -Value $providerState)))
     $published = Get-McRenderProperty -InputObject $status -Name 'published_verification' -Default ([pscustomobject][ordered]@{})
     [void]$lines.Add(('- Mode: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $published -Name 'mode'))))
     [void]$lines.Add(('- Verified at: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $published -Name 'verified_at'))))
+    $auditClosure = Get-McRenderProperty -InputObject $status -Name 'audit_closure' -Default ([pscustomobject][ordered]@{})
+    [void]$lines.Add(('- Audit closure: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $auditClosure -Name 'state'))))
+    $auditBlocking = Get-McRenderProperty -InputObject $auditClosure -Name 'blocking' -Default ([pscustomobject][ordered]@{})
+    $auditCounts = 'conflicts={0}, canonical_unknowns={1}, unresolved={2}, candidate_unknowns={3}' -f `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'conflict_count' -Default 0), `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'canonical_unknown_count' -Default 0), `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'unresolved_entry_count' -Default 0), `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'local_candidate_unknown_count' -Default 0)
+    [void]$lines.Add(('- Audit findings: {0}' -f $auditCounts))
     $providerSummary = @($published.provider_summary | Sort-Object provider)
     if ($providerSummary.Count -gt 0) {
         [void]$lines.Add('- Providers:')
