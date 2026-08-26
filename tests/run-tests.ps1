@@ -343,6 +343,42 @@ Invoke-McTest -Name 'semantic version and banner normalization' -Body {
     Assert-McEqual -Actual $machine.shells[0].observed.version -Expected '5.2.21' -Message 'historical shell banners must be normalized during reconciliation'
 }
 
+Invoke-McTest -Name 'collector process paths never become canonical host facts' -Body {
+    Assert-McTrue -Condition (Test-McCollectorProcessOnlyPath -Path '%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd') -Message 'Codex runtime paths must be recognized as process-only'
+    Assert-McTrue -Condition (-not (Test-McCollectorProcessOnlyPath -Path 'D:\Node.js\Node.js\npm.cmd')) -Message 'persistent host tool paths must remain eligible'
+
+    $module = [pscustomobject][ordered]@{
+        schema_version = 1
+        meta = [pscustomobject][ordered]@{ state = 'observed' }
+        software = @([pscustomobject][ordered]@{
+                id = 'pnpm'
+                kind = 'package-manager'
+                name = 'pnpm'
+                observed = [pscustomobject][ordered]@{
+                    present = $true
+                    verification = 'unverified'
+                    version = '11.19.0'
+                    executable = '%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd'
+                    install = @([pscustomobject][ordered]@{ root = '%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback' })
+                    command_resolution = @([pscustomobject][ordered]@{ executable = '%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd' })
+                    evidence = @([pscustomobject][ordered]@{ provider = 'command' })
+                }
+                curated = [pscustomobject][ordered]@{ status = 'unknown' }
+            })
+    }
+    $cleaned = Merge-McSoftwareModule -Module $module -ModuleName development -Observations @() -VerificationEvents @([pscustomobject][ordered]@{
+            module = 'development'
+            id = 'pnpm'
+            provider = 'runtimes-package-managers-toolchain'
+            verification = 'unverified'
+            reason = 'persistent-command-not-found'
+    })
+    $observed = $cleaned.software[0].observed
+    Assert-McTrue -Condition (($null -eq (Get-McObjectPropertyOrNull -InputObject $observed -Name 'present')) -and ($null -eq (Get-McObjectPropertyOrNull -InputObject $observed -Name 'version')) -and ($null -eq (Get-McObjectPropertyOrNull -InputObject $observed -Name 'executable'))) -Message 'process-only facts must be removed instead of published as host facts'
+    Assert-McEqual -Actual (Get-McObjectPropertyOrNull -InputObject $observed -Name 'verification') -Expected 'unverified' -Message 'process-only cleanup must retain unknown verification state'
+    Assert-McTrue -Condition ((ConvertTo-McJsonText -InputObject $cleaned) -notmatch 'codex-runtimes|pnpm\.cmd') -Message 'process-only path must not remain anywhere in the canonical entity'
+}
+
 Invoke-McTest -Name 'strong relationship derivation' -Body {
     $software = [pscustomobject][ordered]@{
         development = @(
@@ -521,6 +557,44 @@ Invoke-McTest -Name 'project root classification and promotion' -Body {
 
         $segmentPolicy = Get-McProjectRootPolicyForPath -Path (Join-Path $projectPath 'node_modules\package') -Policies $policies
         Assert-McEqual -Actual $segmentPolicy.kind -Expected 'cache-root' -Message 'generated dependency paths must be non-promotable'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }
+    }
+}
+
+Invoke-McTest -Name 'historical project demotion preserves curated intent' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-project-migration\.cache'
+    $contextRoot = Join-Path $fixtureRoot 'context'
+    $projectRoot = Join-Path $contextRoot 'projects'
+    New-Item -ItemType Directory -Path $projectRoot -Force | Out-Null
+    $removedFiles = [System.Collections.Generic.List[string]]::new()
+    $demoted = [System.Collections.Generic.List[object]]::new()
+    $index = [pscustomobject][ordered]@{ schema_version = 1; projects = @(); project_policy = [pscustomobject][ordered]@{} }
+    try {
+        $sdkRecord = [pscustomobject][ordered]@{
+            schema_version = 1
+            id = 'project-historical-sdk'
+            name = 'sdk'
+            observed = [pscustomobject][ordered]@{ local_path = (Join-Path $fixtureRoot 'Dev\flutter') }
+            curated = [pscustomobject][ordered]@{ status = 'unknown' }
+        }
+        $curatedRecord = [pscustomobject][ordered]@{
+            schema_version = 1
+            id = 'project-curated-sdk'
+            name = 'curated-sdk'
+            observed = [pscustomobject][ordered]@{ local_path = (Join-Path $fixtureRoot 'Dev\tool') }
+            curated = [pscustomobject][ordered]@{ status = 'active' }
+        }
+        Write-McJson -Path (Join-Path $projectRoot 'project-historical-sdk.json') -InputObject $sdkRecord
+        Write-McJson -Path (Join-Path $projectRoot 'project-curated-sdk.json') -InputObject $curatedRecord
+        $merged = Merge-McProjects -ContextRoot $contextRoot -ProjectIndex $index -Candidates @() -RemovedFiles $removedFiles -DemotedProjects $demoted
+        Assert-McEqual -Actual @($merged.projects).Count -Expected 1 -Message 'only the explicitly curated historical record should remain'
+        Assert-McEqual -Actual $merged.projects[0].id -Expected 'project-curated-sdk' -Message 'curated project must survive non-project root migration'
+        Assert-McEqual -Actual $demoted[0].id -Expected 'project-historical-sdk' -Message 'un-curated SDK record should be reported as demoted'
+        Assert-McEqual -Actual $demoted[0].classification -Expected 'cache-root' -Message 'fixture under ignored local state should use conservative cache classification'
+        Assert-McTrue -Condition ($removedFiles -contains 'context/projects/project-historical-sdk.json') -Message 'demotion must produce an explicit staged deletion path'
+        Assert-McTrue -Condition (-not (Test-Path -LiteralPath (Join-Path $projectRoot 'project-historical-sdk.json') -PathType Leaf)) -Message 'demoted record must be removed from proposed staging'
     }
     finally {
         if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }

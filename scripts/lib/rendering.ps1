@@ -148,7 +148,7 @@ function Invoke-McRender {
     [void]$lines.Add('')
     [void]$lines.Add('## Development environment')
     [void]$lines.Add('')
-    $developmentItems = @($development.software | Where-Object { $_.observed.present -eq $true } | Sort-Object kind,name,id)
+    $developmentItems = @($development.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object kind,name,id)
     if ($developmentItems.Count -eq 0) {
         [void]$lines.Add('- No verified development tools recorded yet.')
     }
@@ -163,7 +163,7 @@ function Invoke-McRender {
     [void]$lines.Add('')
     [void]$lines.Add('## AI and agent tooling')
     [void]$lines.Add('')
-    $aiItems = @($ai.software | Where-Object { $_.observed.present -eq $true } | Sort-Object name,id)
+    $aiItems = @($ai.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object name,id)
     if ($aiItems.Count -eq 0) {
         [void]$lines.Add('- No verified AI tools recorded yet.')
     }

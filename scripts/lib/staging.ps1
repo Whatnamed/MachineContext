@@ -61,6 +61,7 @@ function New-McRunContext {
         proposed_root        = $proposedRoot
         proposed_context     = $proposedContext
         proposed_current     = Join-Path $proposedRoot 'CURRENT.md'
+        proposed_deletions   = [System.Collections.Generic.List[string]]::new()
         observations_path    = Join-Path $runRoot 'observations.json'
         candidates_path      = Join-Path $runRoot 'candidates.json'
         diagnostics_path     = Join-Path $runRoot 'diagnostics.json'

@@ -237,12 +237,12 @@ function Merge-McSoftwareModule {
     $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($existing in @($Module.software)) {
         if ($null -ne $existing -and -not [string]::IsNullOrWhiteSpace([string]$existing.id)) {
-            $map[[string]$existing.id] = ConvertTo-McNormalizedEntityVersion -Entity $existing
+            $map[[string]$existing.id] = ConvertTo-McHostSafeSoftwareEntity -Entity (ConvertTo-McNormalizedEntityVersion -Entity $existing)
         }
     }
 
     foreach ($observation in @($Observations | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
-        $normalizedObservation = ConvertTo-McNormalizedEntityVersion -Entity $observation
+        $normalizedObservation = ConvertTo-McHostSafeSoftwareEntity -Entity (ConvertTo-McNormalizedEntityVersion -Entity $observation)
         $existing = if ($map.ContainsKey([string]$normalizedObservation.id)) { $map[[string]$normalizedObservation.id] } else { $null }
         $map[[string]$normalizedObservation.id] = New-McObservedEntityRecord -Observation $normalizedObservation -Existing $existing
     }
@@ -352,6 +352,97 @@ function Get-McProjectRecordFileName {
     return ('project-{0}.json' -f (Get-McSha256Hex -Text $Id).Substring(0, 20))
 }
 
+function Test-McProjectCuratedIntent {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Record
+    )
+
+    $curated = Get-McObjectPropertyOrNull -InputObject $Record -Name 'curated'
+    if ($null -eq $curated) {
+        return $false
+    }
+
+    $status = [string](Get-McObjectPropertyOrNull -InputObject $curated -Name 'status')
+    if (-not [string]::IsNullOrWhiteSpace($status) -and $status -ine 'unknown') {
+        return $true
+    }
+
+    foreach ($property in @($curated.PSObject.Properties)) {
+        if ([string]$property.Name -ne 'status' -and $null -ne $property.Value) {
+            return $true
+        }
+    }
+    return $false
+}
+
+function ConvertTo-McHostSafeSoftwareEntity {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Entity
+    )
+
+    $copy = Copy-McJsonObject -InputObject $Entity
+    $observed = Get-McObjectPropertyOrNull -InputObject $copy -Name 'observed'
+    if ($null -eq $observed) {
+        return $copy
+    }
+
+    $executable = [string](Get-McObjectPropertyOrNull -InputObject $observed -Name 'executable')
+    $install = Get-McObjectPropertyOrNull -InputObject $observed -Name 'install'
+    $installRoots = [System.Collections.Generic.List[string]]::new()
+    foreach ($installItem in @($install)) {
+        $root = [string](Get-McObjectPropertyOrNull -InputObject $installItem -Name 'root')
+        if (-not [string]::IsNullOrWhiteSpace($root)) { [void]$installRoots.Add($root) }
+    }
+    $resolutions = @((Get-McObjectPropertyOrNull -InputObject $observed -Name 'command_resolution'))
+    $processResolution = @($resolutions | Where-Object { Test-McCollectorProcessOnlyPath -Path ([string](Get-McObjectPropertyOrNull -InputObject $_ -Name 'executable')) })
+    $primaryProcess = Test-McCollectorProcessOnlyPath -Path $executable
+    $rootProcess = @($installRoots | Where-Object { Test-McCollectorProcessOnlyPath -Path $_ }).Count -gt 0
+    if (-not $primaryProcess -and -not $rootProcess -and $processResolution.Count -eq 0) {
+        return $copy
+    }
+
+    $keptResolutions = @($resolutions | Where-Object { -not (Test-McCollectorProcessOnlyPath -Path ([string](Get-McObjectPropertyOrNull -InputObject $_ -Name 'executable'))) })
+    Set-McObjectProperty -InputObject $observed -Name 'command_resolution' -Value @($keptResolutions)
+
+    if ($primaryProcess -or $rootProcess) {
+        Remove-McObjectProperty -InputObject $observed -Name 'version'
+        Remove-McObjectProperty -InputObject $observed -Name 'present'
+        Remove-McObjectProperty -InputObject $observed -Name 'evidence'
+        if ($keptResolutions.Count -gt 0) {
+            Set-McObjectProperty -InputObject $observed -Name 'executable' -Value ([string](Get-McObjectPropertyOrNull -InputObject $keptResolutions[0] -Name 'executable'))
+        }
+        else {
+            Remove-McObjectProperty -InputObject $observed -Name 'executable'
+        }
+        if ($rootProcess) {
+            if ($install -is [System.Collections.IDictionary]) {
+                Remove-McObjectProperty -InputObject $install -Name 'root'
+                if (@(Get-McPropertyEntries -InputObject $install).Count -eq 0) {
+                    Remove-McObjectProperty -InputObject $observed -Name 'install'
+                }
+            }
+            elseif (Test-McMapping -InputObject $install) {
+                Remove-McObjectProperty -InputObject $install -Name 'root'
+                if (@(Get-McPropertyEntries -InputObject $install).Count -eq 0) {
+                    Remove-McObjectProperty -InputObject $observed -Name 'install'
+                }
+            }
+            else {
+                Remove-McObjectProperty -InputObject $observed -Name 'install'
+            }
+        }
+    }
+
+    Set-McObjectProperty -InputObject $observed -Name 'verification' -Value 'unverified'
+    Set-McObjectProperty -InputObject $observed -Name 'verification_provider' -Value 'canonical-migration'
+    Set-McObjectProperty -InputObject $observed -Name 'verification_reason' -Value 'collector-process-only-path'
+    return $copy
+}
+
 function Merge-McProjects {
     [CmdletBinding()]
     param(
@@ -362,17 +453,43 @@ function Merge-McProjects {
         [object]$ProjectIndex,
 
         [AllowNull()]
-        [object[]]$Candidates
+        [object[]]$Candidates,
+
+        [AllowNull()]
+        [System.Collections.Generic.List[string]]$RemovedFiles,
+
+        [AllowNull()]
+        [System.Collections.Generic.List[object]]$DemotedProjects
     )
 
     $projectRoot = Join-Path $ContextRoot 'projects'
     [void](New-Item -ItemType Directory -Path $projectRoot -Force)
+    if ($null -eq $RemovedFiles) { $RemovedFiles = [System.Collections.Generic.List[string]]::new() }
+    if ($null -eq $DemotedProjects) { $DemotedProjects = [System.Collections.Generic.List[object]]::new() }
+    $repoRoot = Get-McRepoRoot -Path $ContextRoot
+    $rootPolicies = @(Get-McProjectRootPolicies -RepoRoot $repoRoot)
     $records = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
     foreach ($file in @(Get-ChildItem -LiteralPath $projectRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Where-Object { $_.Name -notin @('_template.json', 'index.json') })) {
         try {
             $record = Read-McJson -Path $file.FullName
             if (-not [string]::IsNullOrWhiteSpace([string]$record.id)) {
+                $localPath = [string](Get-McObjectPropertyOrNull -InputObject $record.observed -Name 'local_path')
+                if (-not [string]::IsNullOrWhiteSpace($localPath)) {
+                    $policy = Get-McProjectRootPolicyForPath -Path $localPath -Policies $rootPolicies
+                    $demotable = [string]$policy.kind -in @('sdk-root', 'tool-root', 'cache-root', 'vendor-root')
+                    if ($demotable -and -not (Test-McProjectCuratedIntent -Record $record)) {
+                        $recordFile = 'context/projects/{0}' -f $file.Name
+                        if (-not $RemovedFiles.Contains($recordFile)) { [void]$RemovedFiles.Add($recordFile) }
+                        [void]$DemotedProjects.Add([pscustomobject][ordered]@{
+                                id             = [string]$record.id
+                                path           = $localPath
+                                classification = [string]$policy.kind
+                                reason         = 'historical-canonical-record-under-non-project-root'
+                            })
+                        continue
+                    }
+                }
                 $records[[string]$record.id] = $record
             }
         }
@@ -408,6 +525,13 @@ function Merge-McProjects {
             context_file = ('context/projects/{0}' -f (Get-McProjectRecordFileName -Id ([string]$record.id)))
         })
         Write-McJson -Path (Join-Path $projectRoot (Get-McProjectRecordFileName -Id ([string]$record.id))) -InputObject $record
+    }
+    foreach ($removedFile in @($RemovedFiles)) {
+        $stagedFile = Join-Path $ContextRoot ($removedFile -replace '^context[\\/]', '')
+        $stagedFile = [System.IO.Path]::GetFullPath($stagedFile)
+        if (Test-Path -LiteralPath $stagedFile -PathType Leaf) {
+            Remove-Item -LiteralPath $stagedFile -Force
+        }
     }
     $ProjectIndex.projects = @($indexRefs)
     return $ProjectIndex
@@ -551,13 +675,27 @@ function Invoke-McReconciliation {
 
     $projectIndexPath = Join-Path $contextRoot 'projects\index.json'
     $projectIndex = Read-McJson -Path $projectIndexPath
-    $projectIndex = Merge-McProjects -ContextRoot $contextRoot -ProjectIndex $projectIndex -Candidates @($observations.projects)
+    $demotedProjects = [System.Collections.Generic.List[object]]::new()
+    $projectIndex = Merge-McProjects -ContextRoot $contextRoot -ProjectIndex $projectIndex -Candidates @($observations.projects) -RemovedFiles $RunContext.proposed_deletions -DemotedProjects $demotedProjects
     Write-McJson -Path $projectIndexPath -InputObject $projectIndex
+
+    if ($demotedProjects.Count -gt 0) {
+        $localDiagnostics = Read-McJson -Path $RunContext.local_diagnostics_path
+        Set-McObjectProperty -InputObject $localDiagnostics -Name 'project_reconciliation' -Value ([pscustomobject][ordered]@{
+                demoted_count = $demotedProjects.Count
+                demoted       = @($demotedProjects)
+            })
+        Write-McJson -Path $RunContext.local_diagnostics_path -InputObject $localDiagnostics
+    }
 
     $relationshipsPath = Join-Path $contextRoot 'relationships.json'
     $relationships = Read-McJson -Path $relationshipsPath
+    $demotedIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($demoted in @($demotedProjects)) { [void]$demotedIds.Add([string]$demoted.id) }
+    $previousRelationships = @($relationships.relationships | Where-Object { -not $demotedIds.Contains([string]$_.from) -and -not $demotedIds.Contains([string]$_.to) })
+    $currentRelationships = @($observations.relationships | Where-Object { -not $demotedIds.Contains([string]$_.from) -and -not $demotedIds.Contains([string]$_.to) })
     $mergedRelationships = [System.Collections.Generic.List[object]]::new()
-    foreach ($relationship in @(Merge-McRelationships -Previous @($relationships.relationships) -Current @($observations.relationships))) {
+    foreach ($relationship in @(Merge-McRelationships -Previous $previousRelationships -Current $currentRelationships)) {
         if ($null -ne $relationship) { [void]$mergedRelationships.Add($relationship) }
     }
     Set-McObjectProperty -InputObject $relationships -Name 'relationships' -Value $mergedRelationships

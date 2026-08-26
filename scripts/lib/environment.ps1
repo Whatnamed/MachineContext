@@ -132,6 +132,20 @@ function Get-McCollectorProcessEnvironment {
     }
 }
 
+function Test-McCollectorProcessOnlyPath {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+    $expanded = [Environment]::ExpandEnvironmentVariables($Path).Replace('/', '\')
+    return $expanded -match '(?i)\\\.cache\\codex-runtimes\\|\\\.codex\\tmp\\|\\codex-path\\|\\@openai\\codex-win32[^\\]*\\vendor\\'
+}
+
 function Get-McEnvironmentEntryPath {
     [CmdletBinding()]
     param(

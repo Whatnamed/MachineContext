@@ -231,3 +231,11 @@ Relationship origin remains `detected` when a dedicated provider supplies the re
 Reason: a relationship is useful for planning only when its endpoints and ownership are trustworthy. Strong path/evidence gates prevent broad discovery, injected runtimes, and transient provider failures from creating dangling or noisy canonical edges.
 
 Status: accepted.
+
+## D029 — Canonical project cleanup is explicit and staged
+
+Decision: migration may remove a historical canonical project record only when its normalized path is classified as `sdk-root`, `tool-root`, `cache-root`, or `vendor-root` and the record has no curated intent beyond `status: unknown`. The proposed stage records the exact relative deletion path and local demotion evidence; publish deletes only those explicit paths inside the repository with backup/rollback protection. Curated records and unknown-root records are preserved.
+
+Reason: correcting an old false-positive project must not silently erase user meaning or broaden deletion scope. Staging first makes the change reviewable, while the explicit deletion manifest keeps canonical cleanup deterministic and safe.
+
+Status: accepted.

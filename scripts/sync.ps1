@@ -59,9 +59,19 @@ function Publish-McAtomicFiles {
     foreach ($source in @(Get-ChildItem -LiteralPath $RunContext.proposed_context -Recurse -File -ErrorAction Stop | Where-Object { $_.Extension -ieq '.json' -and $_.Name -ne '_template.json' })) {
         $relative = $source.FullName.Substring($RunContext.proposed_root.Length + 1)
         $target = Join-Path $RepoRoot $relative
-        [void]$files.Add([pscustomobject]@{ source = $source.FullName; target = $target })
+        [void]$files.Add([pscustomobject]@{ source = $source.FullName; target = $target; delete = $false })
     }
-    [void]$files.Add([pscustomobject]@{ source = $RunContext.proposed_current; target = Join-Path $RepoRoot 'CURRENT.md' })
+    [void]$files.Add([pscustomobject]@{ source = $RunContext.proposed_current; target = Join-Path $RepoRoot 'CURRENT.md'; delete = $false })
+
+    $repoFull = (Resolve-Path -LiteralPath $RepoRoot -ErrorAction Stop).Path.TrimEnd('\')
+    foreach ($relative in @($RunContext.proposed_deletions)) {
+        if ([string]::IsNullOrWhiteSpace([string]$relative)) { continue }
+        $relativePath = ([string]$relative).Replace('/', '\').TrimStart('\')
+        if ([System.IO.Path]::IsPathRooted($relativePath)) { throw "Refusing to delete an absolute publish path: $relative" }
+        $target = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $relativePath))
+        if (-not $target.StartsWith($repoFull + '\', [System.StringComparison]::OrdinalIgnoreCase)) { throw "Refusing to delete a path outside the repository: $relative" }
+        [void]$files.Add([pscustomobject]@{ source = $null; target = $target; relative = $relativePath; delete = $true })
+    }
 
     $backupRoot = Join-Path $RunContext.run_root 'publish-backup'
     [void](New-Item -ItemType Directory -Path $backupRoot -Force)
@@ -79,6 +89,11 @@ function Publish-McAtomicFiles {
             $hadBackup = Test-Path -LiteralPath $file.target -PathType Leaf
             if ($hadBackup) {
                 Copy-Item -LiteralPath $file.target -Destination $backupPath -Force
+            }
+            if ($file.delete -eq $true) {
+                if ($hadBackup) { Remove-Item -LiteralPath $file.target -Force }
+                [void]$published.Add([pscustomobject]@{ target = $file.target; backup = $backupPath; had_backup = $hadBackup })
+                continue
             }
             Copy-Item -LiteralPath $file.source -Destination $tempPath -Force
             [void]$temporary.Add($tempPath)
@@ -106,7 +121,10 @@ function Publish-McAtomicFiles {
         }
     }
 
-    return @($files | ForEach-Object { $_.target.Substring($RepoRoot.Length + 1) } | Sort-Object)
+    return @($files | ForEach-Object {
+            $relative = $_.target.Substring($RepoRoot.Length + 1)
+            if ($_.delete -eq $true) { "deleted:$relative" } else { $relative }
+        } | Sort-Object)
 }
 
 $resolvedRoot = Get-McRepoRoot -Path $RepoRoot
