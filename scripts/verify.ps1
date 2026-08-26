@@ -16,7 +16,11 @@ $ErrorActionPreference = 'Stop'
 $resolvedRoot = Get-McRepoRoot -Path $RepoRoot
 $run = New-McRunContext -RepoRoot $resolvedRoot -Mode $Mode
 $result = Invoke-McCollection -RunContext $run
-$providers = if ($Provider.Count -gt 0) { @($result.diagnostics.providers | Where-Object provider -in $Provider) } else { @($result.diagnostics.providers) }
+$hasProviderFilter = $false
+if ($null -ne $Provider) {
+    $hasProviderFilter = @($Provider).Count -gt 0
+}
+$providers = if ($hasProviderFilter) { @($result.diagnostics.providers | Where-Object provider -in @($Provider)) } else { @($result.diagnostics.providers) }
 
 [pscustomobject][ordered]@{
     run_id = $run.run_id

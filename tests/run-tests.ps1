@@ -798,6 +798,17 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
     }
 }
 
+Invoke-McTest -Name 'verification entrypoint accepts omitted provider filter' -Body {
+    $verifyScript = Join-Path $RepoRoot 'scripts\verify.ps1'
+    $pwsh = Join-Path $PSHOME 'pwsh.exe'
+    $output = & $pwsh -NoLogo -NoProfile -File $verifyScript -Mode Quick 2>&1
+    Assert-McEqual -Actual $LASTEXITCODE -Expected 0 -Message 'verify.ps1 without -Provider must complete successfully'
+    $json = ($output -join [Environment]::NewLine) | ConvertFrom-Json -Depth 50
+    Assert-McTrue -Condition (-not [string]::IsNullOrWhiteSpace([string]$json.run_id)) -Message 'verify.ps1 must return a run id'
+    Assert-McTrue -Condition ($null -ne $json.providers) -Message 'verify.ps1 must return provider diagnostics'
+    Assert-McEqual -Actual $json.note -Expected 'Verification is read-only; canonical context was not modified.' -Message 'verify.ps1 read-only note'
+}
+
 Invoke-McTest -Name 'audit closure review contract' -Body {
     $valid = [pscustomobject][ordered]@{
         schema_version = 1
