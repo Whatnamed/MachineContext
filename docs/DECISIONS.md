@@ -161,3 +161,27 @@ Decision: shared probe execution resolves an executable and passes an argument l
 Reason: this avoids quoting/injection issues and makes behavior predictable across non-default paths and localized Windows environments.
 
 Status: accepted.
+
+## D021 — Manifest-only projects remain candidates by default
+
+Decision: project discovery may record manifest fingerprints and package-manager evidence locally, but automatic promotion into `context/projects/` requires a verified `.git` directory/file fingerprint in V1. Non-Git projects can be promoted later through explicit verification/curated intent.
+
+Reason: bounded roots contain SDK samples, caches, generated fixtures, and nested package directories. Treating every manifest as a long-lived project would create high-noise canonical context and silently classify temporary material as user-owned work.
+
+Status: accepted.
+
+## D022 — Bucket volatile free-space observations
+
+Decision: canonical `free_bytes` storage observations are rounded down to 256 MiB buckets. Total capacity remains reported separately; exact per-check values remain local diagnostics/state when needed.
+
+Reason: free space is useful for placement planning, but exact bytes change during the scan and create meaningless repeated-run diffs. The bucket preserves material capacity changes while keeping no-change scans byte-stable.
+
+Status: accepted.
+
+## D023 — Optional provider degradation stays local
+
+Decision: optional discovery accelerators and enrichment providers retain exact `unavailable`, `timed_out`, or `failed` health in `.local` diagnostics, but do not determine the aggregate health of an otherwise usable audit. Required providers still determine the published overall state.
+
+Reason: optional providers such as Everything or winget enrichment improve coverage but are not prerequisites for trustworthy structured observations. Their exact failures must remain visible without turning a bounded fallback or a slow external source into a whole-run failure.
+
+Status: accepted.

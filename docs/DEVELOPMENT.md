@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-当前处于 **V1 Bootstrap / Initial Audit implementation**。架构/采集范围/发现策略已在开发前做过一次研究收敛，下一步应直接实现可靠的 Windows-first collector pipeline，并用真实机器做第一次只读 Full Audit。
+当前处于 **V1 Phase G / Initial real-machine Full Audit**。Phase A-F 的首轮可执行基础已落地：共享 runtime、structured providers、candidate discovery、reconciliation、project records、validation/render/sync 均已接通；下一步是继续复核真实候选、补齐 provider/verifier 覆盖，并进行人工语义整理。
 
 开始实现前必须阅读：
 

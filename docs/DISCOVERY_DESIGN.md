@@ -239,7 +239,7 @@ Project discovery 的单位是“项目根”，不是源码文件。
 
 Package manager 不能靠“有 package.json 就是 npm”推断。优先读取 `packageManager` / Corepack 信息和 lockfile (`pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`, `bun.lock*`)。
 
-Project discovery 只产生候选。是否进入长期 `context/projects/` 还要看 lifecycle/用户价值，避免把临时 clone/cache 全变成长期 context。
+Project discovery 只产生候选。V1 默认只有通过 `.git` directory/file fingerprint 的项目才具备自动晋升资格；manifest-only、cache、vendor 或临时 clone 仍留在 `.local` candidate/evidence，除非后续显式验证/curated。是否进入长期 `context/projects/` 仍要看 lifecycle/用户价值，避免把临时 clone/cache 全变成长期 context。
 
 ## Runtime resolution and multiple installations
 
