@@ -28,7 +28,6 @@
     "workspace_type": "git-repository"
   },
   "curated": {
-    "status": "unknown",
     "purpose": "Browser extension to automatically upload long clipboard texts as files into AI web chats."
   }
 }

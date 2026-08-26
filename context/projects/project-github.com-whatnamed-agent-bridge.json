@@ -28,7 +28,6 @@
     "workspace_type": "git-repository"
   },
   "curated": {
-    "status": "unknown",
     "purpose": "Private monorepo containing the modern Agent Bridge suite, including WinForms tray controller and background monitor services."
   }
 }

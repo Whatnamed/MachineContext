@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "observed"
+    "state": "observed",
+    "recorded_at": "2026-08-26T14:12:00Z",
+    "refresh_policy": "manual-broad-scan",
+    "source": "user-confirmed-broad-inventory"
   },
   "software": [
     {
@@ -27,10 +30,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Cloud storage and file sync desktop client."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -55,10 +55,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Fast archive manager and decompression utility."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -83,10 +80,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "E-book management, viewer, and format conversion suite."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -111,10 +105,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Voice, video, and text communication platform for communities and developers."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -139,10 +130,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Enterprise messaging, documentation, and team collaboration workspace."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -167,10 +155,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Multi-platform proxy client based on ClashMeta and Flutter."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -195,10 +180,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Open-source folder comparison and synchronization utility."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -223,10 +205,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "All-in-one workspace for notes, tasks, wikis, and databases."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -251,10 +230,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Markdown-based local-first knowledge management system and personal knowledge base."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -279,10 +255,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Open-source BitTorrent download client."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -307,10 +280,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Screen capture and pin-to-screen image utility."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -335,10 +305,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Continuous, peer-to-peer decentralized file synchronization daemon."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -363,10 +330,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Cross-platform cloud-based instant messaging client."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -391,10 +355,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Online video conferencing and meeting client."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -419,10 +380,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Open-source multimedia player."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -447,10 +405,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Cross-platform gaming toolkit and network accelerator."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -475,10 +430,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "High-speed NTFS MFT disk space analyzer and file locator."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -503,10 +455,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Tencent WorkBuddy workspace tool."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -531,10 +480,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Batch image converter and image processing tool."
-      }
+      "curated": {}
     }
   ]
 }

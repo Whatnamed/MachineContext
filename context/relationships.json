@@ -201,20 +201,6 @@
     {
       "evidence": [
         {
-          "provider": "filesystem",
-          "fields": [
-            "executable"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "figma-agent",
-      "relation": "provides",
-      "to": "figma"
-    },
-    {
-      "evidence": [
-        {
           "provider": "command",
           "fields": [
             "executable"

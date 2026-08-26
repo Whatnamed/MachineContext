@@ -50,7 +50,6 @@
     "workspace_type": "git-project"
   },
   "curated": {
-    "status": "unknown",
     "purpose": "OpenAI-compatible HTTP API server backed by Codex CLI sessions."
   }
 }

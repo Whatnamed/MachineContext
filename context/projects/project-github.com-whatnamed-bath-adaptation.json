@@ -54,7 +54,6 @@
     "workspace_type": "git-project"
   },
   "curated": {
-    "status": "unknown",
     "purpose": "Web application for accessibility and bathroom layout adaptation planning built with React and Vite."
   }
 }

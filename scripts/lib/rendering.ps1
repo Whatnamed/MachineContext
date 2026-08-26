@@ -119,6 +119,7 @@ function Invoke-McRender {
     $published = Get-McRenderProperty -InputObject $status -Name 'published_verification' -Default ([pscustomobject][ordered]@{})
     [void]$lines.Add(('- Mode: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $published -Name 'mode'))))
     [void]$lines.Add(('- Verified at: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $published -Name 'verified_at'))))
+    [void]$lines.Add('- Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)')
     $auditClosure = Get-McRenderProperty -InputObject $status -Name 'audit_closure' -Default ([pscustomobject][ordered]@{})
     [void]$lines.Add(('- Audit closure: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $auditClosure -Name 'state'))))
     $auditBlocking = Get-McRenderProperty -InputObject $auditClosure -Name 'blocking' -Default ([pscustomobject][ordered]@{})
@@ -220,41 +221,28 @@ function Invoke-McRender {
     }
 
     $creativePath = Join-Path $ContextRoot 'software\creative.json'
-    if (Test-Path $creativePath) {
-        $creative = Read-McJson -Path $creativePath
-        [void]$lines.Add('')
-        [void]$lines.Add('## Design and creative software')
-        [void]$lines.Add('')
-        $creativeItems = @($creative.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object name,id)
-        if ($creativeItems.Count -eq 0) {
-            [void]$lines.Add('- No verified design tools recorded yet.')
-        }
-        else {
-            foreach ($item in $creativeItems) {
-                $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
-                $itemLocation = Get-McRenderLocation -Observed $item.observed
-                [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
-            }
-        }
-    }
-
     $productivityPath = Join-Path $ContextRoot 'software\productivity.json'
-    if (Test-Path $productivityPath) {
-        $productivity = Read-McJson -Path $productivityPath
+    $hasCreative = Test-Path $creativePath
+    $hasProductivity = Test-Path $productivityPath
+    if ($hasCreative -or $hasProductivity) {
         [void]$lines.Add('')
-        [void]$lines.Add('## Productivity and desktop tools')
+        [void]$lines.Add('## Additional software inventory')
         [void]$lines.Add('')
-        $productivityItems = @($productivity.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object name,id)
-        if ($productivityItems.Count -eq 0) {
-            [void]$lines.Add('- No verified productivity tools recorded yet.')
+        if ($hasCreative) {
+            $creative = Read-McJson -Path $creativePath
+            $creativeItems = @($creative.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true })
+            [void]$lines.Add(('- Design / creative: {0} recorded' -f $creativeItems.Count))
+            [void]$lines.Add('  - Full inventory: `context/software/creative.json`')
+            [void]$lines.Add('')
         }
-        else {
-            foreach ($item in $productivityItems) {
-                $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
-                $itemLocation = Get-McRenderLocation -Observed $item.observed
-                [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
-            }
+        if ($hasProductivity) {
+            $productivity = Read-McJson -Path $productivityPath
+            $productivityItems = @($productivity.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true })
+            [void]$lines.Add(('- Productivity / desktop: {0} recorded' -f $productivityItems.Count))
+            [void]$lines.Add('  - Full inventory: `context/software/productivity.json`')
+            [void]$lines.Add('')
         }
+        [void]$lines.Add('These domains come from a user-confirmed broad inventory and are refreshed by explicit broad scans rather than the routine core provider scan.')
     }
 
     [void]$lines.Add('')
@@ -281,17 +269,54 @@ function Invoke-McRender {
         [void]$lines.Add('- No verified projects recorded yet.')
     }
     else {
-        foreach ($project in $projects) { [void]$lines.Add(('- **{0}** — `{1}` — status: {2}' -f (ConvertTo-McMarkdownValue -Value $project.name), (ConvertTo-McMarkdownValue -Value $project.path), (ConvertTo-McMarkdownValue -Value 'see project record'))) }
+        foreach ($project in $projects) {
+            $projRecordPath = Join-Path $ContextRoot ($project.context_file -replace '^context[\\/]', '')
+            $projPurpose = $null
+            if (Test-Path -LiteralPath $projRecordPath -PathType Leaf) {
+                try {
+                    $projObj = Read-McJson -Path $projRecordPath
+                    $projPurpose = [string](Get-McRenderProperty -InputObject $projObj.curated -Name 'purpose')
+                } catch {}
+            }
+            if (-not [string]::IsNullOrWhiteSpace($projPurpose)) {
+                [void]$lines.Add(('- **{0}** — `{1}` — {2}' -f (ConvertTo-McMarkdownValue -Value $project.name), (ConvertTo-McMarkdownValue -Value $project.path), (ConvertTo-McMarkdownValue -Value $projPurpose)))
+            } else {
+                [void]$lines.Add(('- **{0}** — `{1}`' -f (ConvertTo-McMarkdownValue -Value $project.name), (ConvertTo-McMarkdownValue -Value $project.path)))
+            }
+        }
     }
 
     [void]$lines.Add('')
     [void]$lines.Add('## Installation conventions')
     [void]$lines.Add('')
-    $directories = Get-McRenderProperty -InputObject $conventions -Name 'directories' -Default ([pscustomobject][ordered]@{})
-    $knownRoots = @(Get-McRenderProperty -InputObject $directories -Name 'known_roots' -Default @() | ForEach-Object { if ($_ -is [string]) { $_ } else { Get-McRenderProperty -InputObject $_ -Name 'path' } } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object)
-    $knownRootsText = if ($knownRoots.Count -gt 0) { $knownRoots -join ', ' } else { 'none recorded' }
-    [void]$lines.Add(('- Known roots: {0}' -f $knownRootsText))
-    [void]$lines.Add('- Conventions remain bootstrap/curated until confirmed from observed machine usage.')
+    $directoryRoles = @(Get-McRenderProperty -InputObject $conventions -Name 'directory_roles' -Default @())
+    if ($directoryRoles.Count -gt 0) {
+        [void]$lines.Add('- Directory roles:')
+        foreach ($dr in $directoryRoles) {
+            $p = Get-McRenderProperty -InputObject $dr -Name 'path'
+            $r = Get-McRenderProperty -InputObject $dr -Name 'role'
+            [void]$lines.Add(('  - `{0}`: {1}' -f (ConvertTo-McMarkdownValue -Value $p), (ConvertTo-McMarkdownValue -Value $r)))
+        }
+    }
+    $driveTendencies = @(Get-McRenderProperty -InputObject $conventions -Name 'drive_tendencies' -Default @())
+    if ($driveTendencies.Count -gt 0) {
+        [void]$lines.Add('- Drive tendencies (non-strict):')
+        foreach ($dt in $driveTendencies) {
+            $d = Get-McRenderProperty -InputObject $dt -Name 'drive'
+            $t = Get-McRenderProperty -InputObject $dt -Name 'tendency'
+            [void]$lines.Add(('  - `{0}`: {1}' -f (ConvertTo-McMarkdownValue -Value $d), (ConvertTo-McMarkdownValue -Value $t)))
+        }
+    }
+    $systemRoots = @(Get-McRenderProperty -InputObject $conventions -Name 'system_managed_roots' -Default @())
+    if ($systemRoots.Count -gt 0) {
+        [void]$lines.Add(('- System-managed roots: {0}' -f ($systemRoots -join ', ')))
+    }
+    else {
+        $directories = Get-McRenderProperty -InputObject $conventions -Name 'directories' -Default ([pscustomobject][ordered]@{})
+        $knownRoots = @(Get-McRenderProperty -InputObject $directories -Name 'known_roots' -Default @() | ForEach-Object { if ($_ -is [string]) { $_ } else { Get-McRenderProperty -InputObject $_ -Name 'path' } } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object)
+        $knownRootsText = if ($knownRoots.Count -gt 0) { $knownRoots -join ', ' } else { 'none recorded' }
+        [void]$lines.Add(('- Known roots: {0}' -f $knownRootsText))
+    }
 
     $text = $lines -join [Environment]::NewLine
     Write-McUtf8Text -Path $OutputPath -Text $text

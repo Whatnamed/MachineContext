@@ -54,7 +54,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Google Antigravity CLI coding assistant."
       }
     },
@@ -82,7 +81,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Google Antigravity desktop IDE application."
       }
     },
@@ -110,7 +108,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Desktop multi-model LLM client with MCP support."
       }
     },
@@ -159,7 +156,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Anthropic Claude Code CLI assistant."
       }
     },
@@ -191,7 +187,6 @@
         "package_name": "Claude"
       },
       "curated": {
-        "status": "active",
         "purpose": "Anthropic Claude official desktop application."
       }
     },
@@ -237,11 +232,6 @@
             "kind": "plugins-cache",
             "path": "%USERPROFILE%\\.codex\\plugins\\cache",
             "exists": true
-          },
-          {
-            "kind": "wrangler-config",
-            "path": "%APPDATA%\\xdg.config\\.wrangler",
-            "exists": true
           }
         ],
         "evidence": [
@@ -259,7 +249,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "OpenAI Codex CLI coding assistant."
       }
     },
@@ -293,7 +282,6 @@
         "package_name": "OpenAI.Codex"
       },
       "curated": {
-        "status": "active",
         "purpose": "OpenAI Codex official desktop application."
       }
     },
@@ -335,7 +323,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Cursor AI IDE and command line interface."
       }
     },
@@ -382,7 +369,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "DeepSeek Harness interactive terminal agent."
       }
     },
@@ -417,7 +403,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Grok build tool and agent runner."
       }
     },
@@ -452,7 +437,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Open-source Codex protocol CLI and multi-agent harness."
       }
     },
@@ -480,7 +464,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Open Design AI collaborative workbench application."
       }
     },
@@ -508,7 +491,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "ByteDance Trae AI Native IDE."
       }
     },
@@ -536,7 +518,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "AI design canvas and generative drawing assistant."
       }
     },
@@ -564,7 +545,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Zhipu AI coding workbench."
       }
     }

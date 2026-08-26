@@ -8,6 +8,7 @@
 - Provider state: verified
 - Mode: Full
 - Verified at: 2026-08-26T12:52:05.7370164Z
+- Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
 - Providers:
@@ -95,41 +96,15 @@
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
 
-## Design and creative software
+## Additional software inventory
 
-- **即时设计 (js.design)** `js-design` — 2.0.2.0 — `E:\即时设计\js.design\即时设计.exe`
-- **Autodesk Fusion** `autodesk-fusion` — 2605.1.52 — `%LOCALAPPDATA%\Autodesk\webdeploy\production\2b84ec48843dc39cc73fec4274fad44f45968ec2\Fusion360.exe`
-- **Bambu Studio** `bambu-studio` — 02.00.03.54 — `D:\Bambu_Studio\Bambu Studio\bambu-studio.exe`
-- **Figma Agent** `figma-agent` — 126.7.10 — `%LOCALAPPDATA%\FigmaAgent\figma_agent.exe`
-- **Figma Desktop** `figma` — 126.3.12 — `D:\Figma\Figma+汉化+EX\Figma.exe`
-- **GIMP 3** `gimp` — 3.0.6-1 — `E:\Gimp\GIMP 3\bin\gimp-3.0.exe`
-- **KeyShot Studio** `keyshot-studio` — 2024.3.0.0 — `D:\Program Files\KeyShot Studio\bin\keyshot.exe`
-- **Maxon Cinema 4D 2023** `cinema-4d` — 2023.0.0 — `D:\Program Files\Maxon Cinema 4D 2023\Cinema 4D.exe`
-- **PTC Creo Parametric** `ptc-creo` — 11.0.0.0 — `D:\Creo11.0\Creo11.0\Creo 11.0.0.0\Parametric\bin\parametric.exe`
-- **Rhinoceros 7** `rhino-7` — 7.0.20314.03001 — `D:\Program Files\Rhino 7\System\Rhino.exe`
-- **Rhinoceros 8** `rhino-8` — 8.22.25217.12451 — `D:\Program Files\Rhino 8\System\Rhino.exe`
+- Design / creative: 11 recorded
+  - Full inventory: `context/software/creative.json`
 
-## Productivity and desktop tools
+- Productivity / desktop: 19 recorded
+  - Full inventory: `context/software/productivity.json`
 
-- **Baidu Netdisk** `baidu-netdisk` — 8.2.1.102 — `E:\BaiduNetdisk\BaiduNetdisk.exe`
-- **Bandizip** `bandizip` — 7.40.0.1 — `D:\BANDIZIP\Bandizip.exe`
-- **Calibre** `calibre` — 9.4.0 — `D:\calibre\New Folder\calibre.exe`
-- **Discord** `discord` — 1.0.9226 — `%LOCALAPPDATA%\Discord\app-1.0.9226\Discord.exe`
-- **Feishu** `feishu` — 7.69.9 — `E:\Feishu\Feishu.exe`
-- **FlClash** `flclash` — 0.8.96 — `E:\FlClash\FlClash\FlClash.exe`
-- **FreeFileSync** `freefilesync` — 14.5 — `E:\FreeFileSync\FreeFileSync.exe`
-- **Notion** `notion` — 7.7.0 — `%LOCALAPPDATA%\Programs\Notion\Notion.exe`
-- **Obsidian** `obsidian` — 1.9.12 — `D:\Obsidian\Obsidian.exe`
-- **qBittorrent** `qbittorrent` — 5.1.2 — `E:\qBittorrent\qbittorrent.exe`
-- **Snipaste** `snipaste` — 2.11.3 — `D:\Snipaste\Snipaste-2.10.8-x64\Snipaste.exe`
-- **Syncthing** `syncthing` — 2.1.3 — `E:\syncthing\Syncthing\syncthing.exe`
-- **Telegram Desktop** `telegram` — 7.0.7.0 — `D:\telegram\Telegram Desktop\Telegram.exe`
-- **Tencent Meeting (WeMeet)** `tencent-meeting` — 3.43.20.411 — `E:\TencentMeeting\WeMeet\wemeetapp.exe`
-- **VLC media player** `vlc` — 3.0.21 — `D:\vlc\vlc.exe`
-- **Watt Toolkit (Steam++)** `watt-toolkit` — 3.0.0-rc.16 — `E:\WattToolkit\Steam++\Steam++.exe`
-- **WizTree** `wiztree` — 4.31 — `E:\wiztree\WizTree\WizTree.exe`
-- **WorkBuddy** `workbuddy` — 5.3.8.0 — `E:\WorkBuddy\WorkBuddy.exe`
-- **XnConvert** `xnconvert` — 1.106.0 — `E:\XnConvert\XnConvert\xnconvert.exe`
+These domains come from a user-confirmed broad inventory and are refreshed by explicit broad scans rather than the routine core provider scan.
 
 ## Network and local services
 
@@ -141,16 +116,23 @@
 
 ## Projects
 
-- **agent-bridge** — `E:\Projects\agent-bridge\agent-bridge` — status: see project record
-- **axis-ui** — `E:\Projects\AXISUI\AXISUI` — status: see project record
-- **bath-adaptation** — `E:\Projects\Bath\Bath\app` — status: see project record
-- **codex-bridge-tray-controller** — `E:\Projects\agent-bridge-legacy\controller` — status: see project record
-- **Morpho** — `D:\Morpho` — status: see project record
-- **openai-api-server-via-codex** — `E:\Projects\agent-bridge-legacy\monitor` — status: see project record
-- **Paste-as-File-for-ChatGPT** — `E:\Projects\GPTPaste\GPTPaste` — status: see project record
-- **ProxyLens** — `E:\Projects\ProxyLens\ProxyLens` — status: see project record
+- **agent-bridge** — `E:\Projects\agent-bridge\agent-bridge` — Private monorepo containing the modern Agent Bridge suite, including WinForms tray controller and background monitor services.
+- **axis-ui** — `E:\Projects\AXISUI\AXISUI` — Mobile UI and vibe coding design system documentation project built with Expo and React Native.
+- **bath-adaptation** — `E:\Projects\Bath\Bath\app` — Web application for accessibility and bathroom layout adaptation planning built with React and Vite.
+- **codex-bridge-tray-controller** — `E:\Projects\agent-bridge-legacy\controller` — Windows system tray controller and UI for the OpenAI API via Codex Bridge background service.
+- **Morpho** — `D:\Morpho` — AI-assisted continuous canvas workspace for product and industrial design concept generation.
+- **openai-api-server-via-codex** — `E:\Projects\agent-bridge-legacy\monitor` — OpenAI-compatible HTTP API server backed by Codex CLI sessions.
+- **Paste-as-File-for-ChatGPT** — `E:\Projects\GPTPaste\GPTPaste` — Browser extension to automatically upload long clipboard texts as files into AI web chats.
+- **ProxyLens** — `E:\Projects\ProxyLens\ProxyLens` — Windows desktop traffic auditor and flow inspector for local Clash / Mihomo proxies built with Tauri, Rust, and React.
 
 ## Installation conventions
 
-- Known roots: %LOCALAPPDATA%\Programs, %PROGRAMFILES%\WindowsApps, D:\, D:\skills, E:\Dev, E:\Projects, E:\WSL
-- Conventions remain bootstrap/curated until confirmed from observed machine usage.
+- Directory roles:
+  - `E:\Projects`: user project workspace root
+  - `E:\Dev`: development infrastructure, global tools and SDKs
+  - `D:\skills`: shared agent skills library
+  - `E:\WSL`: WSL virtual disk storage
+- Drive tendencies (non-strict):
+  - `D:`: productivity / heavy installed tools, CAD/3D, relatively important local data
+  - `E:`: flexible storage, user development projects, global tools and SDKs
+- System-managed roots: %LOCALAPPDATA%\Programs, %PROGRAMFILES%\WindowsApps

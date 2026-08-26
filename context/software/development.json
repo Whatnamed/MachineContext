@@ -37,9 +37,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -74,9 +72,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -117,9 +113,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -154,9 +148,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -243,9 +235,7 @@
         "sdk_state": "absent",
         "verification_note": "dotnet --version is unavailable because no .NET SDK is installed; runtimes were checked separately"
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -280,9 +270,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -317,9 +305,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -360,9 +346,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -397,9 +381,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -434,9 +416,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -471,9 +451,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -510,9 +488,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -552,9 +528,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -567,9 +541,7 @@
         "verification_reason": "persistent-command-not-found",
         "command_resolution": []
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -612,9 +584,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -649,9 +619,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -686,9 +654,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -723,9 +689,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -766,9 +730,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -803,9 +765,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -840,9 +800,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -914,9 +872,7 @@
           "10.0.22621.0"
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -951,9 +907,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "unknown"
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -986,7 +940,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Agently application framework CLI."
       }
     },
@@ -1021,7 +974,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Codex parallel session and thread execution accelerator tool."
       }
     },
@@ -1056,7 +1008,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Feishu / Lark open platform developer CLI."
       }
     },
@@ -1091,7 +1042,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
       }
     },
@@ -1126,7 +1076,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "OpenAI protocol CLI runner."
       }
     },
@@ -1154,7 +1103,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Terminal emulator and serial communication tool."
       }
     },
@@ -1182,7 +1130,6 @@
         ]
       },
       "curated": {
-        "status": "active",
         "purpose": "Unity editor and project manager."
       }
     }

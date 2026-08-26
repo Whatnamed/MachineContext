@@ -28,7 +28,6 @@
     "workspace_type": "git-repository"
   },
   "curated": {
-    "status": "unknown",
     "purpose": "Windows system tray controller and UI for the OpenAI API via Codex Bridge background service."
   }
 }

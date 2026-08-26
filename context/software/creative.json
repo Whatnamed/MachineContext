@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "observed"
+    "state": "observed",
+    "recorded_at": "2026-08-26T14:12:00Z",
+    "refresh_policy": "manual-broad-scan",
+    "source": "user-confirmed-broad-inventory"
   },
   "software": [
     {
@@ -27,10 +30,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Cloud-based 3D CAD/CAM/CAE tool."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -55,10 +55,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "3D printing slicer software for Bambu Lab 3D printers."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -83,10 +80,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "3D modeling, animation, simulation, and rendering software."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -111,10 +105,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Collaborative interface and user experience design platform."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -139,10 +130,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Local font helper and desktop daemon for Figma."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -167,10 +155,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Open-source raster graphics image editor."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -195,10 +180,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Online UI design and collaboration desktop tool."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -223,10 +205,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "Real-time 3D rendering and animation suite."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -251,10 +230,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "3D CAD parametric modeling software for industrial design and mechanical engineering."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -279,10 +255,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "NURBS-based 3D modeling and industrial design environment."
-      }
+      "curated": {}
     },
     {
       "schema_version": 1,
@@ -307,10 +280,7 @@
           }
         ]
       },
-      "curated": {
-        "status": "active",
-        "purpose": "NURBS-based 3D modeling, Grasshopper visual programming, and computational design suite."
-      }
+      "curated": {}
     }
   ]
 }

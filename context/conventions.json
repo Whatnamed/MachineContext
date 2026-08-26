@@ -1,15 +1,14 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "inferred",
-    "note": "Conventions should be inferred from the real machine and then confirmed; do not invent a directory taxonomy merely to make the inventory look neat."
+    "state": "curated",
+    "note": "Conventions reflect observed tendencies rather than strict machine-wide enforcement rules."
   },
   "directories": {
     "known_roots": [
-      "D:\\",
       "D:\\skills",
-      "E:\\Projects",
       "E:\\Dev",
+      "E:\\Projects",
       "E:\\WSL",
       "%LOCALAPPDATA%\\Programs",
       "%PROGRAMFILES%\\WindowsApps"
@@ -31,5 +30,43 @@
     "avoid unnecessary duplicate runtimes or package managers",
     "consider downstream relationships before moving or replacing tools",
     "record exceptions when a tool intentionally uses a non-default path"
+  ],
+  "directory_roles": [
+    {
+      "path": "E:\\Projects",
+      "role": "user project workspace root",
+      "strict": false
+    },
+    {
+      "path": "E:\\Dev",
+      "role": "development infrastructure, global tools and SDKs",
+      "strict": false
+    },
+    {
+      "path": "D:\\skills",
+      "role": "shared agent skills library",
+      "strict": false
+    },
+    {
+      "path": "E:\\WSL",
+      "role": "WSL virtual disk storage",
+      "strict": false
+    }
+  ],
+  "drive_tendencies": [
+    {
+      "drive": "D:",
+      "strict": false,
+      "tendency": "productivity / heavy installed tools, CAD/3D, relatively important local data"
+    },
+    {
+      "drive": "E:",
+      "strict": false,
+      "tendency": "flexible storage, user development projects, global tools and SDKs"
+    }
+  ],
+  "system_managed_roots": [
+    "%LOCALAPPDATA%\\Programs",
+    "%PROGRAMFILES%\\WindowsApps"
   ]
 }

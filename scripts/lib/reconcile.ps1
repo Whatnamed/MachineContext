@@ -235,7 +235,7 @@ function New-McObservedEntityRecord {
         kind = [string]$Observation.kind
         name = [string]$Observation.name
         observed = $observed
-        curated = [ordered]@{ status = 'unknown' }
+        curated = [ordered]@{}
     }
     return [pscustomobject]$record
 }
@@ -283,7 +283,8 @@ function Merge-McSoftwareModule {
         Set-McObjectProperty -InputObject $codexCli -Name 'observed' -Value (Merge-McObservedObject -Previous $legacyObserved -Current $currentObserved)
         $legacyCurated = Get-McObjectPropertyOrNull -InputObject $legacyCodex -Name 'curated'
         $currentCurated = Get-McObjectPropertyOrNull -InputObject $codexCli -Name 'curated'
-        if ($null -ne $legacyCurated -and ($null -eq $currentCurated -or [string]$currentCurated.status -eq 'unknown')) {
+        $currentStatus = [string](Get-McObjectPropertyOrNull -InputObject $currentCurated -Name 'status')
+        if ($null -ne $legacyCurated -and ($null -eq $currentCurated -or $currentStatus -in @('', 'unknown') -or (@($currentCurated.PSObject.Properties).Count -eq 0))) {
             Set-McObjectProperty -InputObject $codexCli -Name 'curated' -Value (Copy-McJsonObject -InputObject $legacyCurated)
         }
         [void]$map.Remove('codex')
@@ -528,7 +529,7 @@ function Merge-McProjects {
                 id = $id
                 name = [string]$candidate.name_hint
                 observed = Copy-McJsonObject -InputObject $candidate.observed
-                curated = [pscustomobject][ordered]@{ status = 'unknown' }
+                curated = [pscustomobject][ordered]@{}
             }
         }
         if ($null -ne $existing) {
