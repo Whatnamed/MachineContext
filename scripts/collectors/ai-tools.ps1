@@ -147,17 +147,6 @@ function Get-McAiToolObservations {
         })
     }
 
-    $codex = @($entities | Where-Object id -eq 'codex' | Select-Object -First 1)
-    $authCheck = @($pathObservations | Where-Object id -eq 'codex-auth' | Select-Object -First 1)
-    if ($codex.Count -gt 0 -and $authCheck.Count -gt 0 -and $authCheck[0].exists) {
-        $configPaths = @([pscustomobject][ordered]@{
-            path = $authCheck[0].path
-            exists = $true
-            kind = 'auth-file'
-        })
-        $codex[0].observed | Add-Member -MemberType NoteProperty -Name 'config_paths' -Value $configPaths -Force
-    }
-
     $health = if ($failureCount -gt 0) { 'partial' } else { 'success' }
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{
             entities = @($entities)

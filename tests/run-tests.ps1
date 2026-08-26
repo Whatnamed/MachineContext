@@ -99,6 +99,48 @@ Invoke-McTest -Name 'deterministic reconciliation ordering for JSON dictionaries
     Assert-McEqual -Actual ($ids -join ',') -Expected 'bun,cargo,dotnet' -Message 'software records read as dictionaries must sort by id'
 }
 
+Invoke-McTest -Name 'legacy Codex identity migrates to split CLI record' -Body {
+    $module = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'ai'
+        software = @([pscustomobject][ordered]@{
+                schema_version = 1
+                id = 'codex'
+                kind = 'ai-tool'
+                name = 'Codex'
+                observed = [pscustomobject][ordered]@{
+                    present = $true
+                    verification = 'verified-present'
+                    config_paths = @([pscustomobject][ordered]@{
+                            path = '%USERPROFILE%\\.codex\\auth.json'
+                            exists = $true
+                            kind = 'auth-file'
+                        })
+                }
+                curated = [pscustomobject][ordered]@{ status = 'unknown'; role = 'primary' }
+            })
+        meta = [pscustomobject][ordered]@{ state = 'observed' }
+    }
+    $observation = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'codex-cli'
+        kind = 'ai-tool'
+        name = 'Codex CLI'
+        observed = [pscustomobject][ordered]@{
+            present = $true
+            verification = 'verified-present'
+            version = '0.149.1'
+        }
+    }
+    $merged = Merge-McSoftwareModule -Module $module -ModuleName ai -Observations @($observation)
+    $ids = @($merged.software | ForEach-Object { [string]$_.id })
+    Assert-McEqual -Actual ($ids -join ',') -Expected 'codex-cli' -Message 'legacy Codex id must not remain after split migration'
+    $codexCli = @($merged.software | Where-Object id -eq 'codex-cli')[0]
+    Assert-McEqual -Actual $codexCli.observed.version -Expected '0.149.1' -Message 'split Codex CLI observation must win for current facts'
+    Assert-McEqual -Actual $codexCli.observed.config_paths[0].path -Expected '%USERPROFILE%\\.codex\\auth.json' -Message 'legacy Codex evidence must be retained'
+    Assert-McEqual -Actual $codexCli.curated.role -Expected 'primary' -Message 'legacy Codex curated intent must be retained'
+}
+
 Invoke-McTest -Name 'recursive JSON type contract' -Body {
     $emptyArray = Copy-McValue -InputObject @()
     $singleArray = Copy-McValue -InputObject @('one')
