@@ -237,13 +237,14 @@ function Merge-McSoftwareModule {
     $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($existing in @($Module.software)) {
         if ($null -ne $existing -and -not [string]::IsNullOrWhiteSpace([string]$existing.id)) {
-            $map[[string]$existing.id] = Copy-McJsonObject -InputObject $existing
+            $map[[string]$existing.id] = ConvertTo-McNormalizedEntityVersion -Entity $existing
         }
     }
 
     foreach ($observation in @($Observations | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
-        $existing = if ($map.ContainsKey([string]$observation.id)) { $map[[string]$observation.id] } else { $null }
-        $map[[string]$observation.id] = New-McObservedEntityRecord -Observation $observation -Existing $existing
+        $normalizedObservation = ConvertTo-McNormalizedEntityVersion -Entity $observation
+        $existing = if ($map.ContainsKey([string]$normalizedObservation.id)) { $map[[string]$normalizedObservation.id] } else { $null }
+        $map[[string]$normalizedObservation.id] = New-McObservedEntityRecord -Observation $normalizedObservation -Existing $existing
     }
 
     foreach ($event in @($VerificationEvents | Where-Object { $null -ne $_ -and [string]$_.module -eq $ModuleName -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
@@ -322,12 +323,13 @@ function Merge-McMachineShells {
     $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($shell in @((Get-McObjectPropertyOrNull -InputObject $Machine -Name 'shells'))) {
         if ($null -ne $shell -and -not [string]::IsNullOrWhiteSpace([string]$shell.id)) {
-            $map[[string]$shell.id] = Copy-McJsonObject -InputObject $shell
+            $map[[string]$shell.id] = ConvertTo-McNormalizedEntityVersion -Entity $shell
         }
     }
     foreach ($shell in @($Current | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
-        $existing = if ($map.ContainsKey([string]$shell.id)) { $map[[string]$shell.id] } else { $null }
-        $map[[string]$shell.id] = New-McObservedEntityRecord -Observation $shell -Existing $existing
+        $normalizedShell = ConvertTo-McNormalizedEntityVersion -Entity $shell
+        $existing = if ($map.ContainsKey([string]$normalizedShell.id)) { $map[[string]$normalizedShell.id] } else { $null }
+        $map[[string]$normalizedShell.id] = New-McObservedEntityRecord -Observation $normalizedShell -Existing $existing
     }
     foreach ($event in @($VerificationEvents | Where-Object { $null -ne $_ -and [string]$_.module -eq 'machine.shells' -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
         if ($map.ContainsKey([string]$event.id)) {

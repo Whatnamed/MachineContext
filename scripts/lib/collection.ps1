@@ -162,7 +162,9 @@ function New-McCollectionState {
         diagnostics  = New-McDiagnosticsContext -Mode $RunContext.mode
         observations = $observations
         candidates   = [System.Collections.Generic.List[object]]::new()
-        local_diagnostics = [ordered]@{}
+        local_diagnostics = [ordered]@{
+            version_normalization = [System.Collections.Generic.List[object]]::new()
+        }
         verification_events = [System.Collections.Generic.List[object]]::new()
         provider_failures = [System.Collections.Generic.List[object]]::new()
     }
@@ -184,19 +186,30 @@ function Add-McModuleObservations {
 
     foreach ($entity in @($Entities)) {
         if ($null -ne $entity) {
+            $normalizedEntity = ConvertTo-McNormalizedEntityVersion -Entity $entity
+            $rawVersion = Get-McCollectionProperty -InputObject (Get-McCollectionProperty -InputObject $entity -Name 'observed') -Name 'version'
+            $normalizedVersion = Get-McCollectionProperty -InputObject (Get-McCollectionProperty -InputObject $normalizedEntity -Name 'observed') -Name 'version'
+            if (-not [string]::IsNullOrWhiteSpace([string]$rawVersion) -and [string]$rawVersion -cne [string]$normalizedVersion) {
+                [void]$CollectionState.local_diagnostics.version_normalization.Add([pscustomobject][ordered]@{
+                        module = $Module
+                        id = [string]$entity.id
+                        input_hash = Get-McSha256Hex -Text ([string]$rawVersion)
+                        canonical_version = [string]$normalizedVersion
+                    })
+            }
             $list = $CollectionState.observations.software[$Module]
             $existingIndex = -1
             for ($index = 0; $index -lt $list.Count; $index++) {
-                if ([string]$list[$index].id -ieq [string]$entity.id) {
+                if ([string]$list[$index].id -ieq [string]$normalizedEntity.id) {
                     $existingIndex = $index
                     break
                 }
             }
             if ($existingIndex -ge 0) {
-                $list[$existingIndex] = $entity
+                $list[$existingIndex] = $normalizedEntity
             }
             else {
-                [void]$list.Add($entity)
+                [void]$list.Add($normalizedEntity)
             }
         }
     }
@@ -247,6 +260,51 @@ function Set-McCollectionProperty {
     }
 }
 
+function Remove-McCollectionProperty {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if ($null -eq $InputObject) {
+        return
+    }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        if ($InputObject.Contains($Name)) { [void]$InputObject.Remove($Name) }
+        return
+    }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -ne $property) { $InputObject.PSObject.Properties.Remove($Name) }
+}
+
+function ConvertTo-McNormalizedEntityVersion {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Entity
+    )
+
+    $copy = Copy-McJsonObject -InputObject $Entity
+    $observed = Get-McCollectionProperty -InputObject $copy -Name 'observed'
+    $rawVersion = Get-McCollectionProperty -InputObject $observed -Name 'version'
+    if ([string]::IsNullOrWhiteSpace([string]$rawVersion)) {
+        return $copy
+    }
+
+    $semantic = ConvertTo-McSemanticVersion -Text ([string]$rawVersion) -EntityId ([string]$copy.id)
+    if ([string]::IsNullOrWhiteSpace($semantic)) {
+        Remove-McCollectionProperty -InputObject $observed -Name 'version'
+    }
+    else {
+        Set-McCollectionProperty -InputObject $observed -Name 'version' -Value $semantic
+    }
+    return $copy
+}
+
 function Add-McCollectionMachineShells {
     [CmdletBinding()]
     param(
@@ -265,7 +323,7 @@ function Add-McCollectionMachineShells {
     }
     foreach ($shell in @($Shells)) {
         if ($null -ne $shell -and -not [string]::IsNullOrWhiteSpace([string]$shell.id)) {
-            $map[[string]$shell.id] = $shell
+            $map[[string]$shell.id] = ConvertTo-McNormalizedEntityVersion -Entity $shell
         }
     }
     Set-McCollectionProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object id)
@@ -493,9 +551,20 @@ function Invoke-McCollection {
         }
     }
 
+    $state.observations.machine = [pscustomobject]$machine
+    $derivedRelationships = @(Get-McStrongRelationships -Observations ([pscustomobject]$state.observations))
+    foreach ($relationship in $derivedRelationships) {
+        if ($null -ne $relationship) {
+            [void]$state.observations.relationships.Add($relationship)
+        }
+    }
+    $state.local_diagnostics.relationships = [pscustomobject][ordered]@{
+        derived_count = $derivedRelationships.Count
+        total_count = $state.observations.relationships.Count
+    }
+
     $state.observations.verification_events = @($state.verification_events)
     $state.observations.provider_failures = @($state.provider_failures)
-    $state.observations.machine = [pscustomobject]$machine
     $state.diagnostics.finished_at = (Get-Date).ToUniversalTime().ToString('o')
     $state.diagnostics.overall_health = Get-McOverallProviderHealth -Providers $state.diagnostics.providers
     Set-McDiagnosticCount -Diagnostics $state.diagnostics -Name 'candidate_count' -Value $state.candidates.Count

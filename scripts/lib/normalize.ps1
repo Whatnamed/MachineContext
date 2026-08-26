@@ -233,3 +233,52 @@ function Test-McSafeId {
 
     return (-not [string]::IsNullOrWhiteSpace($Id) -and $Id -match '^[a-z0-9][a-z0-9._:-]*$')
 }
+
+function ConvertTo-McSemanticVersion {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [string]$Text,
+
+        [AllowNull()]
+        [string]$EntityId
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $null
+    }
+
+    $value = $Text.Trim()
+    $versionPattern = '(?<version>v?\d+\.\d+(?:\.\d+){0,3}(?:[-+][0-9A-Za-z][0-9A-Za-z.-]*)?)'
+    $patterns = @(
+        ('(?i)\bgo\s+version\s+go' + $versionPattern),
+        ('(?i)\b(?:python|pip|pipx|cargo|rustc|rustup|uv|uvx|gh|flutter|dart|npm|pnpm|yarn|bun|deno|ruby|php|cmake|ninja|adb|git-lfs|git|node)\b[^\d]{0,48}' + $versionPattern),
+        ('(?i)\bversion\s*[=:]?\s*' + $versionPattern),
+        ('(?<![A-Za-z0-9])' + $versionPattern)
+    )
+
+    foreach ($pattern in $patterns) {
+        $match = [regex]::Match($value, $pattern)
+        if (-not $match.Success) {
+            continue
+        }
+        $version = [string]$match.Groups['version'].Value
+        if ($version.StartsWith('v', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $version = $version.Substring(1)
+        }
+        if ($version -match '^\d+\.\d+(?:\.\d+){0,3}(?:[-+][0-9A-Za-z][0-9A-Za-z.-]*)?$') {
+            return $version
+        }
+    }
+
+    # A short, already semantic-looking value is safe to retain. Everything
+    # else is intentionally dropped instead of publishing a banner that may
+    # contain a path, account name, or other provider-specific details.
+    if ($value.Length -le 64 -and $value -match '^v?\d+\.\d+(?:\.\d+){0,3}(?:[-+][0-9A-Za-z][0-9A-Za-z.-]*)?$') {
+        return ($value -replace '^v', '')
+    }
+    if ($value.Length -le 64 -and $value -match '^[A-Za-z0-9][A-Za-z0-9._+-]*$') {
+        return $value
+    }
+    return $null
+}

@@ -221,3 +221,13 @@ Decision: when Discover/Full runs, fallback filesystem discovery may inspect onl
 Reason: portable/custom installations can be missed by Registry and PATH, but arbitrary recursive file inventory is noisy, expensive, and privacy-sensitive. A filename match is useful for selecting a later verifier, not proof that the tool is usable or user-relevant.
 
 Status: accepted.
+
+## D028 — Strong relationships require verified observations and direct evidence
+
+Decision: canonical relationships are derived only from `verified-present` structured observations. Installation relationships such as Git Bash -> Git, Node-local package manager -> Node, and Flutter-bundled Dart -> Flutter require matching normalized executable/install paths. Project runtime/package-manager relationships require both a verified Git project under a promotable project root and manifest fingerprint evidence. Candidate-only, non-promotable, fallback-shim, unknown, stale, or failed-provider observations remain local evidence and cannot create canonical edges.
+
+Relationship origin remains `detected` when a dedicated provider supplies the relationship and `inferred` when a strong path rule derives it. Provider failures do not remove previous relationships; absence/removal requires a separate successful verification policy.
+
+Reason: a relationship is useful for planning only when its endpoints and ownership are trustworthy. Strong path/evidence gates prevent broad discovery, injected runtimes, and transient provider failures from creating dangling or noisy canonical edges.
+
+Status: accepted.

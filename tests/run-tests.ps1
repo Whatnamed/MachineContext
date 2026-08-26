@@ -311,6 +311,90 @@ Invoke-McTest -Name 'path and URL normalization' -Body {
     Assert-McTrue -Condition (Test-McSafeId -Id 'runtime-node.js') -Message 'stable IDs should accept safe generated IDs'
 }
 
+Invoke-McTest -Name 'semantic version and banner normalization' -Body {
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'pip 25.0.1 from C:\Users\hasee\.agent-reach-venv\Lib\site-packages\pip (python 3.12)') -Expected '25.0.1' -Message 'pip banners must become semantic versions without paths'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'git version 2.53.0.windows.3') -Expected '2.53.0' -Message 'Git banners must discard provider suffixes'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'Flutter 3.41.9 • channel stable • https://github.com/flutter/flutter.git') -Expected '3.41.9' -Message 'Flutter banners must become semantic versions'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'go version go1.24.11 windows/amd64') -Expected '1.24.11' -Message 'Go banners must strip the go prefix'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'not a version banner with C:\Users\hasee\secret') -Expected $null -Message 'unparseable banners must not enter canonical version fields'
+
+    $rawEntity = [pscustomobject][ordered]@{
+        id = 'pip'
+        kind = 'package-manager'
+        name = 'pip'
+        observed = [pscustomobject][ordered]@{
+            present = $true
+            version = 'pip 25.0.1 from C:\Users\hasee\.agent-reach-venv\Lib\site-packages\pip (python 3.12)'
+        }
+    }
+    $normalizedEntity = ConvertTo-McNormalizedEntityVersion -Entity $rawEntity
+    Assert-McEqual -Actual $normalizedEntity.observed.version -Expected '25.0.1' -Message 'entity normalization must publish only parsed version'
+    Assert-McTrue -Condition ([string]$normalizedEntity.observed.version -notmatch 'Users|agent-reach-venv|site-packages') -Message 'canonical version must not contain the user path from a banner'
+
+    $machine = [pscustomobject][ordered]@{
+        shells = @([pscustomobject][ordered]@{
+                id = 'shell-fixture'
+                kind = 'shell'
+                name = 'Fixture shell'
+                observed = [pscustomobject][ordered]@{ version = 'GNU bash, version 5.2.21(1)-release (x86_64-pc-msys)' }
+            })
+    }
+    Merge-McMachineShells -Machine $machine -Current @()
+    Assert-McEqual -Actual $machine.shells[0].observed.version -Expected '5.2.21' -Message 'historical shell banners must be normalized during reconciliation'
+}
+
+Invoke-McTest -Name 'strong relationship derivation' -Body {
+    $software = [pscustomobject][ordered]@{
+        development = @(
+            [pscustomobject][ordered]@{ id = 'node'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Node\node.exe'; install = [pscustomobject][ordered]@{ root = 'E:\Node' } } },
+            [pscustomobject][ordered]@{ id = 'npm'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Node\npm.cmd' } },
+            [pscustomobject][ordered]@{ id = 'flutter'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Flutter\bin\flutter.bat'; install = [pscustomobject][ordered]@{ root = 'E:\Flutter\bin' } } },
+            [pscustomobject][ordered]@{ id = 'dart'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Flutter\bin\dart.bat' } },
+            [pscustomobject][ordered]@{ id = 'git'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'D:\Git\Git\cmd\git.exe'; install = [pscustomobject][ordered]@{ root = 'D:\Git\Git' } } }
+        )
+        ai = @()
+    }
+    $observations = [pscustomobject][ordered]@{
+        software = $software
+        machine = [pscustomobject][ordered]@{
+            shells = @([pscustomobject][ordered]@{
+                    id = 'shell-git-bash'
+                    observed = [pscustomobject][ordered]@{
+                        present = $true
+                        verification = 'verified-present'
+                        git_root = 'D:\Git\Git'
+                        git_executable = 'D:\Git\Git\cmd\git.exe'
+                    }
+                })
+        }
+        projects = @(
+            [pscustomobject][ordered]@{
+                id = 'project-fixture'
+                verified = $true
+                promotion_eligible = $true
+                observed = [pscustomobject][ordered]@{
+                    runtime_refs = @('node')
+                    package_manager_refs = @('npm')
+                    manifests = @([pscustomobject][ordered]@{ path = 'E:\Projects\fixture\package.json' })
+                }
+            },
+            [pscustomobject][ordered]@{
+                id = 'project-sdk-fixture'
+                verified = $true
+                promotion_eligible = $false
+                observed = [pscustomobject][ordered]@{ runtime_refs = @('node'); package_manager_refs = @(); manifests = @() }
+            }
+        )
+    }
+    $relationships = @(Get-McStrongRelationships -Observations $observations)
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'npm' -and $_.relation -eq 'provided_by' -and $_.to -eq 'node' }).Count -eq 1) -Message 'Node-local npm should have a strong provided_by relationship'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'dart' -and $_.relation -eq 'provided_by' -and $_.to -eq 'flutter' }).Count -eq 1) -Message 'Flutter-bundled Dart should have a strong provided_by relationship'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'shell-git-bash' -and $_.relation -eq 'provided_by' -and $_.to -eq 'git' -and $_.origin -eq 'detected' }).Count -eq 1) -Message 'Git Bash should be related to the verified Git installation'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'project-fixture' -and $_.relation -eq 'uses_runtime' -and $_.to -eq 'node' }).Count -eq 1) -Message 'promotable projects may reference observed runtimes'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'project-fixture' -and $_.relation -eq 'uses_package_manager' -and $_.to -eq 'npm' }).Count -eq 1) -Message 'promotable projects may reference observed package managers'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'project-sdk-fixture' }).Count -eq 0) -Message 'non-promotable candidates must not create canonical relationships'
+}
+
 Invoke-McTest -Name 'dedicated verifiers and verification states' -Body {
     Assert-McEqual -Actual (Get-McWindowsNormalizedFamily -ProductName 'Windows 10 Home' -BuildNumber '26200') -Expected 'Windows 11' -Message 'Windows build must determine normalized family'
     Assert-McEqual -Actual (Get-McWindowsNormalizedFamily -ProductName 'Windows 10 Pro' -BuildNumber '19045') -Expected 'Windows 10' -Message 'Windows 10 build must remain Windows 10'

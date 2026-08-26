@@ -381,6 +381,17 @@ function Get-McKnownEntityIds {
         catch {
         }
     }
+    $machinePath = Join-Path $ContextRoot 'machine.json'
+    if (Test-Path -LiteralPath $machinePath -PathType Leaf) {
+        try {
+            $machine = Read-McJson -Path $machinePath
+            foreach ($shell in @($machine.shells)) {
+                if (-not [string]::IsNullOrWhiteSpace([string]$shell.id)) { [void]$ids.Add([string]$shell.id) }
+            }
+        }
+        catch {
+        }
+    }
     return $ids
 }
 

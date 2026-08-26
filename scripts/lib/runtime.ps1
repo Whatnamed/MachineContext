@@ -7,6 +7,7 @@ Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'environment.ps1')
 . (Join-Path $PSScriptRoot 'probe.ps1')
 . (Join-Path $PSScriptRoot 'verifiers.ps1')
+. (Join-Path $PSScriptRoot 'relationships.ps1')
 . (Join-Path $PSScriptRoot 'diagnostics.ps1')
 . (Join-Path $PSScriptRoot 'staging.ps1')
 . (Join-Path $PSScriptRoot 'privacy.ps1')
