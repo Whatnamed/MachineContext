@@ -78,7 +78,7 @@
       "open_unknown_count": 3,
       "unresolved_entry_count": 1
     },
-    "generated_at": "2026-08-26T11:56:46.3872265Z",
+    "generated_at": "2026-08-26T12:22:41.6862960Z",
     "reason": "blocking_findings",
     "source": ".local/audit-closure.json"
   }
