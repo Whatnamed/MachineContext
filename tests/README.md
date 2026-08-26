@@ -12,3 +12,9 @@ V1 tests should prioritize behavior that keeps MachineContext maintainable:
 - `CURRENT.md` rendering is deterministic.
 
 Do not commit real secrets or raw personal machine dumps as fixtures.
+
+Run the dependency-free PowerShell 7 fixture/runtime suite with:
+
+```powershell
+pwsh.exe -File .\tests\run-tests.ps1
+```
