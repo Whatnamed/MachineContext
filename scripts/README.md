@@ -10,7 +10,16 @@ V1 uses small Windows-first PowerShell entry points plus source-specific collect
 - `validate.ps1` — JSON/reference/privacy/invariant checks;
 - `sync.ps1` — staging -> collect/discover -> reconcile/verify -> validate/privacy -> render -> atomic publish -> git diff.
 
-The entry-point files currently exist as explicit scaffolds and intentionally fail rather than pretend the workflow is implemented. V1 development should replace them with real behavior.
+The entry points now implement the first Windows-first V1 pipeline. They remain deliberately small and require PowerShell 7 (`pwsh.exe`). `sync.ps1` stops on a dirty tree by default, writes raw candidates/diagnostics only under ignored `.local/`, and never commits or pushes automatically.
+
+Examples:
+
+```powershell
+pwsh.exe -File .\scripts\collect.ps1 -Mode Quick
+pwsh.exe -File .\scripts\sync.ps1 -Mode Full
+pwsh.exe -File .\scripts\validate.ps1
+pwsh.exe -File .\tests\run-tests.ps1
+```
 
 ## Scan modes
 
