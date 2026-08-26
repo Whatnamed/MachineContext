@@ -10,4 +10,4 @@ No confirmation manifest was applied during this session. Existing observed fact
 
 - Added a fixture covering project, software, and conventions proposals without writing canonical files.
 - Added rejection coverage for an attempted `observed` update.
-- All 22 tests pass after the command was added.
+- All 23 tests pass after the command was added.
