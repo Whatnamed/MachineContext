@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-当前处于 **V1 Phase G0 / Correctness Hardening**。Phase A-F 的首轮可执行基础已落地；G0-A 的 JSON Mapping/Sequence/Scalar 契约与 canonical validator、G0-B 的 Windows host 持久化环境和 collector-process 隔离已实现。下一步先完成剩余 G0 硬化，再进入 G1 Initial Audit Closure；在 G0 完成前不重跑 Full Audit。
+当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，重复 Full proposal 已达到逐文件字节稳定，Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate、provider partial 和项目语义得到明确审查。
 
 开始实现前必须阅读：
 
@@ -129,10 +129,18 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - G0-F：增加 bounded high-value executable fingerprint fallback；Everything/`es.exe` 仅在本机已有时查询项目与工具 patterns，所有结果保持低置信度 candidate/evidence，不直接写 canonical，并记录扫描预算与 optional provider health。
 - G0-G：将 provider version banner 归一化为短 semantic version；无法安全解析的 banner 从 canonical `observed.version` 移除，原始输入只以 hash 形式留在 `.local` diagnostics；历史 software/shell records 在 reconciliation 时走同一规则。
 - G0-H：只从 `verified-present` 的结构化观察和强路径证据生成 `provided_by` / project runtime/package-manager relationships；非晋级 project candidates、fallback shims 和 provider failure 不得生成或改写 canonical relationship。
-- G0-C/G0-D 当前 gate：测试与 Quick/`sync -NoPublish` 闭环已运行；旧 canonical validation pollution 通过显式 staged migration 修复，只有列出的非项目 root 历史 project 记录才会在 publish 时原子删除，然后才进入 G1 Initial Full Audit。
-- 每个 G0 子阶段先实现、测试、自审计；G0-A/G0-B gate 期间不执行 Full Audit，不自动重写当前 canonical。
+- G0 gate 已关闭：测试与 Quick/`sync -NoPublish` 闭环已运行；旧 canonical validation pollution 通过显式 staged migration 修复，只有列出的非项目 root 历史 project 记录才会在 publish 时原子删除；OrderedDictionary 输入的 software/shell/project/relationship 数组也已使用显式 stable-key sorting。
+- 每个 G0 子阶段均先实现、测试、自审计；后续变更继续保持同样的 staging、validation 和 no-change scan gate。
 
 ### Phase G1 — Initial real-machine Full Audit Closure
+
+当前进度（2026-08-26）：
+
+- Full Audit #1 已发布，provider aggregate 为 `partial`；structured canonical、项目 registry、relationships 和 `CURRENT.md` 已更新。
+- Full Audit #3 的 19 个 canonical/Markdown proposal 文件与当前仓库逐字节一致，`changed_files=[]`，validation 通过。
+- Quick #1/#2 的 canonical context 除允许的 `status.json` verification metadata 外完全一致；两次均未发布。
+- 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。
+- G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 
 第一次 Full Audit：
 
