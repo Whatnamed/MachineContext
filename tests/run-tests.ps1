@@ -168,6 +168,48 @@ Invoke-McTest -Name 'Visual Studio Native Desktop workload preserves verificatio
     Assert-McTrue -Condition ($null -eq $failed.PSObject.Properties['present']) -Message 'unverified workload must not expose an absent claim'
 }
 
+Invoke-McTest -Name 'Visual Studio workload type contract rejects unsafe states' -Body {
+    $valid = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'visual-studio'
+        kind = 'ide'
+        name = 'Visual Studio'
+        observed = [pscustomobject][ordered]@{
+            present = $true
+            verification = 'verified-present'
+            desktop_cpp_workload = [pscustomobject][ordered]@{
+                workload_id = 'Microsoft.VisualStudio.Workload.NativeDesktop'
+                verification = 'verified-present'
+                present = $true
+                installation_paths = @('D:\Visual Studio\product')
+            }
+        }
+        curated = [pscustomobject][ordered]@{ status = 'unknown' }
+    }
+    $validFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McSoftwareRecord -Record $valid -Findings $validFindings -Path '$.software[0]'
+    Assert-McEqual -Actual $validFindings.Count -Expected 0 -Message 'valid Visual Studio workload should pass the type contract'
+
+    $unverified = Copy-McJsonObject -InputObject $valid
+    $unverified.observed.desktop_cpp_workload = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus 'timed_out' -ProbeText ''
+    $unverifiedFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McSoftwareRecord -Record $unverified -Findings $unverifiedFindings -Path '$.software[0]'
+    Assert-McEqual -Actual $unverifiedFindings.Count -Expected 0 -Message 'unverified workload may omit paths without becoming a validation failure'
+    $unsafeUnverified = Copy-McJsonObject -InputObject $unverified
+    $unsafeUnverified.observed.desktop_cpp_workload.present = $false
+    $unsafeUnverifiedFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McSoftwareRecord -Record $unsafeUnverified -Findings $unsafeUnverifiedFindings -Path '$.software[0]'
+    Assert-McTrue -Condition (@($unsafeUnverifiedFindings | Where-Object code -eq 'visual_studio_workload_unsafe_absence').Count -eq 1) -Message 'unverified workload must reject present=false'
+
+    $invalid = Copy-McJsonObject -InputObject $valid
+    $invalid.observed.desktop_cpp_workload.verification = 'verified-present'
+    $invalid.observed.desktop_cpp_workload.present = $false
+    $invalid.observed.desktop_cpp_workload.installation_paths = @()
+    $invalidFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McSoftwareRecord -Record $invalid -Findings $invalidFindings -Path '$.software[0]'
+    Assert-McTrue -Condition (@($invalidFindings | Where-Object code -eq 'visual_studio_workload_present_contract').Count -eq 1) -Message 'unsafe verified-present workload must be rejected'
+}
+
 Invoke-McTest -Name 'recursive JSON type contract' -Body {
     $emptyArray = Copy-McValue -InputObject @()
     $singleArray = Copy-McValue -InputObject @('one')
