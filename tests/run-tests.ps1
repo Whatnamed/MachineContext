@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\audit.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\review.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\validation.ps1')
+. (Join-Path $RepoRoot 'scripts\lib\curation.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -901,6 +902,99 @@ Invoke-McTest -Name 'semantic review contract' -Body {
     Assert-McTrue -Condition (-not $invalidReview.ok) -Message 'unsafe semantic review must fail the structural review'
     Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'semantic_review_canonical_write' }).Count -eq 1) -Message 'canonical write authorization must be rejected'
     Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'semantic_review_unsafe_absence_claim' }).Count -eq 1) -Message 'unsafe absence claims must be rejected'
+}
+
+Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-curation-confirmation'
+    $confirmationPath = Join-Path $fixtureRoot 'valid.json'
+    $softwareOnlyPath = Join-Path $fixtureRoot 'software-only.json'
+    $unsafePath = Join-Path $fixtureRoot 'unsafe.json'
+    $unknownPath = Join-Path $fixtureRoot 'unknown.json'
+    $projectPath = Join-Path $RepoRoot 'context\projects\project-github.com-whatnamed-morpho.json'
+    $softwarePath = Join-Path $RepoRoot 'context\software\ai.json'
+    $conventionsPath = Join-Path $RepoRoot 'context\conventions.json'
+    try {
+        [void](New-Item -ItemType Directory -Path $fixtureRoot -Force)
+        $valid = [ordered]@{
+            schema_version = 1
+            kind = 'g2-curation-confirmation'
+            confirmed = $true
+            confirmed_at = '2026-08-26T00:00:00Z'
+            source_review = '.local/g2-semantic-review.json'
+            project_updates = @([ordered]@{
+                    id = 'project-github.com-whatnamed-morpho'
+                    curated = [ordered]@{
+                        status = 'active'
+                        purpose = 'fixture confirmation only'
+                        constraints = @()
+                    }
+                    evidence_refs = @('.local/g2-semantic-review.json')
+                })
+            software_updates = @([ordered]@{
+                    id = 'codex-cli'
+                    curated = [ordered]@{ role = 'primary' }
+                    evidence_refs = @('.local/g2-semantic-review.json')
+                })
+            conventions_update = [ordered]@{
+                evidence_refs = @('.local/g2-semantic-review.json')
+                meta = [ordered]@{ state = 'confirmed' }
+                directories = [ordered]@{
+                    known_roots = @([ordered]@{ path = 'E:\Projects'; kind = 'project-root' })
+                }
+            }
+        }
+        Write-McJson -Path $confirmationPath -InputObject $valid
+        $beforeProject = (Get-FileHash -LiteralPath $projectPath -Algorithm SHA256).Hash
+        $beforeSoftware = (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash
+        $beforeConventions = (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash
+        $plan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $confirmationPath
+        Assert-McTrue -Condition $plan.ok -Message 'valid confirmation should produce an applicable plan'
+        Assert-McEqual -Actual @($plan.changes).Count -Expected 3 -Message 'project, software, and conventions updates should produce three proposed files'
+        $proposedProject = $plan.proposed_documents[$projectPath]
+        Assert-McEqual -Actual $proposedProject.curated.status -Expected 'active' -Message 'curation plan should update project curated status only in the proposal'
+        Assert-McEqual -Actual $proposedProject.observed.local_path -Expected 'D:\Morpho' -Message 'curation plan must preserve project observed facts'
+        Assert-McEqual -Actual (Get-FileHash -LiteralPath $projectPath -Algorithm SHA256).Hash -Expected $beforeProject -Message 'dry-run must not write project canonical data'
+        Assert-McEqual -Actual (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash -Expected $beforeSoftware -Message 'dry-run must not write software canonical data'
+        Assert-McEqual -Actual (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash -Expected $beforeConventions -Message 'dry-run must not write conventions canonical data'
+
+        $softwareOnly = Copy-McJsonObject -InputObject $valid
+        Remove-McObjectProperty -InputObject $softwareOnly -Name 'project_updates'
+        Write-McJson -Path $softwareOnlyPath -InputObject $softwareOnly
+        $softwareOnlyPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $softwareOnlyPath
+        Assert-McTrue -Condition $softwareOnlyPlan.ok -Message 'a confirmation may omit project_updates when only software is confirmed'
+        Assert-McEqual -Actual $softwareOnlyPlan.project_update_count -Expected 0 -Message 'omitted project updates must normalize to an empty set'
+        Assert-McEqual -Actual $softwareOnlyPlan.software_update_count -Expected 1 -Message 'software-only confirmation count must remain accurate'
+
+        $unsafe = [ordered]@{
+            schema_version = 1
+            kind = 'g2-curation-confirmation'
+            confirmed = $true
+            confirmed_at = '2026-08-26T00:00:00Z'
+            source_review = '.local/g2-semantic-review.json'
+            project_updates = @([ordered]@{
+                    id = 'project-github.com-whatnamed-morpho'
+                    curated = [ordered]@{ observed = [ordered]@{ present = $false } }
+                    evidence_refs = @('.local/g2-semantic-review.json')
+                })
+            software_updates = @()
+        }
+        Write-McJson -Path $unsafePath -InputObject $unsafe
+        $unsafePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unsafePath
+        Assert-McTrue -Condition (-not $unsafePlan.ok) -Message 'observed writes must be rejected by curation contract'
+        Assert-McTrue -Condition (@($unsafePlan.errors | Where-Object code -eq 'curation_observed_write').Count -gt 0) -Message 'unsafe curation must report observed-write error'
+
+        $unknown = Copy-McJsonObject -InputObject $valid
+        $unknown.project_updates[0].id = 'project-does-not-exist'
+        Write-McJson -Path $unknownPath -InputObject $unknown
+        $unknownPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unknownPath
+        Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
+        Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) {
+            Remove-Item -LiteralPath $fixtureRoot -Recurse -Force
+        }
+    }
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
