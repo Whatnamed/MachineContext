@@ -80,6 +80,22 @@ Invoke-McTest -Name 'deterministic JSON ordering and UTF-8' -Body {
     Remove-Item -LiteralPath $path -Force
 }
 
+Invoke-McTest -Name 'deterministic reconciliation ordering for JSON dictionaries' -Body {
+    $module = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'development'
+        software = @(
+            [ordered]@{ schema_version = 1; id = 'dotnet'; kind = 'runtime'; name = '.NET' },
+            [ordered]@{ schema_version = 1; id = 'cargo'; kind = 'package-manager'; name = 'Cargo' },
+            [ordered]@{ schema_version = 1; id = 'bun'; kind = 'runtime'; name = 'Bun' }
+        )
+        meta = [ordered]@{ state = 'observed' }
+    }
+    $merged = Merge-McSoftwareModule -Module $module -ModuleName development -Observations @() -VerificationEvents @()
+    $ids = @($merged.software | ForEach-Object { [string]$_.id })
+    Assert-McEqual -Actual ($ids -join ',') -Expected 'bun,cargo,dotnet' -Message 'software records read as dictionaries must sort by id'
+}
+
 Invoke-McTest -Name 'recursive JSON type contract' -Body {
     $emptyArray = Copy-McValue -InputObject @()
     $singleArray = Copy-McValue -InputObject @('one')

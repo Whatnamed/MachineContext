@@ -326,7 +326,7 @@ function Add-McCollectionMachineShells {
             $map[[string]$shell.id] = ConvertTo-McNormalizedEntityVersion -Entity $shell
         }
     }
-    Set-McCollectionProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object id)
+    Set-McCollectionProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object { [string]$_.id })
 }
 
 function Merge-McCollectionGpuVerifications {

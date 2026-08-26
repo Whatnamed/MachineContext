@@ -267,7 +267,7 @@ function Merge-McSoftwareModule {
         [void]$map.Remove('codex')
     }
 
-    $Module.software = @($map.Values | Sort-Object id)
+    $Module.software = @($map.Values | Sort-Object { [string]$_.id })
     $meta = Get-McObjectPropertyOrNull -InputObject $Module -Name 'meta'
     if ($null -eq $meta) {
         Set-McObjectProperty -InputObject $Module -Name 'meta' -Value ([pscustomobject][ordered]@{ state = 'observed' })
@@ -336,7 +336,7 @@ function Merge-McMachineShells {
             Set-McObservedVerification -Record $map[[string]$event.id] -Event $event
         }
     }
-    Set-McObjectProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object id)
+    Set-McObjectProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object { [string]$_.id })
 }
 
 function Get-McProjectRecordFileName {
@@ -517,7 +517,7 @@ function Merge-McProjects {
     }
 
     $indexRefs = [System.Collections.Generic.List[object]]::new()
-    foreach ($record in @($records.Values | Sort-Object id)) {
+    foreach ($record in @($records.Values | Sort-Object { [string]$_.id })) {
         [void]$indexRefs.Add([pscustomobject][ordered]@{
             id = [string]$record.id
             name = [string]$record.name
@@ -553,7 +553,10 @@ function Merge-McRelationships {
         $key = '{0}|{1}|{2}' -f $relationship.from, $relationship.relation, $relationship.to
         $map[$key] = Copy-McJsonObject -InputObject $relationship
     }
-    return @($map.Values | Sort-Object from,relation,to)
+    return @($map.Values | Sort-Object `
+        @{ Expression = { [string]$_.from } },
+        @{ Expression = { [string]$_.relation } },
+        @{ Expression = { [string]$_.to } })
 }
 
 function Update-McPublishedStatus {
