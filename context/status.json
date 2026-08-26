@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
-  "state": "verified",
+  "state": "partial",
+  "provider_state": "verified",
   "published_verification": {
     "mode": "Full",
     "verified_at": "2026-08-26T08:43:51.2010267Z",
@@ -66,5 +67,17 @@
         "health": "success"
       }
     ]
+  },
+  "audit_closure": {
+    "state": "partial",
+    "blocking": {
+      "canonical_unknown_count": 5,
+      "conflict_count": 0,
+      "local_candidate_unknown_count": 3,
+      "unresolved_entry_count": 1
+    },
+    "generated_at": "2026-08-26T08:46:51.5607096Z",
+    "reason": "blocking_findings",
+    "source": ".local/audit-closure.json"
   }
 }
