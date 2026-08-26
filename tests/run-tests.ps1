@@ -8,6 +8,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\collection.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\reconcile.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\audit.ps1')
+. (Join-Path $RepoRoot 'scripts\lib\review.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\validation.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
@@ -819,6 +820,64 @@ Invoke-McTest -Name 'audit closure review contract' -Body {
     Assert-McTrue -Condition (-not $invalidReview.ok) -Message 'invalid audit closure must fail the structural review'
     Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'audit_closure_kind' }).Count -eq 1) -Message 'invalid audit kind must be reported'
     Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'audit_closure_duplicate_entry_id' }).Count -eq 1) -Message 'duplicate audit entry ids must be reported'
+}
+
+Invoke-McTest -Name 'semantic review contract' -Body {
+    $valid = [pscustomobject][ordered]@{
+        schema_version = 1
+        kind = 'g2-semantic-review-draft'
+        generated_at = '2026-08-26T00:00:00Z'
+        source = 'fixture evidence'
+        canonical_write = $false
+        project_suggestions = @([pscustomobject][ordered]@{
+                id = 'fixture-project'
+                current_status = 'unknown'
+                review_bucket = 'likely-active'
+                confidence = 'medium'
+                evidence = [pscustomobject][ordered]@{ path = 'E:\Projects\Fixture'; tracked_dirty = $false }
+                requires_confirmation = $true
+            })
+        semantic_suggestions = @([pscustomobject][ordered]@{
+                topic = 'installation-conventions'
+                suggestion = 'Fixture suggestion requires confirmation.'
+                evidence = @('context/conventions.json')
+                requires_confirmation = $true
+            })
+        unresolved_checks = @([pscustomobject][ordered]@{
+                id = 'fixture-check'
+                state = 'unverified'
+                evidence = @('local evidence')
+                absence_claim = $false
+            })
+    }
+    $review = Test-McG2SemanticReviewDocument -InputObject $valid -Source '.local/g2-semantic-review.json'
+    Assert-McTrue -Condition $review.ok -Message 'valid semantic review must pass the structural review'
+    Assert-McTrue -Condition $review.read_only -Message 'semantic review must be explicitly read-only'
+    Assert-McEqual -Actual $review.canonical_write -Expected $false -Message 'semantic review must prohibit canonical writes'
+    Assert-McEqual -Actual $review.project_suggestion_count -Expected 1 -Message 'semantic review project suggestion count'
+    Assert-McEqual -Actual $review.semantic_suggestion_count -Expected 1 -Message 'semantic review suggestion count'
+    Assert-McEqual -Actual $review.unresolved_check_count -Expected 1 -Message 'semantic review unresolved check count'
+    Assert-McTrue -Condition $review.requires_confirmation -Message 'semantic review must expose confirmation gate'
+
+    $invalid = [pscustomobject][ordered]@{
+        schema_version = 1
+        kind = 'g2-semantic-review-draft'
+        generated_at = '2026-08-26T00:00:00Z'
+        source = 'fixture evidence'
+        canonical_write = $true
+        project_suggestions = $valid.project_suggestions
+        semantic_suggestions = $valid.semantic_suggestions
+        unresolved_checks = @([pscustomobject][ordered]@{
+                id = 'unsafe-check'
+                state = 'unresolved'
+                evidence = @('local evidence')
+                absence_claim = $true
+            })
+    }
+    $invalidReview = Test-McG2SemanticReviewDocument -InputObject $invalid -Source '.local/g2-semantic-review.json'
+    Assert-McTrue -Condition (-not $invalidReview.ok) -Message 'unsafe semantic review must fail the structural review'
+    Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'semantic_review_canonical_write' }).Count -eq 1) -Message 'canonical write authorization must be rejected'
+    Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'semantic_review_unsafe_absence_claim' }).Count -eq 1) -Message 'unsafe absence claims must be rejected'
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
