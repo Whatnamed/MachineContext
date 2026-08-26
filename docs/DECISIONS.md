@@ -10,6 +10,14 @@ Reason: the dataset is small, AI-readable files are the product's core value, Gi
 
 Status: accepted.
 
+## D037 — Published verification heartbeat belongs to the publish boundary
+
+Decision: `Update-McPublishedStatus` preserves `published_verification.verified_at` while building a no-publish proposal, but `scripts/sync.ps1` explicitly refreshes that compact heartbeat for an actual publish. The heartbeat records when the committed publication was re-verified; exact provider checks remain in ignored `.local` state.
+
+Reason: reconciliation does not know whether its proposal will be committed. Refreshing the timestamp unconditionally would make read-only/no-publish checks look like publications, while preserving it during every real publish would leave `context/status.json` reporting an old verification time after a successful audit.
+
+Status: accepted.
+
 ## D002 — Canonical JSON and generated `CURRENT.md`
 
 Decision: `context/` is authoritative structured JSON. `CURRENT.md` is a compact, generated convenience view for fast AI reading.

@@ -103,7 +103,7 @@ V1 推荐：
 - item 记录当前 value 的来源/证据以及必要的 `changed_at`；
 - `.local/state.json` 保存本机精确 `last_checked_at` / per-provider diagnostics（不提交）；
 - committed `context/status.json` 只保存发布级别的 freshness/collector-health 摘要；
-- 只有确实发布一次 verification heartbeat 时，允许 `status.json` 产生小 diff；
+- 只有实际发布运行（`scripts/sync.ps1` 未使用 `-NoPublish`）才刷新一次 verification heartbeat，允许 `status.json` 产生小 diff；`-NoPublish` proposal 必须保留既有 heartbeat；
 - 业务事实没变时，其他 canonical files 应保持 byte-stable。
 
 因此 V1 的幂等验收定义为：**零 semantic diff；除明确发布的 status heartbeat 外不产生数据噪声。**

@@ -950,9 +950,13 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
     Assert-McEqual -Actual $status.provider_state -Expected 'verified' -Message 'provider state must reflect provider aggregate health'
     Assert-McEqual -Actual $status.state -Expected 'partial' -Message 'published state must remain partial until audit closure is verified'
     Assert-McEqual -Actual $status.audit_closure.state -Expected 'partial' -Message 'published status must expose audit closure state'
+    $preservedVerifiedAt = [datetime]::Parse([string]$status.published_verification.verified_at).ToUniversalTime()
     $status = Update-McPublishedStatus -Status $status -Diagnostics $diagnostics -Mode 'Quick' -AuditClosure $verifiedAudit
     Assert-McEqual -Actual $status.state -Expected 'verified' -Message 'published state may be verified after both gates pass'
     Assert-McTrue -Condition ([string]$status.published_verification.verified_at -match '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{7}Z$') -Message 'published verification timestamps must remain invariant ISO'
+    Assert-McEqual -Actual ([datetime]::Parse([string]$status.published_verification.verified_at).ToUniversalTime()) -Expected $preservedVerifiedAt -Message 'no-publish reconciliation must preserve the existing heartbeat timestamp'
+    $status = Update-McPublishedStatus -Status $status -Diagnostics $diagnostics -Mode 'Quick' -AuditClosure $verifiedAudit -PublishHeartbeat
+    Assert-McTrue -Condition ([datetime]::Parse([string]$status.published_verification.verified_at).ToUniversalTime() -gt $preservedVerifiedAt) -Message 'published verification heartbeat must refresh on explicit publish'
 
     $testLocalRoot = Join-Path $RepoRoot '.local\test-runtime'
     $run = New-McRunContext -RepoRoot $RepoRoot -Mode Quick -LocalRoot $testLocalRoot

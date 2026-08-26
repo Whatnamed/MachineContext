@@ -138,7 +138,7 @@ if ($gitState.behind -gt 0 -and -not $AllowRemoteDivergence) {
 
 $run = New-McRunContext -RepoRoot $resolvedRoot -Mode $Mode
 $collection = Invoke-McCollection -RunContext $run
-$reconciled = Invoke-McReconciliation -RunContext $run -CollectionResult $collection
+$reconciled = Invoke-McReconciliation -RunContext $run -CollectionResult $collection -PublishHeartbeat:(-not $NoPublish)
 Invoke-McRender -RepoRoot $resolvedRoot -ContextRoot $run.proposed_context -OutputPath $run.proposed_current | Out-Null
 $validation = Invoke-McValidation -RepoRoot $resolvedRoot -ContextRoot $run.proposed_context -CurrentPath $run.proposed_current
 if (-not $validation.ok) {

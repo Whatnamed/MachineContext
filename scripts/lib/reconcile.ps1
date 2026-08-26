@@ -722,7 +722,9 @@ function Update-McPublishedStatus {
         [string]$Mode,
 
         [AllowNull()]
-        [object]$AuditClosure
+        [object]$AuditClosure,
+
+        [switch]$PublishHeartbeat
     )
 
     $summary = ConvertTo-McPublishedProviderSummary -Providers $Diagnostics.providers
@@ -731,7 +733,7 @@ function Update-McPublishedStatus {
     $newSummary = @($summary | ForEach-Object { "{0}:{1}" -f $_.provider, $_.health } | Sort-Object)
     $changed = ([string]$Mode -ne [string](Get-McObjectPropertyOrNull -InputObject $previous -Name 'mode')) -or ((ConvertTo-McJsonText -InputObject $previousSummary) -ne (ConvertTo-McJsonText -InputObject $newSummary))
     $previousVerifiedAt = Get-McObjectPropertyOrNull -InputObject $previous -Name 'verified_at'
-    if ($changed -or [string]::IsNullOrWhiteSpace([string]$previousVerifiedAt)) {
+    if ($PublishHeartbeat -or $changed -or [string]::IsNullOrWhiteSpace([string]$previousVerifiedAt)) {
         $verifiedAt = (Get-Date).ToUniversalTime().ToString('o', [Globalization.CultureInfo]::InvariantCulture)
     }
     elseif ($previousVerifiedAt -is [datetime]) {
@@ -779,7 +781,9 @@ function Invoke-McReconciliation {
         [object]$RunContext,
 
         [Parameter(Mandatory)]
-        [object]$CollectionResult
+        [object]$CollectionResult,
+
+        [switch]$PublishHeartbeat
     )
 
     Copy-McCanonicalToStage -RunContext $RunContext
@@ -870,7 +874,7 @@ function Invoke-McReconciliation {
     $statusPath = Join-Path $contextRoot 'status.json'
     $status = Read-McJson -Path $statusPath
     $auditClosure = Get-McAuditClosureProjection -RepoRoot $RunContext.repo_root
-    $status = Update-McPublishedStatus -Status $status -Diagnostics $CollectionResult.diagnostics -Mode $RunContext.mode -AuditClosure $auditClosure
+    $status = Update-McPublishedStatus -Status $status -Diagnostics $CollectionResult.diagnostics -Mode $RunContext.mode -AuditClosure $auditClosure -PublishHeartbeat:$PublishHeartbeat
     Write-McJson -Path $statusPath -InputObject $status
 
     return [pscustomobject][ordered]@{

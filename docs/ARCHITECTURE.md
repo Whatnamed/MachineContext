@@ -204,7 +204,7 @@ Windows host is V1 primary scope. WSL is recorded as a related but distinct envi
 
 Exact per-item check times belong in ignored local state. `context/status.json` carries compact published verification/provider-health information plus an audit-closure projection. `provider_state` reports the current required-provider aggregate; `audit_closure` reports whether the documented Initial Audit closure is complete. Documented limitations may be accepted explicitly without being hidden; only open unknowns, conflicts, and unresolved entries block closure. The top-level `state` is the publication trust gate and is `verified` only when both are verified. Raw closure findings remain under `.local`.
 
-A no-change scan should produce no semantic context diff. If the user chooses to publish a verification heartbeat, only compact status metadata should change instead of rewriting every item timestamp.
+A no-change scan should produce no semantic context diff. A real `scripts/sync.ps1` publish refreshes one compact verification heartbeat in `context/status.json`; a `-NoPublish` proposal preserves the existing heartbeat. No item timestamps are rewritten.
 
 ## Atomic publication
 
