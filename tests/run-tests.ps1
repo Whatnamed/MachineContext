@@ -396,6 +396,53 @@ Invoke-McTest -Name 'dedicated verifiers and verification states' -Body {
     Assert-McEqual -Actual $absent.software[0].curated.status -Expected 'active' -Message 'absence must preserve curated meaning'
 }
 
+Invoke-McTest -Name 'project root classification and promotion' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-project-policy'
+    $projectPath = Join-Path $fixtureRoot 'Projects\fixture-app'
+    $sdkPath = Join-Path $fixtureRoot 'Dev\flutter'
+    $cachePath = Join-Path $fixtureRoot 'Dev\npm-cache\_npx\fixture'
+    New-Item -ItemType Directory -Path $projectPath, $sdkPath, $cachePath -Force | Out-Null
+
+    $projectPolicy = [pscustomobject][ordered]@{ root = (Join-Path $fixtureRoot 'Projects'); kind = 'project-root'; source = 'fixture-project-root'; auto_promote = $true; walk_depth = 5; priority = 60 }
+    $sdkPolicy = [pscustomobject][ordered]@{ root = (Join-Path $fixtureRoot 'Dev\flutter'); kind = 'sdk-root'; source = 'fixture-sdk-root'; auto_promote = $false; walk_depth = 0; priority = 90 }
+    $cachePolicy = [pscustomobject][ordered]@{ root = (Join-Path $fixtureRoot 'Dev\npm-cache'); kind = 'cache-root'; source = 'fixture-cache-root'; auto_promote = $false; walk_depth = 0; priority = 100 }
+    $policies = @($projectPolicy, $sdkPolicy, $cachePolicy)
+
+    try {
+        New-Item -ItemType File -Path (Join-Path $projectPath '.git') -Force | Out-Null
+        Write-McJson -Path (Join-Path $projectPath 'package.json') -InputObject ([pscustomobject][ordered]@{
+                name = '@fixture/manifest-name'
+                packageManager = 'pnpm@9.1.0'
+                scripts = [pscustomobject][ordered]@{ test = 'pnpm test' }
+            })
+        New-Item -ItemType File -Path (Join-Path $sdkPath '.git') -Force | Out-Null
+        Write-McJson -Path (Join-Path $sdkPath 'package.json') -InputObject ([pscustomobject][ordered]@{ name = 'sdk-package' })
+        Write-McJson -Path (Join-Path $cachePath 'package.json') -InputObject ([pscustomobject][ordered]@{ name = 'cached-package' })
+
+        $projectCandidate = Get-McProjectCandidateAtPath -Path $projectPath -RootPolicy $projectPolicy -RootPolicies $policies
+        $sdkCandidate = Get-McProjectCandidateAtPath -Path $sdkPath -RootPolicy $sdkPolicy -RootPolicies $policies
+        $cacheCandidate = Get-McProjectCandidateAtPath -Path $cachePath -RootPolicy $cachePolicy -RootPolicies $policies
+
+        Assert-McEqual -Actual $projectCandidate.name_hint -Expected '@fixture/manifest-name' -Message 'manifest name should be used without a remote repository'
+        Assert-McEqual -Actual $projectCandidate.name_source -Expected 'manifest' -Message 'manifest name source should be explicit'
+        Assert-McEqual -Actual $projectCandidate.observed.package_manager -Expected 'pnpm@9.1.0' -Message 'packageManager should take precedence over lockfile inference'
+        Assert-McTrue -Condition ($projectCandidate.verified -and $projectCandidate.promotion_eligible) -Message 'Git fingerprint under project root should be promotion eligible'
+        Assert-McEqual -Actual $sdkCandidate.classification -Expected 'sdk-root' -Message 'SDK root classification should be retained'
+        Assert-McTrue -Condition (-not $sdkCandidate.promotion_eligible) -Message 'SDK Git repositories must remain local candidates'
+        Assert-McTrue -Condition (-not $cacheCandidate.verified -and -not $cacheCandidate.promotion_eligible) -Message 'cache manifest candidates must not be verified or promoted'
+
+        $remoteName = Get-McProjectNameHint -Repository 'github.com/Whatnamed/RemoteProject' -PackageName '@fixture/manifest-name' -DirectoryName 'app'
+        Assert-McEqual -Actual $remoteName.value -Expected 'RemoteProject' -Message 'repository basename should outrank manifest name'
+        Assert-McEqual -Actual $remoteName.source -Expected 'repository' -Message 'repository name source should be explicit'
+
+        $segmentPolicy = Get-McProjectRootPolicyForPath -Path (Join-Path $projectPath 'node_modules\package') -Policies $policies
+        Assert-McEqual -Actual $segmentPolicy.kind -Expected 'cache-root' -Message 'generated dependency paths must be non-promotable'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }
+    }
+}
+
 Invoke-McTest -Name 'privacy guardrails' -Body {
     Assert-McTrue -Condition (-not (Test-McPrivacySafeText -Text 'https://user:secret@example.test/repo')) -Message 'credential-bearing URL must be rejected'
     Assert-McTrue -Condition (-not (Test-McPrivacySafeText -Text 'api_key=not-for-commit')) -Message 'credential assignment must be rejected'

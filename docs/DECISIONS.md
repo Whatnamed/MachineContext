@@ -203,3 +203,13 @@ Verification state is separate from provider health. Failed, timed-out, or unava
 Reason: generic PATH aliases can be WSL/App Execution Alias shims, CIM `AdapterRAM` is not a reliable NVIDIA VRAM source, and provider failure must never be mistaken for uninstall/removal. Stable identity and explicit negative-evidence rules keep routine scans trustworthy and idempotent.
 
 Status: accepted.
+
+## D026 — Project root policy gates automatic promotion
+
+Decision: project fingerprint discovery assigns each candidate a bounded root policy. Automatic promotion requires a `.git` directory/file and a configured or verified project root. Developer umbrellas, SDK/tool roots, caches, generated directories, vendor paths, and unknown roots remain local candidates/evidence even when they contain Git or manifests.
+
+Project display names use curated meaning first, then sanitized repository basename, manifest package name, and directory name. Package-manager identity prefers explicit `packageManager` or workspace metadata before lockfiles. Root policies and raw candidate evidence remain under `.local`; canonical project records store only reconciled project context.
+
+Reason: real developer/tool roots contain SDK repositories, examples, generated output, caches, and nested packages. A Git fingerprint proves repository structure but does not by itself prove that the repository is a user-maintained environment project.
+
+Status: accepted.
