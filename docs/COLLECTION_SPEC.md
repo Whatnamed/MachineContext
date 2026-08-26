@@ -287,6 +287,18 @@ Config parser 只能提取 allowlisted safe fields，例如 MCP server **name/sc
 
 Package manager 判定优先 `packageManager`/workspace metadata/lockfile，不能看到 `package.json` 就默认 npm。
 
+### Local-only project activity diagnostics
+
+Discover/Full may collect bounded activity evidence for verified Git candidates that are eligible for canonical project promotion. This evidence remains under `.local` and may contain only:
+
+- normalized project ID/path；
+- current branch name；
+- latest commit timestamp；
+- Boolean tracked-file dirty state；
+- per-probe verification status/failure reason。
+
+不得记录 commit message、完整 `git status` 输出、文件路径列表、diff、源码或项目依赖内容。Activity evidence is for audit review only and must not automatically set project lifecycle, purpose, or other `curated` semantics.
+
 ## N. Installation / update conventions
 
 Initial Audit 后基于真实机器归纳：

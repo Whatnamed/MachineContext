@@ -239,3 +239,11 @@ Decision: migration may remove a historical canonical project record only when i
 Reason: correcting an old false-positive project must not silently erase user meaning or broaden deletion scope. Staging first makes the change reviewable, while the explicit deletion manifest keeps canonical cleanup deterministic and safe.
 
 Status: accepted.
+
+## D030 — Project activity evidence is local-only and non-semantic
+
+Decision: Discover/Full may run bounded read-only Git activity probes for verified, promotion-eligible project candidates. Branch, latest commit timestamp, tracked-file dirty Boolean, and probe status remain in ignored `.local` diagnostics. The provider is optional and never writes canonical observations or infers `curated.status`, purpose, role, or active/legacy meaning.
+
+Reason: Git activity is useful evidence for an Initial Audit review, but recency and dirty state are not reliable proof of lifecycle or user intent. Keeping the evidence local avoids canonical churn and preserves explicit semantic ownership.
+
+Status: accepted.

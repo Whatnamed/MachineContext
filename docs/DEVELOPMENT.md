@@ -141,6 +141,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - VS Code 修复后的 Full repeat（20 个 canonical/Markdown proposal 文件）与当前仓库逐字节一致，`changed_files=[]`，validation 通过。
 - VS Code 修复后的 Quick #1/#2 的 canonical context 除允许的 `status.json` verification metadata 外完全一致；两次均未发布。
 - 只读 listener check 将当前 `127.0.0.1:7988` 关联到进程名 `FlClashCore`；历史 `10808`、`10100`、`18080` 无 listener，但尚不足以自动决定 proxy primary 或 FlClash project lifecycle。
+- Full/Discover 现通过 optional `project-activity-local` provider 将八个 promotion-eligible Git project 的 branch、latest commit time、tracked dirty Boolean 和 probe status 保存在 `.local`；这些证据不自动写入 lifecycle/purpose 等 `curated` 语义。
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。
 - G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 
