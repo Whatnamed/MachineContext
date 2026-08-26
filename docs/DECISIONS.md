@@ -287,3 +287,11 @@ Decision: G2 semantic updates are expressed through a separate `g2-curation-conf
 Reason: Human meaning must not be inferred from installation evidence or silently mixed into collector reconciliation. A reviewable manifest makes the authority boundary explicit, keeps the default maintenance path safe, and provides a staged validation/rollback path when the user eventually confirms semantics.
 
 Status: accepted.
+
+## D036 — Project and software curation statuses use separate contracts
+
+Decision: software/AI confirmation patches use the generic curated status set (`active`, `inactive`, `legacy`, `testing`, `broken`, `unknown`). Project confirmation patches use the lifecycle set declared by `context/projects/index.json.project_policy.statuses`, with `unknown` always allowed. The curation validator must not accept a project-only lifecycle status such as `paused` for a software record.
+
+Reason: project lifecycle and software operational state are different meanings. Keeping the project policy as the project-status source prevents the G2 confirmation manifest from rejecting documented project states or silently broadening software semantics.
+
+Status: accepted.

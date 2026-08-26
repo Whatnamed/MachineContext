@@ -157,12 +157,14 @@ evidence
 Typical curated fields may include:
 
 ```text
-status: active | inactive | legacy | testing | broken | unknown
+software status: active | inactive | legacy | testing | broken | unknown
 role: primary | secondary | project-only | optional
 purpose
 constraints
 notes
 ```
+
+Project lifecycle status is project-specific: `context/projects/index.json.project_policy.statuses` plus `unknown` (currently `active | paused | maintenance | archived | experimental | unknown`).
 
 Omit fields that have no value; do not manufacture large null-filled records.
 

@@ -151,6 +151,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - `scripts/review.ps1` 现在同时审查 `.local/audit-closure.json` 与 `.local/g2-semantic-review.json`；semantic suggestions、project buckets 和 unresolved checks 必须保留 evidence、`canonical_write=false` 与 confirmation gate，candidate/unverified 不能声明 absence。
 - runtimes provider 现在把 pnpm 的 allowlisted host-path/store evidence 留在 `.local`；当前观察到 `%LOCALAPPDATA%\pnpm\store` 存在但没有 persistent executable，因此仍保持 `pnpm` unverified，不推断 installed/absent。
 - `context/status.json` 现明确区分 `provider_state` 与 `audit_closure`；audit closure 可显式记录按设计接受的 unknown，只有 open unknown/conflict/unresolved 才阻塞顶层 `state=verified`，因此当前仍因 pnpm、项目语义和 bridge/proxy 语义保持 `partial`。
+- G2 curation validator 现区分 software/AI operational status 与 project lifecycle status：项目遵循 `context/projects/index.json.project_policy.statuses` 加 `unknown`，软件仍使用通用 curated status；本次只修正确认 contract，未写入任何 curated 值。
 - G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 - standalone `scripts/verify.ps1 -Mode Quick` 已修复未传 `-Provider` 时的 StrictMode null `.Count` 崩溃，并由真实入口回归测试覆盖；该入口仍只写 ignored `.local` staging，不修改 canonical。
 

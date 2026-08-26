@@ -4,6 +4,39 @@ $script:McCurationStatuses = @('active', 'inactive', 'legacy', 'testing', 'broke
 $script:McCurationRoles = @('primary', 'secondary', 'project-only', 'optional')
 $script:McCurationRootKinds = @('project-root', 'workspace-root', 'developer-root', 'tool-root', 'sdk-root', 'cache-root', 'vendor-root', 'unknown-root')
 
+function Get-McCurationProjectStatuses {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $fallback = @('active', 'paused', 'maintenance', 'archived', 'experimental', 'unknown')
+    $statuses = [System.Collections.Generic.List[string]]::new()
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($status in $fallback) {
+        if ($seen.Add($status)) { [void]$statuses.Add($status) }
+    }
+
+    $indexPath = Join-Path $RepoRoot 'context\projects\index.json'
+    if (Test-Path -LiteralPath $indexPath -PathType Leaf) {
+        try {
+            $index = Read-McJson -Path $indexPath
+            $policy = Get-McObjectPropertyOrNull -InputObject $index -Name 'project_policy'
+            $configured = Get-McObjectPropertyOrNull -InputObject $policy -Name 'statuses'
+            foreach ($status in @($configured)) {
+                if (-not [string]::IsNullOrWhiteSpace([string]$status) -and $seen.Add([string]$status)) {
+                    [void]$statuses.Add([string]$status)
+                }
+            }
+        }
+        catch {
+        }
+    }
+
+    return @($statuses)
+}
+
 function Add-McCurationFinding {
     [CmdletBinding()]
     param(
@@ -324,15 +357,19 @@ function Test-McCurationEntityPatch {
         [object]$Findings,
 
         [Parameter(Mandatory)]
-        [string]$Path
+        [string]$Path,
+
+        [AllowNull()]
+        [string[]]$AllowedStatuses
     )
 
     if (-not (Test-McCurationAllowedProperties -InputObject $Patch -Allowed $Allowed -Findings $Findings -Path $Path)) {
         return $false
     }
     $status = Get-McObjectPropertyOrNull -InputObject $Patch -Name 'status'
-    if ((Test-McCurationPropertyPresent -InputObject $Patch -Name 'status') -and ([string]$status -notin $script:McCurationStatuses)) {
-        Add-McCurationFinding -Findings $Findings -Code 'curation_status_value' -Message ("Status must be one of: {0}." -f ($script:McCurationStatuses -join ', ')) -Path ("{0}.status" -f $Path)
+    $allowedStatusValues = if ($null -eq $AllowedStatuses -or $AllowedStatuses.Count -eq 0) { @($script:McCurationStatuses) } else { @($AllowedStatuses) }
+    if ((Test-McCurationPropertyPresent -InputObject $Patch -Name 'status') -and ([string]$status -notin $allowedStatusValues)) {
+        Add-McCurationFinding -Findings $Findings -Code 'curation_status_value' -Message ("Status must be one of: {0}." -f ($allowedStatusValues -join ', ')) -Path ("{0}.status" -f $Path)
     }
     $role = Get-McObjectPropertyOrNull -InputObject $Patch -Name 'role'
     if ((Test-McCurationPropertyPresent -InputObject $Patch -Name 'role') -and ([string]$role -notin $script:McCurationRoles)) {
@@ -515,7 +552,8 @@ function Test-McG2CurationConfirmationDocument {
                 }
                 [void](Test-McCurationEvidenceRefs -Value (Get-McObjectPropertyOrNull -InputObject $update -Name 'evidence_refs') -Findings $errors -Path ("{0}.evidence_refs" -f $path) -AllowedEvidence $allowedEvidence)
                 $allowedPatch = if ($field -eq 'project_updates') { @('status', 'purpose', 'constraints') } else { @('status', 'role', 'purpose', 'constraints', 'notes') }
-                [void](Test-McCurationEntityPatch -Patch (Get-McObjectPropertyOrNull -InputObject $update -Name 'curated') -Allowed $allowedPatch -Findings $errors -Path ("{0}.curated" -f $path))
+                $allowedStatuses = if ($field -eq 'project_updates') { Get-McCurationProjectStatuses -RepoRoot $RepoRoot } else { @($script:McCurationStatuses) }
+                [void](Test-McCurationEntityPatch -Patch (Get-McObjectPropertyOrNull -InputObject $update -Name 'curated') -Allowed $allowedPatch -AllowedStatuses $allowedStatuses -Findings $errors -Path ("{0}.curated" -f $path))
                 $index++
             }
         }

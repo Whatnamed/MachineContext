@@ -35,7 +35,8 @@ curated            user/agent-owned semantics
 
 ### 常见 curated fields
 
-- `status`：active / inactive / legacy / testing / broken / unknown；
+- 软件/AI 的 `status`：active / inactive / legacy / testing / broken / unknown；
+- project lifecycle 的 `status`：由 `context/projects/index.json.project_policy.statuses` 声明，当前为 active / paused / maintenance / archived / experimental / unknown；
 - `role`：primary / secondary / project-only / optional；
 - `purpose`；
 - `constraints`；

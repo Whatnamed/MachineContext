@@ -1096,6 +1096,8 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $invalidEvidencePath = Join-Path $fixtureRoot 'invalid-evidence.json'
     $invalidTimestampPath = Join-Path $fixtureRoot 'invalid-timestamp.json'
     $offsetTimestampPath = Join-Path $fixtureRoot 'offset-timestamp.json'
+    $projectLifecyclePath = Join-Path $fixtureRoot 'project-lifecycle.json'
+    $softwareProjectStatusPath = Join-Path $fixtureRoot 'software-project-status.json'
     $projectPath = Join-Path $RepoRoot 'context\projects\project-github.com-whatnamed-morpho.json'
     $softwarePath = Join-Path $RepoRoot 'context\software\ai.json'
     $conventionsPath = Join-Path $RepoRoot 'context\conventions.json'
@@ -1146,8 +1148,22 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $offsetTimestamp = Copy-McJsonObject -InputObject $valid
     $offsetTimestamp.confirmed_at = '2026-08-26T00:00:00+08:00'
     Write-McJson -Path $offsetTimestampPath -InputObject $offsetTimestamp
-    $offsetTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $offsetTimestampPath
-    Assert-McTrue -Condition $offsetTimestampPlan.ok -Message 'explicit non-UTC confirmation offsets must remain valid'
+        $offsetTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $offsetTimestampPath
+        Assert-McTrue -Condition $offsetTimestampPlan.ok -Message 'explicit non-UTC confirmation offsets must remain valid'
+
+        $projectLifecycle = Copy-McJsonObject -InputObject $valid
+        $projectLifecycle.project_updates[0].curated.status = 'paused'
+        Write-McJson -Path $projectLifecyclePath -InputObject $projectLifecycle
+        $projectLifecyclePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $projectLifecyclePath
+        Assert-McTrue -Condition $projectLifecyclePlan.ok -Message 'project policy lifecycle status paused must be accepted'
+        Assert-McEqual -Actual $projectLifecyclePlan.proposed_documents[$projectPath].curated.status -Expected 'paused' -Message 'project lifecycle status must remain curated-only in the proposal'
+
+        $softwareProjectStatus = Copy-McJsonObject -InputObject $valid
+        $softwareProjectStatus.software_updates[0].curated.status = 'paused'
+        Write-McJson -Path $softwareProjectStatusPath -InputObject $softwareProjectStatus
+        $softwareProjectStatusPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $softwareProjectStatusPath
+        Assert-McTrue -Condition (-not $softwareProjectStatusPlan.ok) -Message 'project-only lifecycle status must not be accepted for software curation'
+        Assert-McTrue -Condition (@($softwareProjectStatusPlan.errors | Where-Object code -eq 'curation_status_value').Count -gt 0) -Message 'software project-only status must report a status contract error'
 
         $softwareOnly = Copy-McJsonObject -InputObject $valid
         Remove-McObjectProperty -InputObject $softwareOnly -Name 'project_updates'
