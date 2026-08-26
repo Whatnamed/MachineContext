@@ -606,6 +606,22 @@ function ConvertTo-McAuditClosureProjection {
     $declaredState = [string](Get-McObjectPropertyOrNull -InputObject $summary -Name 'state')
     $conflictCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'conflicts')
     $canonicalUnknownCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'canonical_unknowns')
+    $acceptedUnknownCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'accepted_unknowns')
+    $hasExplicitOpenUnknowns = $false
+    if ($null -ne $summary) {
+        if ($summary -is [System.Collections.IDictionary]) {
+            $hasExplicitOpenUnknowns = $summary.Contains('open_unknowns')
+        }
+        else {
+            $hasExplicitOpenUnknowns = $null -ne $summary.PSObject.Properties['open_unknowns']
+        }
+    }
+    $openUnknownCount = if ($hasExplicitOpenUnknowns) {
+        Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'open_unknowns')
+    }
+    else {
+        $canonicalUnknownCount
+    }
     $candidateUnknownCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'local_candidate_unknowns')
     $unresolvedCount = Get-McAuditClosureCount -InputObject (Get-McObjectPropertyOrNull -InputObject $summary -Name 'unresolved')
     $entries = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'entries'
@@ -616,7 +632,7 @@ function ConvertTo-McAuditClosureProjection {
     }
 
     $hasInput = $null -ne $InputObject
-    $hasBlockingFindings = ($conflictCount -gt 0) -or ($canonicalUnknownCount -gt 0) -or ($unresolvedCount -gt 0)
+    $hasBlockingFindings = ($conflictCount -gt 0) -or ($openUnknownCount -gt 0) -or ($unresolvedCount -gt 0)
     $state = if ($hasInput -and $declaredState -ieq 'verified' -and -not $hasBlockingFindings) { 'verified' } else { 'partial' }
     $reason = if (-not [string]::IsNullOrWhiteSpace($UnavailableReason)) {
         $UnavailableReason
@@ -642,6 +658,8 @@ function ConvertTo-McAuditClosureProjection {
         blocking = [pscustomobject][ordered]@{
             conflict_count = $conflictCount
             canonical_unknown_count = $canonicalUnknownCount
+            accepted_unknown_count = $acceptedUnknownCount
+            open_unknown_count = $openUnknownCount
             unresolved_entry_count = $unresolvedCount
             local_candidate_unknown_count = $candidateUnknownCount
         }

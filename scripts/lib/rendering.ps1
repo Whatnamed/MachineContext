@@ -91,8 +91,10 @@ function Invoke-McRender {
     $auditClosure = Get-McRenderProperty -InputObject $status -Name 'audit_closure' -Default ([pscustomobject][ordered]@{})
     [void]$lines.Add(('- Audit closure: {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $auditClosure -Name 'state'))))
     $auditBlocking = Get-McRenderProperty -InputObject $auditClosure -Name 'blocking' -Default ([pscustomobject][ordered]@{})
-    $auditCounts = 'conflicts={0}, canonical_unknowns={1}, unresolved={2}, candidate_unknowns={3}' -f `
+    $auditCounts = 'conflicts={0}, open_unknowns={1}, accepted_unknowns={2}, canonical_unknowns={3}, unresolved={4}, candidate_unknowns={5}' -f `
         (Get-McRenderProperty -InputObject $auditBlocking -Name 'conflict_count' -Default 0), `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'open_unknown_count' -Default 0), `
+        (Get-McRenderProperty -InputObject $auditBlocking -Name 'accepted_unknown_count' -Default 0), `
         (Get-McRenderProperty -InputObject $auditBlocking -Name 'canonical_unknown_count' -Default 0), `
         (Get-McRenderProperty -InputObject $auditBlocking -Name 'unresolved_entry_count' -Default 0), `
         (Get-McRenderProperty -InputObject $auditBlocking -Name 'local_candidate_unknown_count' -Default 0)

@@ -250,7 +250,7 @@ Status: accepted.
 
 ## D031 — Published trust state requires provider health and audit closure
 
-Decision: `context/status.json` exposes separate `provider_state` and `audit_closure` axes. `provider_state` is the required-provider aggregate from the current run. `audit_closure` is a compact projection of ignored `.local/audit-closure.json`, containing only its state, source, timestamp, and finding counts. The top-level `state` is `verified` only when both axes are `verified`; missing or invalid local closure evidence, canonical unknowns, conflicts, or unresolved entries keep it `partial`. Local candidate unknowns remain visible as counts but do not by themselves block closure.
+Decision: `context/status.json` exposes separate `provider_state` and `audit_closure` axes. `provider_state` is the required-provider aggregate from the current run. `audit_closure` is a compact projection of ignored `.local/audit-closure.json`, containing only its state, source, timestamp, and finding counts. Closure evidence may classify documented limitations as `accepted_unknowns`; unresolved `open_unknowns`, conflicts, or unresolved entries remain blocking. The top-level `state` is `verified` only when both axes are `verified`; missing or invalid local closure evidence or any blocking finding keeps it `partial`. Local candidate unknowns and accepted unknowns remain visible as counts but do not by themselves block closure.
 
 Reason: a successful provider run proves that the configured checks completed; it does not prove that the documented Initial Audit has no unresolved canonical meaning. Keeping both axes makes that distinction explicit to AI readers while preserving provider failure semantics and keeping raw closure evidence out of Git.
 

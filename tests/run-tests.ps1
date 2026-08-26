@@ -710,13 +710,17 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
             summary = [pscustomobject][ordered]@{
                 state = 'partial'
                 conflicts = @()
-                canonical_unknowns = @('fixture unknown')
+                canonical_unknowns = @('fixture accepted unknown', 'fixture open unknown')
+                accepted_unknowns = @('fixture accepted unknown')
+                open_unknowns = @('fixture open unknown')
                 local_candidate_unknowns = @('fixture candidate')
             }
             entries = @([pscustomobject][ordered]@{ status = 'unresolved' })
         }) -Source '.local/audit-closure.json'
     Assert-McEqual -Actual $partialAudit.state -Expected 'partial' -Message 'audit closure with canonical unknowns must remain partial'
-    Assert-McEqual -Actual $partialAudit.blocking.canonical_unknown_count -Expected 1 -Message 'audit closure canonical unknown count'
+    Assert-McEqual -Actual $partialAudit.blocking.canonical_unknown_count -Expected 2 -Message 'audit closure canonical unknown count'
+    Assert-McEqual -Actual $partialAudit.blocking.accepted_unknown_count -Expected 1 -Message 'audit closure accepted unknown count'
+    Assert-McEqual -Actual $partialAudit.blocking.open_unknown_count -Expected 1 -Message 'audit closure open unknown count'
     Assert-McEqual -Actual $partialAudit.blocking.unresolved_entry_count -Expected 1 -Message 'audit closure unresolved entry count'
     Assert-McEqual -Actual $partialAudit.blocking.local_candidate_unknown_count -Expected 1 -Message 'audit closure candidate unknown count'
 
@@ -725,7 +729,9 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
             summary = [pscustomobject][ordered]@{
                 state = 'verified'
                 conflicts = @()
-                canonical_unknowns = @()
+                canonical_unknowns = @('fixture accepted unknown')
+                accepted_unknowns = @('fixture accepted unknown')
+                open_unknowns = @()
                 local_candidate_unknowns = @('candidate evidence is allowed')
             }
             entries = @()

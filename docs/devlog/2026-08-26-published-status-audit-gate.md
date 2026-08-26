@@ -7,8 +7,8 @@ The published status now keeps provider execution health separate from Initial A
 - `provider_state` remains the required-provider aggregate for the current run;
 - `audit_closure` is a compact projection of ignored `.local/audit-closure.json`;
 - top-level `state` is `verified` only when both are `verified`;
-- missing or invalid closure evidence, conflicts, canonical unknowns, and unresolved entries keep the top-level state `partial`;
-- local candidate unknowns are counted but do not independently block closure.
+- missing or invalid closure evidence, conflicts, open unknowns, and unresolved entries keep the top-level state `partial`;
+- documented `accepted_unknowns` (such as non-authoritative non-NVIDIA VRAM) and local candidate unknowns are counted but do not independently block closure.
 
 `CURRENT.md` renders all three states and the compact finding counts. No raw closure text or additional machine data is published.
 
