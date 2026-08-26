@@ -773,6 +773,7 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
+    Assert-McEqual -Actual (Get-McServiceExecutableName -PathName '"C:\Program Files\FlClash\FlClashHelperService.exe" --service') -Expected 'FlClashHelperService.exe' -Message 'service ownership parser must retain basename only'
     $currentProcessName = (Get-Process -Id $PID -ErrorAction Stop | Select-Object -First 1).ProcessName
     $listeners = @(Get-McNetworkListenerDiagnostics -Connections @(
             [pscustomobject][ordered]@{ LocalAddress = '127.0.0.1'; LocalPort = 7988; OwningProcess = $PID },
@@ -783,8 +784,11 @@ Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
     $known = $listeners | Where-Object { $_.port -eq 7988 }
     Assert-McEqual -Actual $known.address_scope -Expected 'loopback' -Message 'loopback listener scope must be normalized'
     Assert-McEqual -Actual $known.process_name -Expected $currentProcessName -Message 'accessible owning process name must be recorded locally'
+    Assert-McTrue -Condition ($null -ne $known.PSObject.Properties['parent_process_name']) -Message 'parent process ownership must remain a local diagnostic field'
+    Assert-McTrue -Condition ($null -ne $known.PSObject.Properties['service_name']) -Message 'service ownership must remain a local diagnostic field'
     $unknown = $listeners | Where-Object { $_.port -eq 10808 }
     Assert-McEqual -Actual $unknown.process_name -Expected $null -Message 'inaccessible owning process must remain unknown'
+    Assert-McEqual -Actual $unknown.parent_process_name -Expected $null -Message 'inaccessible parent ownership must remain unknown'
     Assert-McEqual -Actual $unknown.local_address -Expected '::1' -Message 'local address evidence must remain local-only and deterministic'
 }
 

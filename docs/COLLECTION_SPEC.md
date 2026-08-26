@@ -257,6 +257,8 @@ Config parser 只能提取 allowlisted safe fields，例如 MCP server **name/sc
 
 不记录：subscription URL、节点列表、用户名/password/token、外网 IP 历史、完整 proxy config、raw network connections。
 
+Allowlisted loopback listener diagnostics may retain only local ownership labels such as process name, parent process name, Windows service name/state/start mode, and whether an executable path was accessible. Do not retain PIDs, command lines, service arguments, or raw executable paths in canonical context; these diagnostics stay under ignored `.local` state.
+
 ## M. Projects
 
 只把长期有用的 project 写进 `context/projects/`。每个 project 记录：

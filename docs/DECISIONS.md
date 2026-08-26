@@ -255,3 +255,11 @@ Decision: `context/status.json` exposes separate `provider_state` and `audit_clo
 Reason: a successful provider run proves that the configured checks completed; it does not prove that the documented Initial Audit has no unresolved canonical meaning. Keeping both axes makes that distinction explicit to AI readers while preserving provider failure semantics and keeping raw closure evidence out of Git.
 
 Status: accepted.
+
+## D032 — Listener parent and service ownership stays local-only
+
+Decision: allowlisted local listener diagnostics may resolve a listener's process name, direct parent process name, and matching Windows service name/state/start mode. Executable path access is represented only as a Boolean and service executable identity only as a basename. PIDs, command lines, service arguments, and raw paths remain excluded; all ownership enrichment stays in ignored `.local` diagnostics and cannot promote or classify a canonical network service.
+
+Reason: process name alone was insufficient to explain the observed FlClash listener, while raw process/service command data is noisy and privacy-sensitive. A bounded ownership label improves audit evidence without turning runtime ownership into user intent or proxy policy.
+
+Status: accepted.

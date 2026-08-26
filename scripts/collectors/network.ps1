@@ -1,5 +1,71 @@
 Set-StrictMode -Version Latest
 
+function Get-McServiceExecutableName {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [string]$PathName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($PathName)) { return $null }
+    $match = [regex]::Match(
+        $PathName,
+        '^\s*"?([^"]+?\.exe)(?:"|\s|$)',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+    )
+    if (-not $match.Success) { return $null }
+    return [System.IO.Path]::GetFileName($match.Groups[1].Value)
+}
+
+function Get-McNetworkOwnershipDiagnostic {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [int]$ProcessId
+    )
+
+    $diagnostic = [ordered]@{
+        parent_process_name = $null
+        parent_process_path_available = $false
+        service_name = $null
+        service_state = $null
+        service_start_mode = $null
+        service_executable_name = $null
+        service_executable_path_available = $false
+    }
+    if ($ProcessId -le 0) {
+        return [pscustomobject]$diagnostic
+    }
+
+    try {
+        $process = Get-CimInstance -ClassName Win32_Process -Filter ("ProcessId={0}" -f $ProcessId) -ErrorAction Stop
+        if ($null -eq $process) { return [pscustomobject]$diagnostic }
+        $parentPid = [int]$process.ParentProcessId
+        if ($parentPid -le 0) { return [pscustomobject]$diagnostic }
+
+        $parent = Get-CimInstance -ClassName Win32_Process -Filter ("ProcessId={0}" -f $parentPid) -ErrorAction SilentlyContinue
+        if ($null -ne $parent) {
+            $diagnostic.parent_process_name = [string]$parent.Name
+            $diagnostic.parent_process_path_available = -not [string]::IsNullOrWhiteSpace([string]$parent.ExecutablePath)
+        }
+
+        $service = Get-CimInstance -ClassName Win32_Service -Filter ("ProcessId={0}" -f $parentPid) -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -ne $service) {
+            $diagnostic.service_name = [string]$service.Name
+            $diagnostic.service_state = [string]$service.State
+            $diagnostic.service_start_mode = [string]$service.StartMode
+            $diagnostic.service_executable_name = Get-McServiceExecutableName -PathName ([string]$service.PathName)
+            $diagnostic.service_executable_path_available = -not [string]::IsNullOrWhiteSpace([string]$service.PathName)
+        }
+    }
+    catch {
+        # Parent/service ownership is optional local evidence. Access failures
+        # must not change listener presence or provider health.
+    }
+
+    return [pscustomobject]$diagnostic
+}
+
 function Get-McNetworkListenerDiagnostics {
     [CmdletBinding()]
     param(
@@ -21,6 +87,15 @@ function Get-McNetworkListenerDiagnostics {
 
         $processName = $null
         [int]$processId = 0
+        $ownership = [pscustomobject][ordered]@{
+            parent_process_name = $null
+            parent_process_path_available = $false
+            service_name = $null
+            service_state = $null
+            service_start_mode = $null
+            service_executable_name = $null
+            service_executable_path_available = $false
+        }
         if ([int]::TryParse([string]$connection.OwningProcess, [ref]$processId) -and $processId -gt 0) {
             try {
                 $process = Get-Process -Id $processId -ErrorAction Stop | Select-Object -First 1
@@ -32,6 +107,7 @@ function Get-McNetworkListenerDiagnostics {
                 # Process ownership is useful local evidence, but access failure
                 # must remain unknown rather than changing listener presence.
             }
+            $ownership = Get-McNetworkOwnershipDiagnostic -ProcessId $processId
         }
 
         [void]$listeners.Add([pscustomobject][ordered]@{
@@ -39,6 +115,13 @@ function Get-McNetworkListenerDiagnostics {
                 local_address = $localAddress
                 address_scope = if ($localAddress -in @('127.0.0.1', '::1')) { 'loopback' } else { 'local-machine' }
                 process_name  = $processName
+                parent_process_name = $ownership.parent_process_name
+                parent_process_path_available = $ownership.parent_process_path_available
+                service_name = $ownership.service_name
+                service_state = $ownership.service_state
+                service_start_mode = $ownership.service_start_mode
+                service_executable_name = $ownership.service_executable_name
+                service_executable_path_available = $ownership.service_executable_path_available
             })
     }
 
