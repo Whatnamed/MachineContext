@@ -143,6 +143,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - 当前 Full repeats `20260826-102534495-34fd2444` / `20260826-102623197-8b7ddaa8` 均为 `success`、293 candidates、`changed_files=[]`；两次 proposed canonical context 除 `status.json` 外完全一致。local diagnostics 仅出现 bounded discovery `visited_directories` 的 480→469 变化，属于本机扫描 volatility，不是 canonical semantic drift。
 - G2 hardening 后的 Full no-publish `20260826-110930082-f2092b2a` 仍为 `success`、293 candidates、`changed_files=[]`，validation 通过；未发布 canonical，Everything unavailable 与 bounded fallback partial 保持为已知 optional/coverage 状态。
 - Native Desktop workload verifier 发布后的 Full run `20260826-114713082-ecd921ba` 为 `success`、294 candidates、validation 通过；Full no-publish repeat `20260826-114845414-e4404102` 保持 `visual-studio.desktop_cpp_workload=verified-present` 且与 canonical evidence byte-equal。
+- 嵌套 verifier failure hardening 后的 Full publish `20260826-120805036-a6dfe909` 为 `success`、294 candidates、validation 通过；发布 diff 仅包含真实 C: 存储变化与最新 ignored audit-closure timestamp 投影，未改变软件、项目或关系语义。
 - 只读 listener check 将当前 `127.0.0.1:7988` 关联到 `FlClashCore -> FlClashHelperService.exe`（`Running/Auto`）；历史 `10808`、`10100`、`18080` 无 listener，但尚不足以自动决定 proxy primary 或 FlClash project lifecycle。
 - Full/Discover 现通过 optional `project-activity-local` provider 将八个 promotion-eligible Git project 的 branch、latest commit time、tracked dirty Boolean 和 probe status 保存在 `.local`；这些证据不自动写入 lifecycle/purpose 等 `curated` 语义。
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。

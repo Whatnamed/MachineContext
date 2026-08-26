@@ -41,7 +41,7 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (26.5/195.9 GiB free/total)
+  - `C:\` NTFS (26.2/195.9 GiB free/total)
   - `D:\` NTFS (48.5/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
