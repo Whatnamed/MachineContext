@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\runtime.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\collection.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\reconcile.ps1')
+. (Join-Path $RepoRoot 'scripts\lib\audit.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\validation.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
@@ -770,6 +771,54 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
             Remove-Item -LiteralPath $run.local_root -Recurse -Force
         }
     }
+}
+
+Invoke-McTest -Name 'audit closure review contract' -Body {
+    $valid = [pscustomobject][ordered]@{
+        schema_version = 1
+        kind = 'initial-audit-closure'
+        generated_at = '2026-08-26T00:00:00Z'
+        source = 'fixture'
+        run_ids = [pscustomobject][ordered]@{ fixture = 'run-1' }
+        summary = [pscustomobject][ordered]@{
+            state = 'verified'
+            conflicts = @()
+            canonical_unknowns = @('fixture accepted unknown')
+            accepted_unknowns = @('fixture accepted unknown')
+            open_unknowns = @()
+            verified_negative_facts = @('fixture negative fact')
+            local_candidate_unknowns = @('fixture candidate')
+            idempotency = [pscustomobject][ordered]@{ fixture_repeat = $true }
+        }
+        entries = @([pscustomobject][ordered]@{
+                id = 'fixture'
+                status = 'verified'
+                evidence = @('context/status.json')
+                facts = @('fixture fact')
+            })
+    }
+    $review = Test-McAuditClosureDocument -InputObject $valid -Source '.local/audit-closure.json'
+    Assert-McTrue -Condition $review.ok -Message 'valid audit closure must pass the structural review'
+    Assert-McTrue -Condition $review.read_only -Message 'audit closure review must be explicitly read-only'
+    Assert-McEqual -Actual $review.entry_count -Expected 1 -Message 'audit closure review entry count'
+    Assert-McEqual -Actual $review.run_id_count -Expected 1 -Message 'audit closure review run id count'
+    Assert-McEqual -Actual $review.closure.state -Expected 'verified' -Message 'verified fixture projection'
+    Assert-McEqual -Actual $review.closure.blocking.accepted_unknown_count -Expected 1 -Message 'accepted unknowns remain visible in review'
+
+    $invalid = [pscustomobject][ordered]@{
+        schema_version = 1
+        kind = 'wrong-kind'
+        generated_at = '2026-08-26T00:00:00Z'
+        summary = $valid.summary
+        entries = @(
+            [pscustomobject][ordered]@{ id = 'duplicate'; status = 'verified' }
+            [pscustomobject][ordered]@{ id = 'duplicate'; status = 'unknown' }
+        )
+    }
+    $invalidReview = Test-McAuditClosureDocument -InputObject $invalid -Source '.local/audit-closure.json'
+    Assert-McTrue -Condition (-not $invalidReview.ok) -Message 'invalid audit closure must fail the structural review'
+    Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'audit_closure_kind' }).Count -eq 1) -Message 'invalid audit kind must be reported'
+    Assert-McTrue -Condition (@($invalidReview.errors | Where-Object { $_.code -eq 'audit_closure_duplicate_entry_id' }).Count -eq 1) -Message 'duplicate audit entry ids must be reported'
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
