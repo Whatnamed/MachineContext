@@ -921,6 +921,9 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $softwareOnlyPath = Join-Path $fixtureRoot 'software-only.json'
     $unsafePath = Join-Path $fixtureRoot 'unsafe.json'
     $unknownPath = Join-Path $fixtureRoot 'unknown.json'
+    $invalidEvidencePath = Join-Path $fixtureRoot 'invalid-evidence.json'
+    $invalidTimestampPath = Join-Path $fixtureRoot 'invalid-timestamp.json'
+    $offsetTimestampPath = Join-Path $fixtureRoot 'offset-timestamp.json'
     $projectPath = Join-Path $RepoRoot 'context\projects\project-github.com-whatnamed-morpho.json'
     $softwarePath = Join-Path $RepoRoot 'context\software\ai.json'
     $conventionsPath = Join-Path $RepoRoot 'context\conventions.json'
@@ -959,14 +962,20 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
         $beforeSoftware = (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash
         $beforeConventions = (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash
         $plan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $confirmationPath
-        Assert-McTrue -Condition $plan.ok -Message 'valid confirmation should produce an applicable plan'
+    Assert-McTrue -Condition $plan.ok -Message 'valid confirmation should produce an applicable plan'
         Assert-McEqual -Actual @($plan.changes).Count -Expected 3 -Message 'project, software, and conventions updates should produce three proposed files'
         $proposedProject = $plan.proposed_documents[$projectPath]
         Assert-McEqual -Actual $proposedProject.curated.status -Expected 'active' -Message 'curation plan should update project curated status only in the proposal'
         Assert-McEqual -Actual $proposedProject.observed.local_path -Expected 'D:\Morpho' -Message 'curation plan must preserve project observed facts'
         Assert-McEqual -Actual (Get-FileHash -LiteralPath $projectPath -Algorithm SHA256).Hash -Expected $beforeProject -Message 'dry-run must not write project canonical data'
         Assert-McEqual -Actual (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash -Expected $beforeSoftware -Message 'dry-run must not write software canonical data'
-        Assert-McEqual -Actual (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash -Expected $beforeConventions -Message 'dry-run must not write conventions canonical data'
+    Assert-McEqual -Actual (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash -Expected $beforeConventions -Message 'dry-run must not write conventions canonical data'
+
+    $offsetTimestamp = Copy-McJsonObject -InputObject $valid
+    $offsetTimestamp.confirmed_at = '2026-08-26T00:00:00+08:00'
+    Write-McJson -Path $offsetTimestampPath -InputObject $offsetTimestamp
+    $offsetTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $offsetTimestampPath
+    Assert-McTrue -Condition $offsetTimestampPlan.ok -Message 'explicit non-UTC confirmation offsets must remain valid'
 
         $softwareOnly = Copy-McJsonObject -InputObject $valid
         Remove-McObjectProperty -InputObject $softwareOnly -Name 'project_updates'
@@ -1000,6 +1009,20 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $unknownPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unknownPath
     Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
     Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
+
+    $invalidEvidence = Copy-McJsonObject -InputObject $valid
+    $invalidEvidence.project_updates[0].evidence_refs = @('invented evidence')
+    Write-McJson -Path $invalidEvidencePath -InputObject $invalidEvidence
+    $invalidEvidencePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $invalidEvidencePath
+    Assert-McTrue -Condition (-not $invalidEvidencePlan.ok) -Message 'evidence outside the declared review must be rejected'
+    Assert-McTrue -Condition (@($invalidEvidencePlan.errors | Where-Object code -eq 'curation_evidence_reference').Count -gt 0) -Message 'unproven evidence references must be reported'
+
+    $invalidTimestamp = Copy-McJsonObject -InputObject $valid
+    $invalidTimestamp.confirmed_at = 'not-a-timestamp'
+    Write-McJson -Path $invalidTimestampPath -InputObject $invalidTimestamp
+    $invalidTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $invalidTimestampPath
+    Assert-McTrue -Condition (-not $invalidTimestampPlan.ok) -Message 'invalid confirmation timestamps must be rejected'
+    Assert-McTrue -Condition (@($invalidTimestampPlan.errors | Where-Object code -eq 'curation_timestamp').Count -gt 0) -Message 'invalid confirmation timestamps must be reported'
 
     $empty = [ordered]@{
         schema_version = 1

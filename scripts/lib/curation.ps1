@@ -73,6 +73,108 @@ function Test-McCurationRequiredString {
     return $true
 }
 
+function Test-McCurationTimestamp {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [object]$Findings,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $text = [string]$Value
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        Add-McCurationFinding -Findings $Findings -Code 'curation_timestamp' -Message 'Confirmation timestamps must be non-empty ISO-8601 values.' -Path $Path
+        return $false
+    }
+
+    # ConvertFrom-Json in Windows PowerShell/PowerShell 7 may materialize an
+    # ISO-8601 value with an offset as a local/UTC DateTime before this validator sees it.
+    if ($Value -is [DateTime]) {
+        if ($Value.Kind -in @([DateTimeKind]::Utc, [DateTimeKind]::Local)) { return $true }
+        Add-McCurationFinding -Findings $Findings -Code 'curation_timestamp' -Message 'Confirmation timestamps must carry an explicit offset.' -Path $Path
+        return $false
+    }
+    if ($Value -is [DateTimeOffset]) { return $true }
+
+    $parsed = [DateTimeOffset]::MinValue
+    $isoShape = '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$'
+    if ($text -notmatch $isoShape -or -not [DateTimeOffset]::TryParse($text, [ref]$parsed)) {
+        Add-McCurationFinding -Findings $Findings -Code 'curation_timestamp' -Message 'Confirmation timestamps must be valid ISO-8601 values with an explicit offset.' -Path $Path
+        return $false
+    }
+    return $true
+}
+
+function Add-McCurationEvidenceStrings {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [System.Collections.Generic.HashSet[string]]$Evidence
+    )
+
+    if ($null -eq $InputObject) { return }
+    if ($InputObject -is [string]) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$InputObject)) {
+            [void]$Evidence.Add([string]$InputObject)
+        }
+        return
+    }
+    if (Test-McMapping -InputObject $InputObject) {
+        foreach ($entry in @(Get-McPropertyEntries -InputObject $InputObject)) {
+            Add-McCurationEvidenceStrings -InputObject $entry.value -Evidence $Evidence
+        }
+        return
+    }
+    if (Test-McSequence -InputObject $InputObject) {
+        foreach ($item in @($InputObject)) {
+            Add-McCurationEvidenceStrings -InputObject $item -Evidence $Evidence
+        }
+    }
+}
+
+function Test-McCurationEvidenceRefs {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [object]$Findings,
+
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [System.Collections.Generic.HashSet[string]]$AllowedEvidence
+    )
+
+    if (-not (Test-McCurationStringSequence -Value $Value -Findings $Findings -Path $Path -Message 'Evidence references must be a non-empty sequence of strings.' -AllowSingleString)) {
+        return $false
+    }
+    $refCount = @($Value).Count
+    if ($refCount -eq 0) {
+        Add-McCurationFinding -Findings $Findings -Code 'curation_evidence_reference' -Message 'Evidence references must contain at least one reference.' -Path $Path
+        return $false
+    }
+    $index = 0
+    foreach ($ref in @($Value)) {
+        $reference = [string]$ref
+        if (-not $AllowedEvidence.Contains($reference)) {
+            Add-McCurationFinding -Findings $Findings -Code 'curation_evidence_reference' -Message 'Each evidence reference must be present in the declared G2 semantic review.' -Path ("{0}[{1}]" -f $Path, $index)
+        }
+        $index++
+    }
+    return $true
+}
+
 function Test-McCurationAllowedProperties {
     [CmdletBinding()]
     param(
@@ -260,13 +362,16 @@ function Test-McCurationConventionsUpdate {
         [object]$Findings,
 
         [Parameter(Mandatory)]
-        [string]$Path
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [System.Collections.Generic.HashSet[string]]$AllowedEvidence
     )
 
     if (-not (Test-McCurationAllowedProperties -InputObject $Update -Allowed @('evidence_refs', 'meta', 'directories', 'installation', 'updates', 'principles') -Findings $Findings -Path $Path)) {
         return $false
     }
-    [void](Test-McCurationStringSequence -Value (Get-McObjectPropertyOrNull -InputObject $Update -Name 'evidence_refs') -Findings $Findings -Path ("{0}.evidence_refs" -f $Path) -Message 'Conventions evidence_refs must be a non-empty sequence of strings.' -AllowSingleString)
+    [void](Test-McCurationEvidenceRefs -Value (Get-McObjectPropertyOrNull -InputObject $Update -Name 'evidence_refs') -Findings $Findings -Path ("{0}.evidence_refs" -f $Path) -AllowedEvidence $AllowedEvidence)
 
     $meta = Get-McObjectPropertyOrNull -InputObject $Update -Name 'meta'
     if (-not (Test-McCurationPropertyPresent -InputObject $Update -Name 'meta')) {
@@ -369,13 +474,25 @@ function Test-McG2CurationConfirmationDocument {
         if ($confirmed -isnot [bool] -or -not $confirmed) {
             Add-McCurationFinding -Findings $errors -Code 'curation_not_confirmed' -Message 'Curation confirmation must explicitly set confirmed=true.' -Path '$.confirmed'
         }
-        [void](Test-McCurationRequiredString -Value (Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'confirmed_at') -Findings $errors -Path '$.confirmed_at' -Code 'curation_confirmed_at' -Message 'confirmed_at must be non-empty.')
+        [void](Test-McCurationTimestamp -Value (Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'confirmed_at') -Findings $errors -Path '$.confirmed_at')
         $sourceReview = [string](Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'source_review')
+        $allowedEvidence = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+        if (-not [string]::IsNullOrWhiteSpace($sourceReview)) {
+            [void]$allowedEvidence.Add($sourceReview)
+        }
         if ($sourceReview -cne '.local/g2-semantic-review.json') {
             Add-McCurationFinding -Findings $errors -Code 'curation_source_review' -Message 'source_review must point to .local/g2-semantic-review.json.' -Path '$.source_review'
         }
         elseif (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.local\g2-semantic-review.json') -PathType Leaf)) {
             Add-McCurationFinding -Findings $errors -Code 'curation_source_review_missing' -Message 'The referenced G2 semantic review draft does not exist.' -Path '$.source_review'
+        }
+        else {
+            try {
+                Add-McCurationEvidenceStrings -InputObject (Read-McJson -Path (Join-Path $RepoRoot '.local\g2-semantic-review.json')) -Evidence $allowedEvidence
+            }
+            catch {
+                Add-McCurationFinding -Findings $errors -Code 'curation_source_review_invalid' -Message 'The referenced G2 semantic review draft could not be parsed.' -Path '$.source_review'
+            }
         }
 
         foreach ($field in @('project_updates', 'software_updates')) {
@@ -396,7 +513,7 @@ function Test-McG2CurationConfirmationDocument {
                 if (Test-McCurationRequiredString -Value $id -Findings $errors -Path ("{0}.id" -f $path) -Code 'curation_update_id' -Message 'Each curation update needs a stable id.') {
                     if (-not $seen.Add($id)) { Add-McCurationFinding -Findings $errors -Code 'curation_duplicate_id' -Message ("Curation id '{0}' is duplicated." -f $id) -Path ("{0}.id" -f $path) }
                 }
-                [void](Test-McCurationStringSequence -Value (Get-McObjectPropertyOrNull -InputObject $update -Name 'evidence_refs') -Findings $errors -Path ("{0}.evidence_refs" -f $path) -Message 'Each curation update needs non-empty evidence_refs.' -AllowSingleString)
+                [void](Test-McCurationEvidenceRefs -Value (Get-McObjectPropertyOrNull -InputObject $update -Name 'evidence_refs') -Findings $errors -Path ("{0}.evidence_refs" -f $path) -AllowedEvidence $allowedEvidence)
                 $allowedPatch = if ($field -eq 'project_updates') { @('status', 'purpose', 'constraints') } else { @('status', 'role', 'purpose', 'constraints', 'notes') }
                 [void](Test-McCurationEntityPatch -Patch (Get-McObjectPropertyOrNull -InputObject $update -Name 'curated') -Allowed $allowedPatch -Findings $errors -Path ("{0}.curated" -f $path))
                 $index++
@@ -404,7 +521,7 @@ function Test-McG2CurationConfirmationDocument {
         }
 
         if (Test-McCurationPropertyPresent -InputObject $InputObject -Name 'conventions_update') {
-            [void](Test-McCurationConventionsUpdate -Update (Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'conventions_update') -Findings $errors -Path '$.conventions_update')
+            [void](Test-McCurationConventionsUpdate -Update (Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'conventions_update') -Findings $errors -Path '$.conventions_update' -AllowedEvidence $allowedEvidence)
         }
 
         $projectUpdatesValue = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'project_updates'
