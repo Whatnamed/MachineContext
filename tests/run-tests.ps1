@@ -994,13 +994,26 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
         Assert-McTrue -Condition (-not $unsafePlan.ok) -Message 'observed writes must be rejected by curation contract'
         Assert-McTrue -Condition (@($unsafePlan.errors | Where-Object code -eq 'curation_observed_write').Count -gt 0) -Message 'unsafe curation must report observed-write error'
 
-        $unknown = Copy-McJsonObject -InputObject $valid
-        $unknown.project_updates[0].id = 'project-does-not-exist'
-        Write-McJson -Path $unknownPath -InputObject $unknown
-        $unknownPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unknownPath
-        Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
-        Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
+    $unknown = Copy-McJsonObject -InputObject $valid
+    $unknown.project_updates[0].id = 'project-does-not-exist'
+    Write-McJson -Path $unknownPath -InputObject $unknown
+    $unknownPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unknownPath
+    Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
+    Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
+
+    $empty = [ordered]@{
+        schema_version = 1
+        kind = 'g2-curation-confirmation'
+        confirmed = $true
+        confirmed_at = '2026-08-26T00:00:00Z'
+        source_review = '.local/g2-semantic-review.json'
     }
+    $emptyPath = Join-Path $fixtureRoot 'empty.json'
+    Write-McJson -Path $emptyPath -InputObject $empty
+    $emptyPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $emptyPath
+    Assert-McTrue -Condition (-not $emptyPlan.ok) -Message 'an empty confirmation must be rejected'
+    Assert-McTrue -Condition (@($emptyPlan.errors | Where-Object code -eq 'curation_empty').Count -gt 0) -Message 'empty confirmation must report curation_empty'
+}
     finally {
         if (Test-Path -LiteralPath $fixtureRoot -PathType Container) {
             Remove-Item -LiteralPath $fixtureRoot -Recurse -Force

@@ -407,8 +407,10 @@ function Test-McG2CurationConfirmationDocument {
             [void](Test-McCurationConventionsUpdate -Update (Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'conventions_update') -Findings $errors -Path '$.conventions_update')
         }
 
-        $projectCount = @((Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'project_updates')).Count
-        $softwareCount = @((Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'software_updates')).Count
+        $projectUpdatesValue = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'project_updates'
+        $softwareUpdatesValue = Get-McObjectPropertyOrNull -InputObject $InputObject -Name 'software_updates'
+        $projectCount = if ($null -eq $projectUpdatesValue) { 0 } else { @($projectUpdatesValue).Count }
+        $softwareCount = if ($null -eq $softwareUpdatesValue) { 0 } else { @($softwareUpdatesValue).Count }
         $conventionsCount = if (Test-McCurationPropertyPresent -InputObject $InputObject -Name 'conventions_update') { 1 } else { 0 }
         if (($projectCount + $softwareCount + $conventionsCount) -eq 0) {
             Add-McCurationFinding -Findings $errors -Code 'curation_empty' -Message 'Confirmation must contain at least one explicit curated update.' -Path '$'
