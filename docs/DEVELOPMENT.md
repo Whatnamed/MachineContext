@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，VS Code `.cmd` host probe 已修复并重新验证，重复 Full proposal 已达到逐文件字节稳定，Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate 和项目语义得到明确审查。
+当前处于 **V1 Phase G1 / Initial Audit Closure**。Phase A-F 的首轮可执行基础与 G0-A 至 G0-H correctness hardening 已落地；第一次真实机器 Full Audit 已发布，VS Code `.cmd` host probe 已修复并重新验证。当前重复 Full 的 canonical proposal 在排除允许变化的 `status.json` heartbeat 后保持 semantic/逐文件稳定；`.local` raw diagnostics 与 live volatile facts 可变化。Quick 重复扫描也已验证 canonical context 无变化。G1 仍保持 partial，直到历史线索、unknown/candidate 和项目语义得到明确审查。
 
 开始实现前必须阅读：
 
@@ -140,6 +140,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - VS Code `1.134.0` 已通过带空格路径的 `.cmd` safe probe，写入 canonical `code` entity；host-authoritative provider 随之从 `partial` 变为 `success`。
 - VS Code 修复后的 Full repeat（20 个 canonical/Markdown proposal 文件）与当前仓库逐字节一致，`changed_files=[]`，validation 通过。
 - VS Code 修复后的 Quick #1/#2 的 canonical context 除允许的 `status.json` verification metadata 外完全一致；两次均未发布。
+- 当前 Full repeats `20260826-102534495-34fd2444` / `20260826-102623197-8b7ddaa8` 均为 `success`、293 candidates、`changed_files=[]`；两次 proposed canonical context 除 `status.json` 外完全一致。local diagnostics 仅出现 bounded discovery `visited_directories` 的 480→469 变化，属于本机扫描 volatility，不是 canonical semantic drift。
 - 只读 listener check 将当前 `127.0.0.1:7988` 关联到 `FlClashCore -> FlClashHelperService.exe`（`Running/Auto`）；历史 `10808`、`10100`、`18080` 无 listener，但尚不足以自动决定 proxy primary 或 FlClash project lifecycle。
 - Full/Discover 现通过 optional `project-activity-local` provider 将八个 promotion-eligible Git project 的 branch、latest commit time、tracked dirty Boolean 和 probe status 保存在 `.local`；这些证据不自动写入 lifecycle/purpose 等 `curated` 语义。
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。

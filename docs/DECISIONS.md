@@ -10,6 +10,14 @@ Reason: the dataset is small, AI-readable files are the product's core value, Gi
 
 Status: accepted.
 
+## D034 — Idempotency separates canonical semantics from volatile diagnostics
+
+Decision: Full/Quick no-publish acceptance compares proposed canonical context separately from expected heartbeat metadata in `context/status.json`. Ignored `.local` diagnostics and live observations such as storage free space or bounded-discovery visit counts may vary between scans; those changes must be reported as volatility and must not be treated as canonical semantic drift.
+
+Reason: A real machine can change while a scan is running, and diagnostic counters are intentionally observations of the scan itself. Requiring every raw artifact to be byte-identical would either hide useful facts or encourage collectors to falsify live state. The stable contract is zero semantic diff for unchanged canonical facts, with explicitly documented metadata/volatile exceptions.
+
+Status: accepted.
+
 ## D002 — Canonical JSON and generated `CURRENT.md`
 
 Decision: `context/` is authoritative structured JSON. `CURRENT.md` is a compact, generated convenience view for fast AI reading.
