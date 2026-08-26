@@ -734,6 +734,22 @@ Invoke-McTest -Name 'provider diagnostics and local state' -Body {
     }
 }
 
+Invoke-McTest -Name 'network listener ownership stays local-only' -Body {
+    $currentProcessName = (Get-Process -Id $PID -ErrorAction Stop | Select-Object -First 1).ProcessName
+    $listeners = @(Get-McNetworkListenerDiagnostics -Connections @(
+            [pscustomobject][ordered]@{ LocalAddress = '127.0.0.1'; LocalPort = 7988; OwningProcess = $PID },
+            [pscustomobject][ordered]@{ LocalAddress = '::1'; LocalPort = 10808; OwningProcess = 2147483647 }
+        ))
+
+    Assert-McEqual -Actual $listeners.Count -Expected 2 -Message 'allowlisted listeners must retain one local diagnostic per connection'
+    $known = $listeners | Where-Object { $_.port -eq 7988 }
+    Assert-McEqual -Actual $known.address_scope -Expected 'loopback' -Message 'loopback listener scope must be normalized'
+    Assert-McEqual -Actual $known.process_name -Expected $currentProcessName -Message 'accessible owning process name must be recorded locally'
+    $unknown = $listeners | Where-Object { $_.port -eq 10808 }
+    Assert-McEqual -Actual $unknown.process_name -Expected $null -Message 'inaccessible owning process must remain unknown'
+    Assert-McEqual -Actual $unknown.local_address -Expected '::1' -Message 'local address evidence must remain local-only and deterministic'
+}
+
 if ($failures.Count -gt 0) {
     Write-Host "FAILED $($failures.Count) assertion(s)"
     $failures | ForEach-Object { Write-Host " - $_" }

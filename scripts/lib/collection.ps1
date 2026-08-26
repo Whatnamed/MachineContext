@@ -495,6 +495,7 @@ function Invoke-McCollection {
             $state.observations.network[$property.Name] = $property.Value
         }
     }
+    if ($null -ne $network.local) { $state.local_diagnostics.network = $network.local }
 
     $discoveryMode = $RunContext.mode -in @('Discover', 'Full')
     if ($discoveryMode) {

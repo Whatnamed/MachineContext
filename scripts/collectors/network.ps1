@@ -1,5 +1,50 @@
 Set-StrictMode -Version Latest
 
+function Get-McNetworkListenerDiagnostics {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object[]]$Connections = @()
+    )
+
+    $listeners = [System.Collections.Generic.List[object]]::new()
+    foreach ($connection in @($Connections)) {
+        if ($null -eq $connection) { continue }
+
+        [int]$port = 0
+        if (-not [int]::TryParse([string]$connection.LocalPort, [ref]$port) -or $port -lt 1 -or $port -gt 65535) {
+            continue
+        }
+
+        $localAddress = ([string]$connection.LocalAddress).Trim()
+        if ([string]::IsNullOrWhiteSpace($localAddress)) { continue }
+
+        $processName = $null
+        [int]$processId = 0
+        if ([int]::TryParse([string]$connection.OwningProcess, [ref]$processId) -and $processId -gt 0) {
+            try {
+                $process = Get-Process -Id $processId -ErrorAction Stop | Select-Object -First 1
+                if ($null -ne $process -and -not [string]::IsNullOrWhiteSpace([string]$process.ProcessName)) {
+                    $processName = [string]$process.ProcessName
+                }
+            }
+            catch {
+                # Process ownership is useful local evidence, but access failure
+                # must remain unknown rather than changing listener presence.
+            }
+        }
+
+        [void]$listeners.Add([pscustomobject][ordered]@{
+                port          = $port
+                local_address = $localAddress
+                address_scope = if ($localAddress -in @('127.0.0.1', '::1')) { 'loopback' } else { 'local-machine' }
+                process_name  = $processName
+            })
+    }
+
+    return @($listeners | Sort-Object port,address_scope,local_address,process_name -Unique)
+}
+
 function Get-McNetworkObservation {
     [CmdletBinding()]
     param()
@@ -39,6 +84,7 @@ function Get-McNetworkObservation {
 
     $ports = [System.Collections.Generic.List[object]]::new()
     $portAllowlist = @(3000, 5432, 6379, 7988, 8000, 8080, 8787, 10100, 10808, 18080, 54321)
+    $connections = @()
     try {
         $connections = @(Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object {
             $_.LocalPort -in $portAllowlist -and $_.LocalAddress -in @('127.0.0.1', '0.0.0.0', '::1', '::')
@@ -52,6 +98,10 @@ function Get-McNetworkObservation {
     }
     catch {
         [void]$warnings.Add('Get-NetTCPConnection unavailable or access denied')
+    }
+
+    $local = [pscustomobject][ordered]@{
+        listener_processes = @(Get-McNetworkListenerDiagnostics -Connections $connections)
     }
 
     $wsl = [ordered]@{}
@@ -116,5 +166,5 @@ function Get-McNetworkObservation {
         constraints = @()
     }
     $health = if ($wslHealth -eq 'partial') { 'partial' } else { 'success' }
-    return New-McProviderPayload -Value $value -Health $health -ResultCount ($ports.Count + 1) -Warnings @($warnings) -CoverageComplete $false -VerificationEvents @($verificationEvents)
+    return New-McProviderPayload -Value $value -Health $health -ResultCount ($ports.Count + 1) -Warnings @($warnings) -CoverageComplete $false -Local $local -VerificationEvents @($verificationEvents)
 }
