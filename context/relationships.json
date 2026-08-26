@@ -7,18 +7,21 @@
     {
       "evidence": [
         {
-          "provider": "git-for-windows",
+          "provider": "runtimes-package-managers-toolchain",
           "fields": [
-            "git_root",
-            "git_executable",
-            "executable"
+            "executable",
+            "install.root"
+          ],
+          "paths": [
+            "E:\\dev\\flutter\\bin\\dart.bat",
+            "E:\\dev\\flutter\\bin"
           ]
         }
       ],
-      "origin": "detected",
-      "from": "shell-git-bash",
+      "origin": "inferred",
+      "from": "dart",
       "relation": "provided_by",
-      "to": "git"
+      "to": "flutter"
     },
     {
       "evidence": [
@@ -38,25 +41,6 @@
       "from": "npm",
       "relation": "provided_by",
       "to": "node"
-    },
-    {
-      "evidence": [
-        {
-          "provider": "runtimes-package-managers-toolchain",
-          "fields": [
-            "executable",
-            "install.root"
-          ],
-          "paths": [
-            "E:\\dev\\flutter\\bin\\dart.bat",
-            "E:\\dev\\flutter\\bin"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "dart",
-      "relation": "provided_by",
-      "to": "flutter"
     },
     {
       "evidence": [
@@ -152,6 +136,22 @@
       "from": "project-github.com-whatnamed-morpho",
       "relation": "uses_package_manager",
       "to": "npm"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "git-for-windows",
+          "fields": [
+            "git_root",
+            "git_executable",
+            "executable"
+          ]
+        }
+      ],
+      "origin": "detected",
+      "from": "shell-git-bash",
+      "relation": "provided_by",
+      "to": "git"
     }
   ]
 }

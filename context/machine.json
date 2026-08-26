@@ -160,90 +160,6 @@
   ],
   "shells": [
     {
-      "id": "shell-pwsh",
-      "kind": "shell",
-      "name": "PowerShell 7",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "verification_provider": "shells-path-resolution",
-        "verification_reason": "version-probe-success",
-        "version": "7.6.5",
-        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
-        "command_resolution": [
-          {
-            "scope": "windows-host",
-            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
-            "command_type": "PersistentApplication",
-            "path_index": 27,
-            "source": "persistent-path"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "pwsh.exe",
-            "fields": [
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          },
-          {
-            "provider": "persistent-path",
-            "provider_key": "pwsh.exe",
-            "fields": [
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      }
-    },
-    {
-      "id": "shell-windows-powershell",
-      "kind": "shell",
-      "name": "Windows PowerShell",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "verification_provider": "shells-path-resolution",
-        "verification_reason": "version-probe-success",
-        "version": "5.1.26100.9168",
-        "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-        "command_resolution": [
-          {
-            "scope": "windows-host",
-            "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-            "command_type": "PersistentApplication",
-            "path_index": 6,
-            "source": "persistent-path"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "powershell.exe",
-            "fields": [
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          },
-          {
-            "provider": "persistent-path",
-            "provider_key": "powershell.exe",
-            "fields": [
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      }
-    },
-    {
       "id": "shell-cmd",
       "kind": "shell",
       "name": "Command Prompt",
@@ -341,6 +257,48 @@
       }
     },
     {
+      "id": "shell-pwsh",
+      "kind": "shell",
+      "name": "PowerShell 7",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "shells-path-resolution",
+        "verification_reason": "version-probe-success",
+        "version": "7.6.5",
+        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+            "command_type": "PersistentApplication",
+            "path_index": 27,
+            "source": "persistent-path"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "pwsh.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "persistent-path",
+            "provider_key": "pwsh.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
       "id": "shell-ssh",
       "kind": "shell",
       "name": "OpenSSH client",
@@ -373,6 +331,48 @@
           {
             "provider": "persistent-path",
             "provider_key": "ssh.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shell-windows-powershell",
+      "kind": "shell",
+      "name": "Windows PowerShell",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "shells-path-resolution",
+        "verification_reason": "version-probe-success",
+        "version": "5.1.26100.9168",
+        "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "command_type": "PersistentApplication",
+            "path_index": 6,
+            "source": "persistent-path"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "powershell.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "persistent-path",
+            "provider_key": "powershell.exe",
             "fields": [
               "executable",
               "command_resolution"
