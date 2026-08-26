@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "meta": {
+    "state": "observed"
+  },
+  "software": [
+    {
+      "schema_version": 1,
+      "id": "baidu-netdisk",
+      "kind": "cloud-app",
+      "name": "Baidu Netdisk",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "8.2.1.102",
+        "executable": "E:\\BaiduNetdisk\\BaiduNetdisk.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "baidu-netdisk",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Cloud storage and file sync desktop client."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "bandizip",
+      "kind": "utility-app",
+      "name": "Bandizip",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "7.40.0.1",
+        "executable": "D:\\BANDIZIP\\Bandizip.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "bandizip",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Fast archive manager and decompression utility."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "calibre",
+      "kind": "e-book-app",
+      "name": "Calibre",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "9.4.0",
+        "executable": "D:\\calibre\\New Folder\\calibre.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "calibre",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "E-book management, viewer, and format conversion suite."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "discord",
+      "kind": "communication-app",
+      "name": "Discord",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.9226",
+        "executable": "%LOCALAPPDATA%\\Discord\\app-1.0.9226\\Discord.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "discord",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Voice, video, and text communication platform for communities and developers."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "feishu",
+      "kind": "collaboration-app",
+      "name": "Feishu",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "7.69.9",
+        "executable": "E:\\Feishu\\Feishu.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "feishu",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Enterprise messaging, documentation, and team collaboration workspace."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "flclash",
+      "kind": "network-app",
+      "name": "FlClash",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.8.96",
+        "executable": "E:\\FlClash\\FlClash\\FlClash.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "flclash",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Multi-platform proxy client based on ClashMeta and Flutter."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "freefilesync",
+      "kind": "sync-app",
+      "name": "FreeFileSync",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "14.5",
+        "executable": "E:\\FreeFileSync\\FreeFileSync.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "freefilesync",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open-source folder comparison and synchronization utility."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "notion",
+      "kind": "productivity-app",
+      "name": "Notion",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "7.7.0",
+        "executable": "%LOCALAPPDATA%\\Programs\\Notion\\Notion.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "notion",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "All-in-one workspace for notes, tasks, wikis, and databases."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "obsidian",
+      "kind": "productivity-app",
+      "name": "Obsidian",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.9.12",
+        "executable": "D:\\Obsidian\\Obsidian.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "obsidian",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Markdown-based local-first knowledge management system and personal knowledge base."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "qbittorrent",
+      "kind": "network-app",
+      "name": "qBittorrent",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "5.1.2",
+        "executable": "E:\\qBittorrent\\qbittorrent.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "qbittorrent",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open-source BitTorrent download client."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "snipaste",
+      "kind": "utility-app",
+      "name": "Snipaste",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.11.3",
+        "executable": "D:\\Snipaste\\Snipaste-2.10.8-x64\\Snipaste.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "snipaste",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Screen capture and pin-to-screen image utility."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "syncthing",
+      "kind": "sync-app",
+      "name": "Syncthing",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.1.3",
+        "executable": "E:\\syncthing\\Syncthing\\syncthing.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "syncthing",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Continuous, peer-to-peer decentralized file synchronization daemon."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "telegram",
+      "kind": "communication-app",
+      "name": "Telegram Desktop",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "7.0.7.0",
+        "executable": "D:\\telegram\\Telegram Desktop\\Telegram.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "telegram",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Cross-platform cloud-based instant messaging client."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "tencent-meeting",
+      "kind": "conferencing-app",
+      "name": "Tencent Meeting (WeMeet)",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.43.20.411",
+        "executable": "E:\\TencentMeeting\\WeMeet\\wemeetapp.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "tencent-meeting",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Online video conferencing and meeting client."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "vlc",
+      "kind": "media-app",
+      "name": "VLC media player",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.0.21",
+        "executable": "D:\\vlc\\vlc.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "vlc",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open-source multimedia player."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "watt-toolkit",
+      "kind": "utility-app",
+      "name": "Watt Toolkit (Steam++)",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.0.0-rc.16",
+        "executable": "E:\\WattToolkit\\Steam++\\Steam++.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "watt-toolkit",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Cross-platform gaming toolkit and network accelerator."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "wiztree",
+      "kind": "utility-app",
+      "name": "WizTree",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "4.31",
+        "executable": "E:\\wiztree\\WizTree\\WizTree.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "wiztree",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "High-speed NTFS MFT disk space analyzer and file locator."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "workbuddy",
+      "kind": "collaboration-app",
+      "name": "WorkBuddy",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "5.3.8.0",
+        "executable": "E:\\WorkBuddy\\WorkBuddy.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "workbuddy",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Tencent WorkBuddy workspace tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "xnconvert",
+      "kind": "utility-app",
+      "name": "XnConvert",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.106.0",
+        "executable": "E:\\XnConvert\\XnConvert\\xnconvert.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "xnconvert",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Batch image converter and image processing tool."
+      }
+    }
+  ]
+}

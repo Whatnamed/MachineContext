@@ -57,6 +57,7 @@
     "workspace_type": "git-project"
   },
   "curated": {
-    "status": "unknown"
+    "status": "unknown",
+    "purpose": "AI-assisted continuous canvas workspace for product and industrial design concept generation."
   }
 }

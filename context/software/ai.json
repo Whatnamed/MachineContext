@@ -12,12 +12,31 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.1.20",
+        "version": "1.1.21",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
             "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
             "command_type": "PersistentApplication"
+          }
+        ],
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.gemini\\settings.json",
+            "exists": true
+          }
+        ],
+        "data_paths": [
+          {
+            "kind": "plugins-directory",
+            "path": "%USERPROFILE%\\.gemini\\config\\plugins",
+            "exists": true
+          },
+          {
+            "kind": "skills-library",
+            "path": "D:\\skills",
+            "exists": true
           }
         ],
         "evidence": [
@@ -35,7 +54,64 @@
         ]
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "Google Antigravity CLI coding assistant."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "antigravity-desktop",
+      "kind": "ai-tool",
+      "name": "Antigravity Desktop",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.8.1",
+        "executable": "%LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "antigravity-desktop",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Google Antigravity desktop IDE application."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "cherry-studio",
+      "kind": "ai-tool",
+      "name": "Cherry Studio",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.8.1",
+        "executable": "%PROGRAMFILES%\\Cherry Studio\\Cherry Studio.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "cherry-studio",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Desktop multi-model LLM client with MCP support."
       }
     },
     {
@@ -54,6 +130,20 @@
             "command_type": "PersistentApplication"
           }
         ],
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.claude.json",
+            "exists": true
+          }
+        ],
+        "data_paths": [
+          {
+            "kind": "skills-directory",
+            "path": "%USERPROFILE%\\.claude\\skills",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -69,7 +159,40 @@
         ]
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "Anthropic Claude Code CLI assistant."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "claude-desktop",
+      "kind": "ai-tool",
+      "name": "Claude Desktop",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.24012.11.0",
+        "executable": "%PROGRAMFILES%\\WindowsApps\\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc\\Claude.exe",
+        "evidence": [
+          {
+            "provider": "host-authoritative-tools",
+            "provider_key": "claude-desktop-appx",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "install_location"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc",
+        "package_full_name": "Claude_1.24012.11.0_x64__pzs8sxrjxfjjc",
+        "package_name": "Claude"
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Anthropic Claude official desktop application."
       }
     },
     {
@@ -97,6 +220,30 @@
         "install": {
           "root": "E:\\Codex\\codex-cli"
         },
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.codex\\config.json",
+            "exists": false
+          }
+        ],
+        "data_paths": [
+          {
+            "kind": "session-data",
+            "path": "%USERPROFILE%\\.codex",
+            "exists": true
+          },
+          {
+            "kind": "plugins-cache",
+            "path": "%USERPROFILE%\\.codex\\plugins\\cache",
+            "exists": true
+          },
+          {
+            "kind": "wrangler-config",
+            "path": "%APPDATA%\\xdg.config\\.wrangler",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -112,7 +259,8 @@
         ]
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "OpenAI Codex CLI coding assistant."
       }
     },
     {
@@ -145,7 +293,8 @@
         "package_name": "OpenAI.Codex"
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "OpenAI Codex official desktop application."
       }
     },
     {
@@ -164,6 +313,13 @@
             "command_type": "PersistentApplication"
           }
         ],
+        "config_paths": [
+          {
+            "kind": "mcp-config",
+            "path": "%APPDATA%\\Cursor\\User\\Claude\\claude_desktop_config.json",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -179,7 +335,8 @@
         ]
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "Cursor AI IDE and command line interface."
       }
     },
     {
@@ -198,6 +355,18 @@
             "command_type": "PersistentApplication"
           }
         ],
+        "data_paths": [
+          {
+            "kind": "dsh-data",
+            "path": "%USERPROFILE%\\.dsh",
+            "exists": true
+          },
+          {
+            "kind": "agent-presets",
+            "path": "%USERPROFILE%\\.dsh\\.agent-presets",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -213,7 +382,190 @@
         ]
       },
       "curated": {
-        "status": "unknown"
+        "status": "active",
+        "purpose": "DeepSeek Harness interactive terminal agent."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "grok",
+      "kind": "ai-tool",
+      "name": "Grok Build CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.4",
+        "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
+        "command_resolution": [
+          {
+            "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "grok",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Grok build tool and agent runner."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "opencodex",
+      "kind": "ai-tool",
+      "name": "OpenCodex",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.15.1",
+        "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "opencodex",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open-source Codex protocol CLI and multi-agent harness."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "open-design",
+      "kind": "ai-tool",
+      "name": "Open Design",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.16.1",
+        "executable": "E:\\open-design\\Open Design\\Open Design.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "open-design",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open Design AI collaborative workbench application."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "trae",
+      "kind": "ai-tool",
+      "name": "TRAE Work CN",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.1.39",
+        "executable": "D:\\TRAE_Work_CN\\TRAE SOLO CN\\TRAE SOLO CN.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "trae",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "ByteDance Trae AI Native IDE."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "wand",
+      "kind": "ai-tool",
+      "name": "Wand",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "12.21.0",
+        "executable": "%LOCALAPPDATA%\\Wand\\Wand.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "wand",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "AI design canvas and generative drawing assistant."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "zcode",
+      "kind": "ai-tool",
+      "name": "ZCode",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.8.1.5310",
+        "executable": "D:\\ZCode\\ZCode\\ZCode.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "zcode",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Zhipu AI coding workbench."
       }
     }
   ]

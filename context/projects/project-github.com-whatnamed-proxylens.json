@@ -28,6 +28,7 @@
     "workspace_type": "git-repository"
   },
   "curated": {
-    "status": "unknown"
+    "status": "unknown",
+    "purpose": "Windows desktop traffic auditor and flow inspector for local Clash / Mihomo proxies built with Tauri, Rust, and React."
   }
 }

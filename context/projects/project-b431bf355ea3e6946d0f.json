@@ -53,6 +53,7 @@
     "workspace_type": "git-project"
   },
   "curated": {
-    "status": "unknown"
+    "status": "unknown",
+    "purpose": "Mobile UI and vibe coding design system documentation project built with Expo and React Native."
   }
 }

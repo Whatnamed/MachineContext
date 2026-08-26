@@ -1,11 +1,19 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "bootstrap",
+    "state": "inferred",
     "note": "Conventions should be inferred from the real machine and then confirmed; do not invent a directory taxonomy merely to make the inventory look neat."
   },
   "directories": {
-    "known_roots": [],
+    "known_roots": [
+      "D:\\",
+      "D:\\skills",
+      "E:\\Projects",
+      "E:\\Dev",
+      "E:\\WSL",
+      "%LOCALAPPDATA%\\Programs",
+      "%PROGRAMFILES%\\WindowsApps"
+    ],
     "machine_context_root": "E:\\MachineContext"
   },
   "installation": {

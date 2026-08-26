@@ -8,9 +8,17 @@
     {
       "path": "ai.json",
       "scope": "AI coding tools, harnesses, local bridges, and related agent tooling"
+    },
+    {
+      "path": "creative.json",
+      "scope": "industrial design, 3D modeling, CAD/CAM, UI/UX design, and creative software"
+    },
+    {
+      "path": "productivity.json",
+      "scope": "knowledge management, communication, sync, and system utility applications"
     }
   ],
   "extension_policy": {
-    "note": "Add new software domains as modules instead of expanding one monolithic file. Future examples may include general.json, creative.json, productivity.json, browsers.json, or media.json."
+    "note": "Add new software domains as modules instead of expanding one monolithic file. Future examples may include general.json, browsers.json, or media.json."
   }
 }

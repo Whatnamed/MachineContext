@@ -954,6 +954,237 @@
       "curated": {
         "status": "unknown"
       }
+    },
+    {
+      "schema_version": 1,
+      "id": "agently-cli",
+      "kind": "cli",
+      "name": "Agently CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.5",
+        "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "agently-cli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Agently application framework CLI."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "codex-threadripper",
+      "kind": "cli",
+      "name": "Codex Threadripper",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.3.4",
+        "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "codex-threadripper",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Codex parallel session and thread execution accelerator tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "lark-cli",
+      "kind": "cli",
+      "name": "Lark CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.64",
+        "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "lark-cli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Feishu / Lark open platform developer CLI."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "mcporter",
+      "kind": "cli",
+      "name": "MCPorter",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.9.0",
+        "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "mcporter",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "opencli",
+      "kind": "cli",
+      "name": "OpenCLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.8.4",
+        "executable": "E:\\Dev\\npm-global\\opencli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\opencli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "opencli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "OpenAI protocol CLI runner."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "tera-term",
+      "kind": "terminal-app",
+      "name": "Tera Term 5",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "5.5.0",
+        "executable": "E:\\teraterm\\teraterm5\\ttermpro.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "tera-term",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Terminal emulator and serial communication tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "unity-hub",
+      "kind": "game-engine-hub",
+      "name": "Unity Hub",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.3.3-c3",
+        "executable": "D:\\Unity\\Unity Hub\\Unity Hub.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "unity-hub",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Unity editor and project manager."
+      }
     }
   ]
 }

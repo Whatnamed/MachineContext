@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "meta": {
+    "state": "observed"
+  },
+  "software": [
+    {
+      "schema_version": 1,
+      "id": "autodesk-fusion",
+      "kind": "cad-app",
+      "name": "Autodesk Fusion",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2605.1.52",
+        "executable": "%LOCALAPPDATA%\\Autodesk\\webdeploy\\production\\2b84ec48843dc39cc73fec4274fad44f45968ec2\\Fusion360.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "autodesk-fusion",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Cloud-based 3D CAD/CAM/CAE tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "bambu-studio",
+      "kind": "3d-slicing-app",
+      "name": "Bambu Studio",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "02.00.03.54",
+        "executable": "D:\\Bambu_Studio\\Bambu Studio\\bambu-studio.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "bambu-studio",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "3D printing slicer software for Bambu Lab 3D printers."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "cinema-4d",
+      "kind": "3d-app",
+      "name": "Maxon Cinema 4D 2023",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2023.0.0",
+        "executable": "D:\\Program Files\\Maxon Cinema 4D 2023\\Cinema 4D.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "cinema-4d",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "3D modeling, animation, simulation, and rendering software."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "figma",
+      "kind": "design-app",
+      "name": "Figma Desktop",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "126.3.12",
+        "executable": "D:\\Figma\\Figma+汉化+EX\\Figma.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "figma",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Collaborative interface and user experience design platform."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "figma-agent",
+      "kind": "system-helper",
+      "name": "Figma Agent",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "126.7.10",
+        "executable": "%LOCALAPPDATA%\\FigmaAgent\\figma_agent.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "figma-agent",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Local font helper and desktop daemon for Figma."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "gimp",
+      "kind": "graphics-app",
+      "name": "GIMP 3",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.0.6-1",
+        "executable": "E:\\Gimp\\GIMP 3\\bin\\gimp-3.0.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "gimp",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Open-source raster graphics image editor."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "js-design",
+      "kind": "design-app",
+      "name": "即时设计 (js.design)",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.0.2.0",
+        "executable": "E:\\即时设计\\js.design\\即时设计.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "js-design",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Online UI design and collaboration desktop tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "keyshot-studio",
+      "kind": "rendering-app",
+      "name": "KeyShot Studio",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2024.3.0.0",
+        "executable": "D:\\Program Files\\KeyShot Studio\\bin\\keyshot.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "keyshot-studio",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "Real-time 3D rendering and animation suite."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "ptc-creo",
+      "kind": "cad-app",
+      "name": "PTC Creo Parametric",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "11.0.0.0",
+        "executable": "D:\\Creo11.0\\Creo11.0\\Creo 11.0.0.0\\Parametric\\bin\\parametric.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "ptc-creo",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "3D CAD parametric modeling software for industrial design and mechanical engineering."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "rhino-7",
+      "kind": "cad-app",
+      "name": "Rhinoceros 7",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "7.0.20314.03001",
+        "executable": "D:\\Program Files\\Rhino 7\\System\\Rhino.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "rhino-7",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "NURBS-based 3D modeling and industrial design environment."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "rhino-8",
+      "kind": "cad-app",
+      "name": "Rhinoceros 8",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "8.22.25217.12451",
+        "executable": "D:\\Program Files\\Rhino 8\\System\\Rhino.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "rhino-8",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "active",
+        "purpose": "NURBS-based 3D modeling, Grasshopper visual programming, and computational design suite."
+      }
+    }
+  ]
+}

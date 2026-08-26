@@ -219,6 +219,44 @@ function Invoke-McRender {
         }
     }
 
+    $creativePath = Join-Path $ContextRoot 'software\creative.json'
+    if (Test-Path $creativePath) {
+        $creative = Read-McJson -Path $creativePath
+        [void]$lines.Add('')
+        [void]$lines.Add('## Design and creative software')
+        [void]$lines.Add('')
+        $creativeItems = @($creative.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object name,id)
+        if ($creativeItems.Count -eq 0) {
+            [void]$lines.Add('- No verified design tools recorded yet.')
+        }
+        else {
+            foreach ($item in $creativeItems) {
+                $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+                $itemLocation = Get-McRenderLocation -Observed $item.observed
+                [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
+            }
+        }
+    }
+
+    $productivityPath = Join-Path $ContextRoot 'software\productivity.json'
+    if (Test-Path $productivityPath) {
+        $productivity = Read-McJson -Path $productivityPath
+        [void]$lines.Add('')
+        [void]$lines.Add('## Productivity and desktop tools')
+        [void]$lines.Add('')
+        $productivityItems = @($productivity.software | Where-Object { (Get-McRenderProperty -InputObject $_.observed -Name 'present') -eq $true } | Sort-Object name,id)
+        if ($productivityItems.Count -eq 0) {
+            [void]$lines.Add('- No verified productivity tools recorded yet.')
+        }
+        else {
+            foreach ($item in $productivityItems) {
+                $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+                $itemLocation = Get-McRenderLocation -Observed $item.observed
+                [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
+            }
+        }
+    }
+
     [void]$lines.Add('')
     [void]$lines.Add('## Network and local services')
     [void]$lines.Add('')

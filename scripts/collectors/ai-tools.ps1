@@ -10,6 +10,8 @@ function Get-McAiDefinitions {
         [pscustomobject]@{ id = 'claude-code'; name = 'Claude Code'; command = 'claude'; args = @('--version') },
         [pscustomobject]@{ id = 'gemini-cli'; name = 'Gemini CLI'; command = 'gemini'; args = @('--version') },
         [pscustomobject]@{ id = 'cursor-cli'; name = 'Cursor CLI'; command = 'cursor'; args = @('--version') },
+        [pscustomobject]@{ id = 'opencodex'; name = 'OpenCodex'; command = 'opencodex'; args = @('--version') },
+        [pscustomobject]@{ id = 'grok'; name = 'Grok Build CLI'; command = 'grok'; args = @('--version') },
         [pscustomobject]@{ id = 'windsurf-cli'; name = 'Windsurf CLI'; command = 'windsurf'; args = @('--version') }
     )
 }
