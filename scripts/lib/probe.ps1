@@ -285,6 +285,7 @@ function Invoke-McProbe {
     $launchArguments = @($Arguments)
     $usedShell = $false
     $launcher = 'direct'
+    $usesRawCommandLine = $false
     $extension = [System.IO.Path]::GetExtension($launchFile)
     if ($extension -in @('.cmd', '.bat')) {
         $comSpecCandidate = Resolve-McExecutable -Executable 'cmd.exe' -Scope $ResolutionScope
@@ -300,6 +301,7 @@ function Invoke-McProbe {
         $launchArguments = @('/d', '/s', '/c', (ConvertTo-McWindowsCommandLine -Executable $resolvedLaunchPath -Arguments $Arguments))
         $usedShell = $true
         $launcher = 'cmd'
+        $usesRawCommandLine = $true
     }
     elseif ($extension -eq '.ps1') {
         $pwsh = Resolve-McExecutable -Executable 'pwsh.exe' -Scope $ResolutionScope
@@ -341,8 +343,19 @@ function Invoke-McProbe {
             $startInfo.WorkingDirectory = $WorkingDirectory
         }
 
-        foreach ($argument in @($launchArguments)) {
-            [void]$startInfo.ArgumentList.Add([string]$argument)
+        if ($usesRawCommandLine) {
+            # ProcessStartInfo.ArgumentList applies C-runtime escaping to the
+            # /c command string. cmd.exe does not interpret those backslashes
+            # as quote escapes, so a path containing spaces becomes a literal
+            # command name. The executable and caller arguments were already
+            # kept separate above; only the fixed cmd.exe invocation uses the
+            # raw Arguments property here.
+            $startInfo.Arguments = '/d /s /c "{0}"' -f ([string]$launchArguments[3])
+        }
+        else {
+            foreach ($argument in @($launchArguments)) {
+                [void]$startInfo.ArgumentList.Add([string]$argument)
+            }
         }
 
         $process = [System.Diagnostics.Process]::new()

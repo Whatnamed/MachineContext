@@ -662,6 +662,13 @@ Invoke-McTest -Name 'safe subprocess probe' -Body {
     $capped = Invoke-McProbe -Executable 'pwsh.exe' -Arguments @('-NoLogo', '-NoProfile', '-Command', "Write-Output ('x' * 10000)") -Provider 'fixture' -ProbeName 'cap' -TimeoutMs 5000 -OutputCapBytes 1024 -ResolutionScope 'collector-process'
     Assert-McEqual -Actual $capped.status -Expected 'success' -Message 'capped probe health'
     Assert-McTrue -Condition $capped.output_truncated -Message 'probe output cap must be reported'
+
+    $cmdFixture = Join-Path $RepoRoot 'tests\fixtures\probe.cmd'
+    $cmd = Invoke-McProbe -Executable $cmdFixture -Arguments @('--version') -Provider 'fixture' -ProbeName 'cmd-script' -TimeoutMs 5000 -ResolutionScope 'collector-process'
+    Assert-McEqual -Actual $cmd.status -Expected 'success' -Message 'cmd script probe must support paths with spaces'
+    Assert-McEqual -Actual $cmd.exit_code -Expected 0 -Message 'cmd script probe exit code'
+    Assert-McEqual -Actual (Get-McProbeVersionText -Probe $cmd) -Expected 'machinecontext-probe 1.2.3' -Message 'cmd script probe version output'
+    Assert-McTrue -Condition ($cmd.used_shell -and $cmd.launcher -eq 'cmd') -Message 'cmd script probe must record explicit cmd launcher'
 }
 
 Invoke-McTest -Name 'curated ownership and safe absence semantics' -Body {
