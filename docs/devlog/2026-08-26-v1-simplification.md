@@ -7,3 +7,4 @@
 - Removed weak/incorrect associations: removed wrangler-config from codex-cli data paths and removed figma-agent provides figma from relationships.json.
 - Compacted CURRENT.md into a high-signal AI entrance: routine development and AI tools remain fully expanded, while creative and productivity domains render as structured summary counts with JSON pointers.
 - Feature-freeze: V1 is frozen for regular agent and user planning without further architectural rewrites.
+- Consistency close-out: restricted `conventions.directories.known_roots` strictly to `E:\Projects` (preventing directory roles/system roots from being crawled as project roots), assigned explicit `meta.supplemental_inventory` in `development.json` and `ai.json`, corrected `claude-desktop` evidence provider to `appx-manifest`, and aligned `machine-context.json`, `ROADMAP.md`, and `SCHEMA.md` with active V1 normal use.

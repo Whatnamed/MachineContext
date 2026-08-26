@@ -6,12 +6,7 @@
   },
   "directories": {
     "known_roots": [
-      "D:\\skills",
-      "E:\\Dev",
-      "E:\\Projects",
-      "E:\\WSL",
-      "%LOCALAPPDATA%\\Programs",
-      "%PROGRAMFILES%\\WindowsApps"
+      "E:\\Projects"
     ],
     "machine_context_root": "E:\\MachineContext"
   },

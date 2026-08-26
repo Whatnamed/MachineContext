@@ -1,7 +1,21 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "observed"
+    "state": "observed",
+    "supplemental_inventory": {
+      "entity_ids": [
+        "antigravity-desktop",
+        "cherry-studio",
+        "claude-desktop",
+        "open-design",
+        "trae",
+        "wand",
+        "zcode"
+      ],
+      "recorded_at": "2026-08-26T14:12:00Z",
+      "refresh_policy": "manual-broad-scan",
+      "source": "user-confirmed-broad-inventory"
+    }
   },
   "software": [
     {
@@ -171,7 +185,7 @@
         "executable": "%PROGRAMFILES%\\WindowsApps\\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc\\Claude.exe",
         "evidence": [
           {
-            "provider": "host-authoritative-tools",
+            "provider": "appx-manifest",
             "provider_key": "claude-desktop-appx",
             "fields": [
               "present",

@@ -33,7 +33,6 @@
     "schema_notes": "SCHEMA.md"
   },
   "state": {
-    "phase": "bootstrap",
-    "initial_audit_complete": false
+    "phase": "v1-normal-use"
   }
 }

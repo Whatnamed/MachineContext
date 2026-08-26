@@ -15,58 +15,48 @@ Status: complete.
 - implementation guardrails for observed/curated ownership, provider health, atomic publication, and Git sync;
 - initial script/collector/test folders.
 
-## Phase 1 — Initial Audit + V1 collector
+## Phase 1 — Initial Audit, V1 Simplification, and Integration
 
-Status: next.
+Status: complete.
 
-Goal: turn the repository from a documented skeleton into verified context for the real Windows machine.
+Goal: turn the repository from a documented skeleton into verified context for the real Windows machine, simplified for immediate AI consumption.
 
-Deliverables:
+Delivered:
 
 - shared PowerShell probe/JSON/path/privacy/staging helpers;
-- structured Windows providers (Registry/CIM/PATH/tool-specific APIs/CLIs);
+- structured Windows providers (Registry/CIM/PATH/tool-specific APIs/CLIs/deduped verifiers);
 - Quick / Discover / Enrich / Full modes;
 - optional Everything indexed discovery adapter + bounded fallback;
 - project fingerprint discovery;
 - candidate/evidence reconciliation and stable identity;
 - multi-source dedupe and safe absence semantics;
-- canonical `observed` updates preserving `curated` semantics;
+- canonical `observed` updates preserving `curated` semantics without redundant status boilerplate;
 - provider health/diagnostics and compact `context/status.json`;
 - privacy/reference validation;
-- deterministic `CURRENT.md` rendering;
+- deterministic compact `CURRENT.md` rendering;
 - atomic staging/publication and safe `sync.ps1` orchestration;
-- first real-machine Full Audit using `BOOTSTRAP_HINTS.md` only as search hints;
-- initial long-lived project registry and installation conventions;
-- idempotence/recovery tests.
+- real-machine Full Audit and broad inventory integration (`creative.json`, `productivity.json`, and supplemental tool provenance);
+- long-lived project registry with confirmed purposes and refined directory roles / drive tendencies;
+- idempotence, verification, and regression tests.
 
-## Phase 2 — Maintenance hardening
+## Phase 2 — Normal Use and Routine Maintenance
 
-Goal: make routine updates boring and dependable.
+Status: active baseline (V1 feature-frozen).
 
-Possible work:
+Goal: use MachineContext in everyday pairing without ongoing architectural rework.
 
-- targeted scope refresh based on changed/related entities;
-- stronger installer/update ownership inference;
-- better conflict resolution and diagnostics;
-- broader fixture coverage for localized/edge-case Windows outputs;
-- stale/freshness policies by provider/domain where useful;
-- explicit reviewed commit/push helper;
-- relationship consistency and impact checks;
-- performance profiling/bounded concurrency based on real scan timings.
+Operational baseline:
 
-## Phase 3 — General software context
+- routine core updates run via `Quick` / `Full` sync;
+- supplemental inventories (`creative.json`, `productivity.json`, and broad inventory tools) are refreshed explicitly via manual broad scans;
+- no-change scans maintain zero semantic diff;
+- changes are driven by concrete machine modifications or planning needs rather than perpetual self-refactoring.
 
-Goal: expand beyond development only after the core loop is trustworthy.
+## Phase 3 — Extended Software Domains
 
-Add selective modules such as:
+Status: partially integrated ahead of schedule into V1.
 
-- `general.json` — common desktop utilities;
-- `creative.json` — design/Adobe/3D/CAD/image/video tools;
-- `productivity.json` — notes/sync/Office-like tools;
-- `browsers.json` — profile-independent browser facts;
-- `media.json` — only when useful for planning.
-
-Broad Windows installed-app inventory can feed candidates, but persistent context remains decision-oriented rather than becoming an enterprise CMDB.
+Selective creative (`creative.json`) and productivity (`productivity.json`) inventories have been confirmed and included with clear `manual-broad-scan` provenance. Further domain expansions (such as `browsers.json` or `media.json`) are deferred until specific planning tasks require them.
 
 ## Phase 4 — Convenience CLI / optional read-only MCP
 

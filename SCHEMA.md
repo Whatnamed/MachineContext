@@ -40,25 +40,24 @@ When an entity mixes machine-detectable and semantic information, split ownershi
   "name": "Node.js",
   "observed": {
     "present": true,
-    "version": "22.x",
-    "executable": "D:\\path\\node.exe",
+    "version": "22.23.2",
+    "executable": "D:\\Node.js\\Node.js\\node.exe",
     "install": {},
     "evidence": []
   },
-  "curated": {
-    "status": "active",
-    "role": "primary",
-    "purpose": null,
-    "constraints": []
-  }
+  "curated": {}
 }
 ```
 
 Routine collectors may replace/update `observed` after reconciliation. They must preserve `curated` unless an explicit semantic edit is requested.
 
-## Explicit curation confirmation
+Curated fields are strictly optional. Canonical presence indicates that the software/project exists; redundant `status: active` or generic encyclopedia definitions are omitted. Curated fields are reserved for actionable user intent (e.g., `role: primary`, `status: legacy`, specific tool purpose, or machine constraints).
 
-G2 semantic edits use a separate confirmation manifest with `kind: g2-curation-confirmation`, `confirmed: true`, an ISO-8601 `confirmed_at`, a reference to `.local/g2-semantic-review.json`, and evidence references for every update. Evidence references must be the declared review path or exact string evidence present in that review. `scripts/curate.ps1` is read-only by default; `-Apply` is required before it can write canonical files. The manifest may update only allowlisted `curated` fields, confirmed conventions fields, and existing stable IDs. It must never contain `observed`, and the command never commits or pushes automatically.
+## Curation confirmation
+
+User confirmation in conversation is authoritative for establishing semantic intent, project purposes, and supplemental inventories.
+
+For optional batch or scripted curation workflows, `scripts/curate.ps1` provides an offline safety mechanism via a `g2-curation-confirmation` manifest (dry-run by default, applying only with explicit `-Apply`). It validates allowlisted `curated` fields without modifying `observed` facts.
 
 Not every document must mechanically contain both sections. `conventions.json`, for example, is primarily curated. The ownership rule matters when automated and semantic fields coexist.
 
@@ -154,17 +153,16 @@ data_paths
 evidence
 ```
 
-Typical curated fields may include:
-
+Typical curated fields (all optional):
 ```text
-software status: active | inactive | legacy | testing | broken | unknown
+software status: legacy | testing | broken | compatibility-only (omitted for standard active tools)
 role: primary | secondary | project-only | optional
-purpose
+purpose: short 1-line description (retained for AI/specialized CLIs; omitted for standard tools)
 constraints
 notes
 ```
 
-Project lifecycle status is project-specific: `context/projects/index.json.project_policy.statuses` plus `unknown` (currently `active | paused | maintenance | archived | experimental | unknown`).
+Project lifecycle status is optional; canonical presence in `context/projects/` records its long-term project status. When explicitly required, projects use: `active | paused | maintenance | archived | experimental`.
 
 Omit fields that have no value; do not manufacture large null-filled records.
 

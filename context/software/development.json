@@ -1,7 +1,21 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "observed"
+    "state": "observed",
+    "supplemental_inventory": {
+      "entity_ids": [
+        "agently-cli",
+        "codex-threadripper",
+        "lark-cli",
+        "mcporter",
+        "opencli",
+        "tera-term",
+        "unity-hub"
+      ],
+      "recorded_at": "2026-08-26T14:12:00Z",
+      "refresh_policy": "manual-broad-scan",
+      "source": "user-confirmed-broad-inventory"
+    }
   },
   "software": [
     {
