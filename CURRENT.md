@@ -42,7 +42,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
   - `C:\` NTFS (26.5/195.9 GiB free/total)
-  - `D:\` NTFS (49.2/279.3 GiB free/total)
+  - `D:\` NTFS (49.0/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
 ## Development environment
