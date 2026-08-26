@@ -263,3 +263,11 @@ Decision: allowlisted local listener diagnostics may resolve a listener's proces
 Reason: process name alone was insufficient to explain the observed FlClash listener, while raw process/service command data is noisy and privacy-sensitive. A bounded ownership label improves audit evidence without turning runtime ownership into user intent or proxy policy.
 
 Status: accepted.
+
+## D033 — Package-manager store evidence is not CLI verification
+
+Decision: when a package-manager executable is not verified through the persistent Windows host scope, an allowlisted store/cache path may be recorded only in ignored `.local` diagnostics. Store/cache existence must not create canonical `present`, `verified-present`, `verified-absent`, or installation/update ownership facts.
+
+Reason: package-manager stores can survive after a CLI is removed, and a store can also be created by another environment or a previous agent/runtime. Treating the store as an executable would turn historical residue into a false installation fact.
+
+Status: accepted.

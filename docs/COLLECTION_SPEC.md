@@ -156,6 +156,8 @@ V1 不默认深入枚举每个 distro 的所有 Linux runtime/package。以后�
 
 除 version/path 外，记录有决策价值的 global prefix/store/cache。
 
+当 package-manager CLI 尚未通过 host verifier 时，允许只在 `.local` 记录 allowlisted store/cache 的 normalized path 与 exists 状态；store/cache 痕迹不能单独证明 CLI 可用、已安装或已卸载，也不能晋级 canonical `present` 或 `verified-absent`。
+
 如使用非默认 registry/mirror/proxy，只记录安全 host/策略/“已配置”状态；禁止 credential-bearing URL/token/password。
 
 默认不枚举所有 global package；只有对长期环境/项目关系有价值的 package 才进入 persistent context。

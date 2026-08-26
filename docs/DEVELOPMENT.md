@@ -145,6 +145,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - 历史线索闭环保存在 ignored `.local/audit-closure.json`；该文件明确保留 unresolved/unknown，不将 provider failure 推断为卸载。
 - `scripts/audit.ps1` 提供只读 closure contract/projection review；默认允许当前 `partial` closure，`-RequireVerified` 可作为进入后续阶段前的显式 gate，命令不写入 `.local` 或 canonical。
 - `scripts/review.ps1` 现在同时审查 `.local/audit-closure.json` 与 `.local/g2-semantic-review.json`；semantic suggestions、project buckets 和 unresolved checks 必须保留 evidence、`canonical_write=false` 与 confirmation gate，candidate/unverified 不能声明 absence。
+- runtimes provider 现在把 pnpm 的 allowlisted host-path/store evidence 留在 `.local`；当前观察到 `%LOCALAPPDATA%\pnpm\store` 存在但没有 persistent executable，因此仍保持 `pnpm` unverified，不推断 installed/absent。
 - `context/status.json` 现明确区分 `provider_state` 与 `audit_closure`；audit closure 可显式记录按设计接受的 unknown，只有 open unknown/conflict/unresolved 才阻塞顶层 `state=verified`，因此当前仍因 pnpm、项目语义和 bridge/proxy 语义保持 `partial`。
 - G1 尚未宣称完成：需要用户审查项目 active/legacy/purpose、安装/更新 ownership、bridge/proxy 语义和剩余 unknown/candidate 后，才能进入 G2 curated semantics。
 
