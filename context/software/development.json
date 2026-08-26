@@ -883,8 +883,30 @@
               "windows_sdk_versions"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "visual-studio-msvc-sdk",
+            "provider_key": "vswhere",
+            "fields": [
+              "present",
+              "version",
+              "install",
+              "msvc_toolsets",
+              "windows_sdk_versions",
+              "desktop_cpp_workload"
+            ],
+            "confidence": "high"
           }
         ],
+        "desktop_cpp_workload": {
+          "present": true,
+          "verification": "verified-present",
+          "installation_paths": [
+            "D:\\Visual Studio\\product"
+          ],
+          "probe_status": "success",
+          "workload_id": "Microsoft.VisualStudio.Workload.NativeDesktop"
+        },
         "msvc_toolsets": [
           "D:\\Visual Studio\\product\\VC\\Tools\\MSVC\\14.43.34808"
         ],
