@@ -58,7 +58,7 @@ Routine collectors may replace/update `observed` after reconciliation. They must
 
 ## Explicit curation confirmation
 
-G2 semantic edits use a separate confirmation manifest with `kind: g2-curation-confirmation`, `confirmed: true`, a reference to `.local/g2-semantic-review.json`, and evidence references for every update. `scripts/curate.ps1` is read-only by default; `-Apply` is required before it can write canonical files. The manifest may update only allowlisted `curated` fields, confirmed conventions fields, and existing stable IDs. It must never contain `observed`, and the command never commits or pushes automatically.
+G2 semantic edits use a separate confirmation manifest with `kind: g2-curation-confirmation`, `confirmed: true`, an ISO-8601 `confirmed_at`, a reference to `.local/g2-semantic-review.json`, and evidence references for every update. Evidence references must be the declared review path or exact string evidence present in that review. `scripts/curate.ps1` is read-only by default; `-Apply` is required before it can write canonical files. The manifest may update only allowlisted `curated` fields, confirmed conventions fields, and existing stable IDs. It must never contain `observed`, and the command never commits or pushes automatically.
 
 Not every document must mechanically contain both sections. `conventions.json`, for example, is primarily curated. The ownership rule matters when automated and semantic fields coexist.
 
