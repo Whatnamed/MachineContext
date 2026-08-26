@@ -185,3 +185,21 @@ Decision: optional discovery accelerators and enrichment providers retain exact 
 Reason: optional providers such as Everything or winget enrichment improve coverage but are not prerequisites for trustworthy structured observations. Their exact failures must remain visible without turning a bounded fallback or a slow external source into a whole-run failure.
 
 Status: accepted.
+
+## D024 — Persistent Windows host environment is separate from collector process
+
+Decision: canonical command/path facts use the persistent Windows Machine and User environment, with Machine entries before User entries and stable de-duplication. The current collector process PATH and `Get-Command` resolution are diagnostic-only and remain under ignored `.local` state. Future WSL records use an explicit `wsl:<distro>` scope rather than being flattened into host facts.
+
+Reason: Codex/Agy launchers and other agent runtimes may inject temporary PATH prefixes that are not installed-machine truth. Publishing those paths would make repeated audits report false primary installations and would make canonical state depend on the process that happened to run the collector.
+
+Status: accepted.
+
+## D025 — Dedicated verifiers and conservative verification states
+
+Decision: high-value Windows identities use dedicated read-only verifiers instead of relying on generic command discovery. Git Bash is authoritative only when `bash.exe` is found under the verified Git-for-Windows installation root; Windows publishes both raw registry identity and a build-derived `normalized_family`; NVIDIA VRAM is authoritative only from `nvidia-smi`; Visual Studio/MSVC/Windows SDK, Codex CLI/Desktop, Supabase CLI, VS Code CLI, and .NET use their applicable native/known-root checks. The legacy AI `codex` record migrates to `codex-cli` only when a successful dedicated CLI observation exists; Codex Desktop is a separate Appx identity.
+
+Verification state is separate from provider health. Failed, timed-out, or unavailable checks preserve prior `observed` facts and mark an existing record `unverified`. Only a successful high-confidence applicable absence check may retain the record with `present: false`, `verification: verified-absent`, and `last_known`; broad discovery and missing generic commands remain candidates or unknown.
+
+Reason: generic PATH aliases can be WSL/App Execution Alias shims, CIM `AdapterRAM` is not a reliable NVIDIA VRAM source, and provider failure must never be mistaken for uninstall/removal. Stable identity and explicit negative-evidence rules keep routine scans trustworthy and idempotent.
+
+Status: accepted.

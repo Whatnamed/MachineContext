@@ -6,40 +6,86 @@ function Get-McShellObservation {
 
     $shells = [System.Collections.Generic.List[object]]::new()
     $resolution = [System.Collections.Generic.List[object]]::new()
+    $shellCandidates = [System.Collections.Generic.List[object]]::new()
+    $verificationEvents = [System.Collections.Generic.List[object]]::new()
     $warnings = [System.Collections.Generic.List[string]]::new()
+    $failureCount = 0
     $definitions = @(
         [pscustomobject]@{ id = 'shell-pwsh'; name = 'PowerShell 7'; command = 'pwsh.exe'; args = @('--version') },
         [pscustomobject]@{ id = 'shell-windows-powershell'; name = 'Windows PowerShell'; command = 'powershell.exe'; args = @('-NoLogo', '-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()') },
         [pscustomobject]@{ id = 'shell-cmd'; name = 'Command Prompt'; command = 'cmd.exe'; args = @('/c', 'ver') },
-        [pscustomobject]@{ id = 'shell-git-bash'; name = 'Git Bash'; command = 'bash.exe'; args = @('--version') },
         [pscustomobject]@{ id = 'shell-ssh'; name = 'OpenSSH client'; command = 'ssh.exe'; args = @('-V') }
     )
 
     foreach ($definition in $definitions) {
-        $candidates = @(Get-McExecutableCandidates -Executable $definition.command)
-        if ($candidates.Count -eq 0) {
+        $commandCandidates = @(Get-McExecutableCandidates -Executable $definition.command -Scope 'windows-host')
+        if ($commandCandidates.Count -eq 0) {
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'machine.shells'
+                    id = [string]$definition.id
+                    provider = 'shells-path-resolution'
+                    verification = 'unverified'
+                    reason = 'persistent-command-not-found'
+                    source_key = [string]$definition.command
+                })
             continue
         }
 
-        $primary = $candidates[0]
-        $probe = Invoke-McProbe -Executable $primary.path -Arguments @($definition.args) -Provider 'shells-path-resolution' -ProbeName ([string]$definition.id) -TimeoutMs 5000
+        $primary = $commandCandidates[0]
+        $probe = Invoke-McProbe -Executable $primary.path -Arguments @($definition.args) -Provider 'shells-path-resolution' -ProbeName ([string]$definition.id) -TimeoutMs 5000 -ResolutionScope 'windows-host'
+        if ($probe.status -ne 'success') {
+            $failureCount++
+            [void]$warnings.Add("$($definition.command) verifier status: $($probe.status)")
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'machine.shells'
+                    id = [string]$definition.id
+                    provider = 'shells-path-resolution'
+                    verification = 'unverified'
+                    reason = [string]$probe.status
+                    source_key = [string]$definition.command
+                })
+            [void]$shellCandidates.Add([pscustomobject][ordered]@{
+                    candidate_id = New-McStableId -Kind 'shell-candidate' -Identity ("{0}|{1}" -f $definition.id, $primary.path)
+                    kind_hint = 'shell'
+                    name_hint = [string]$definition.name
+                    path = ConvertTo-McNormalizedPath -Path ([string]$primary.path)
+                    source = 'shells-path-resolution'
+                    source_key = [string]$definition.command
+                    confidence_hint = 'low'
+                    evidence = @([pscustomobject][ordered]@{ type = 'command_resolves'; verifier_status = [string]$probe.status })
+                })
+            continue
+        }
+
+        [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                module = 'machine.shells'
+                id = [string]$definition.id
+                provider = 'shells-path-resolution'
+                verification = 'verified-present'
+                reason = 'version-probe-success'
+                source_key = [string]$definition.command
+            })
         $record = [ordered]@{
             id   = [string]$definition.id
             kind = 'shell'
             name = [string]$definition.name
             observed = [ordered]@{
-                present = ($probe.status -eq 'success')
+                present = $true
+                verification = 'verified-present'
                 executable = ConvertTo-McNormalizedPath -Path ([string]$primary.path)
                 command_resolution = @(
-                    foreach ($candidate in $candidates) {
+                    foreach ($candidate in $commandCandidates) {
                         [pscustomobject][ordered]@{
-                            executable = ConvertTo-McNormalizedPath -Path ([string]$candidate.path)
+                            executable   = ConvertTo-McNormalizedPath -Path ([string]$candidate.path)
                             command_type = [string]$candidate.command_type
+                            scope        = [string]$candidate.scope
+                            source       = [string]$candidate.source
+                            path_index   = $candidate.path_index
                         }
                     }
                 )
                 evidence = @([pscustomobject][ordered]@{
-                    provider = 'command'
+                    provider = 'persistent-path'
                     provider_key = [string]$definition.command
                     fields = @('executable', 'command_resolution')
                     confidence = if ($probe.status -eq 'success') { 'high' } else { 'low' }
@@ -50,31 +96,21 @@ function Get-McShellObservation {
         if (-not [string]::IsNullOrWhiteSpace($version)) {
             $record.observed.version = $version
         }
-        if ($probe.status -ne 'success') {
-            [void]$warnings.Add("$($definition.command) verifier status: $($probe.status)")
-        }
         [void]$shells.Add([pscustomobject]$record)
     }
 
     foreach ($command in @('pwsh', 'powershell', 'cmd', 'bash', 'git', 'ssh', 'where')) {
-        $candidates = @(Get-McExecutableCandidates -Executable $command)
+        $candidates = @(Get-McExecutableCandidates -Executable $command -Scope 'windows-host')
         if ($candidates.Count -eq 0) { continue }
         [void]$resolution.Add([pscustomobject][ordered]@{
             command = $command
+            scope = 'windows-host'
             resolved = ConvertTo-McNormalizedPath -Path ([string]$candidates[0].path)
             all = @($candidates | ForEach-Object { ConvertTo-McNormalizedPath -Path ([string]$_.path) })
         })
     }
 
-    $pathEntries = [System.Collections.Generic.List[string]]::new()
-    foreach ($entry in @(([Environment]::GetEnvironmentVariable('Path')) -split ';')) {
-        if ([string]::IsNullOrWhiteSpace($entry)) { continue }
-        $normalized = ConvertTo-McNormalizedPath -Path $entry
-        if ($null -ne $normalized -and -not $pathEntries.Contains($normalized)) {
-            [void]$pathEntries.Add($normalized)
-        }
-    }
-
+    $hostEnvironment = Get-McPersistentEnvironment
     $profiles = [System.Collections.Generic.List[object]]::new()
     $userProfile = [Environment]::GetEnvironmentVariable('USERPROFILE')
     if (-not [string]::IsNullOrWhiteSpace($userProfile)) {
@@ -93,20 +129,44 @@ function Get-McShellObservation {
         }
     }
 
+    $processEnvironment = Get-McCollectorProcessEnvironment
+    $processResolution = [System.Collections.Generic.List[object]]::new()
+    foreach ($command in @('pwsh', 'powershell', 'cmd', 'bash', 'git', 'ssh', 'where')) {
+        $candidates = @(Get-McProcessExecutableCandidates -Executable $command)
+        if ($candidates.Count -eq 0) { continue }
+        [void]$processResolution.Add([pscustomobject][ordered]@{
+            command = $command
+            scope = 'collector-process'
+            resolved = ConvertTo-McNormalizedPath -Path ([string]$candidates[0].path)
+            all = @($candidates | ForEach-Object { ConvertTo-McNormalizedPath -Path ([string]$_.path) })
+        })
+    }
+
     $value = [pscustomobject][ordered]@{
         shells = @($shells)
+        candidates = @()
         paths = [pscustomobject][ordered]@{
+            scope = 'windows-host'
+            machine_path = @($hostEnvironment.machine_path)
+            user_path = @($hostEnvironment.user_path)
+            persistent_effective_path = @($hostEnvironment.persistent_effective_path)
             machine_context_root = ConvertTo-McNormalizedPath -Path (Join-Path $PSScriptRoot '..\..') -ResolveExisting
-            path_entries = @($pathEntries | Sort-Object)
-            entry_count = $pathEntries.Count
+            entry_count = @($hostEnvironment.persistent_effective_path).Count
         }
         environment = [pscustomobject][ordered]@{
-            path_summary = @($pathEntries | Sort-Object)
+            scope = 'windows-host'
+            path_summary = @($hostEnvironment.persistent_effective_path)
             shell_profiles = @($profiles)
         }
         command_resolution = @($resolution | Sort-Object command)
     }
+    $local = [pscustomobject][ordered]@{
+        scope = 'collector-process'
+        environment = $processEnvironment
+        command_resolution = @($processResolution | Sort-Object command)
+    }
 
-    $health = if ($shells.Count -gt 0) { 'success' } else { 'partial' }
-    return New-McProviderPayload -Value $value -Health $health -ResultCount ($shells.Count + $resolution.Count) -Warnings @($warnings) -CoverageComplete $false
+    $health = if ($failureCount -gt 0) { 'partial' } elseif ($shells.Count -gt 0) { 'success' } else { 'partial' }
+    $value.candidates = @($shellCandidates)
+    return New-McProviderPayload -Value $value -Local $local -Health $health -ResultCount ($shells.Count + $resolution.Count) -Warnings @($warnings) -CoverageComplete $false -VerificationEvents @($verificationEvents)
 }

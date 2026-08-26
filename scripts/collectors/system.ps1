@@ -127,7 +127,10 @@ function Get-McSystemHardwareObservation {
     $build = Get-McRegistryValue -Path $currentVersion -Name 'CurrentBuild'
     $ubr = Get-McRegistryValue -Path $currentVersion -Name 'UBR'
 
-    if ($null -ne $productName) { $system.product_name = [string]$productName }
+    if ($null -ne $productName) {
+        $system.raw_product_name = [string]$productName
+        $system.normalized_family = Get-McWindowsNormalizedFamily -ProductName ([string]$productName) -BuildNumber ([string]$build)
+    }
     if ($null -ne $edition) { $system.edition = [string]$edition }
     if ($null -ne $displayVersion) { $system.display_version = [string]$displayVersion }
     if ($null -ne $build) { $system.build_number = [string]$build }
@@ -185,8 +188,8 @@ function Get-McSystemHardwareObservation {
         $record = [ordered]@{ name = ([string]$name).Trim() }
         $driver = Get-McOptionalProperty -InputObject $gpu -Name 'DriverVersion'
         if ($null -ne $driver) { $record.driver_version = [string]$driver }
-        $vram = Get-McOptionalProperty -InputObject $gpu -Name 'AdapterRAM'
-        if ($null -ne $vram -and [int64]$vram -gt 0) { $record.vram_bytes = [int64]$vram }
+        $record.vram_status = 'unknown'
+        $record.vram_source = if ([string]$name -match '(?i)nvidia') { 'nvidia-smi-required' } else { 'dedicated-verifier-required' }
         [void]$gpuRecords.Add([pscustomobject]$record)
     }
     if ($gpuRecords.Count -gt 0) { $hardware.gpus = $gpuRecords }

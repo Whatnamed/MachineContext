@@ -5,7 +5,6 @@ function Get-McAiDefinitions {
     param()
 
     return @(
-        [pscustomobject]@{ id = 'codex'; name = 'Codex'; command = 'codex'; args = @('--version') },
         [pscustomobject]@{ id = 'dsh'; name = 'DSH'; command = 'dsh'; args = @('--version') },
         [pscustomobject]@{ id = 'agy'; name = 'Agy'; command = 'agy'; args = @('--version') },
         [pscustomobject]@{ id = 'claude-code'; name = 'Claude Code'; command = 'claude'; args = @('--version') },
@@ -54,13 +53,26 @@ function Get-McAiToolObservations {
     $entities = [System.Collections.Generic.List[object]]::new()
     $candidates = [System.Collections.Generic.List[object]]::new()
     $relationships = [System.Collections.Generic.List[object]]::new()
+    $verificationEvents = [System.Collections.Generic.List[object]]::new()
+    $failureCount = 0
 
     foreach ($definition in (Get-McAiDefinitions)) {
         $commands = @(Get-McExecutableCandidates -Executable $definition.command)
-        if ($commands.Count -eq 0) { continue }
+        if ($commands.Count -eq 0) {
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'ai'
+                    id = [string]$definition.id
+                    provider = 'ai-tooling'
+                    verification = 'unverified'
+                    reason = 'persistent-command-not-found'
+                    source_key = [string]$definition.command
+                })
+            continue
+        }
         $primary = $commands[0]
         $probe = Invoke-McProbe -Executable $primary.path -Arguments @($definition.args) -Provider 'ai-tooling' -ProbeName ([string]$definition.id) -TimeoutMs 8000 -OutputCapBytes 8192
         if ($probe.status -ne 'success') {
+            $failureCount++
             [void]$candidates.Add([pscustomobject][ordered]@{
                 candidate_id = New-McStableId -Kind 'ai-candidate' -Identity ("{0}|{1}" -f $definition.id, $primary.path)
                 kind_hint = 'ai-tool'
@@ -70,12 +82,21 @@ function Get-McAiToolObservations {
                 source_key = [string]$definition.command
                 confidence_hint = 'low'
                 evidence = @([pscustomobject][ordered]@{ type = 'command_resolves'; verifier_status = [string]$probe.status })
-            })
+                })
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'ai'
+                    id = [string]$definition.id
+                    provider = 'ai-tooling'
+                    verification = 'unverified'
+                    reason = [string]$probe.status
+                    source_key = [string]$definition.command
+                })
             continue
         }
 
         $observed = [ordered]@{
             present = $true
+            verification = 'verified-present'
             version = Get-McProbeVersionText -Probe $probe
             executable = ConvertTo-McNormalizedPath -Path ([string]$primary.path)
             command_resolution = @(
@@ -129,17 +150,19 @@ function Get-McAiToolObservations {
     $codex = @($entities | Where-Object id -eq 'codex' | Select-Object -First 1)
     $authCheck = @($pathObservations | Where-Object id -eq 'codex-auth' | Select-Object -First 1)
     if ($codex.Count -gt 0 -and $authCheck.Count -gt 0 -and $authCheck[0].exists) {
-        $codex[0].observed.config_paths = @([pscustomobject][ordered]@{
+        $configPaths = @([pscustomobject][ordered]@{
             path = $authCheck[0].path
             exists = $true
             kind = 'auth-file'
         })
+        $codex[0].observed | Add-Member -MemberType NoteProperty -Name 'config_paths' -Value $configPaths -Force
     }
 
+    $health = if ($failureCount -gt 0) { 'partial' } else { 'success' }
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{
             entities = @($entities)
             candidates = @($candidates)
             path_observations = @($pathObservations)
             relationships = @($relationships)
-        }) -Health 'success' -ResultCount ($entities.Count + $pathObservations.Count) -CoverageComplete $false
+        }) -Health $health -ResultCount ($entities.Count + $pathObservations.Count) -CoverageComplete $false -VerificationEvents @($verificationEvents)
 }

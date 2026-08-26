@@ -17,6 +17,18 @@ Canonical structured files are JSON:
 
 PowerShell maintenance code must use repository JSON helpers rather than each collector independently serializing files.
 
+### PowerShell value contract
+
+Before serialization, every value is classified explicitly:
+
+- scalar: `null`, strings/chars, primitive values, decimals, timestamps, GUIDs, and URIs;
+- mapping: `IDictionary` or an actual `PSCustomObject`;
+- sequence: arrays, lists, or other explicit `IEnumerable` collections, except strings, mappings, and scalar values.
+
+`Copy-McValue` recursively clones mappings and sequences while preserving empty, single-item, and multi-item arrays. `ConvertTo-McStableObject` uses the same classification. JSON round-tripping is not used to guess a source value's type, and unsupported object types fail rather than expanding their .NET adapter properties.
+
+Canonical JSON must never contain collection metadata such as `SyncRoot`, `IsFixedSize`, `IsReadOnly`, `LongLength`, or `Rank`. The validator rejects those properties and rejects literal current-user profile paths where `%USERPROFILE%` normalization is sufficient.
+
 ## Ownership: observed vs curated
 
 When an entity mixes machine-detectable and semantic information, split ownership:
@@ -94,6 +106,19 @@ failed
 ```
 
 A failed provider cannot provide negative evidence for removal.
+
+## Observation verification state
+
+When an observed record has a `present` field, its evidence state may be:
+
+```text
+verified-present
+unverified
+stale
+verified-absent
+```
+
+`verified-present` requires a successful applicable direct/provider check. `unverified` is used after a failed, timed-out, or unavailable check while preserving the previous observed fields; it never means that software was removed. `stale` is an explicit retained state for facts that need a fresh check. `verified-absent` is reserved for a successful, high-confidence applicable absence check; the record remains in canonical JSON with `present: false` and a `last_known` observed snapshot. Provider health and observation verification are separate dimensions.
 
 ## Freshness
 
@@ -178,6 +203,8 @@ A relationship may be detected, inferred, or curated. Do not silently promote a 
 ## Environment scope
 
 V1 primary scope is the Windows host. Records that belong to another environment (WSL, container, project-local virtual environment) must carry or inherit an explicit scope instead of being flattened into Windows host state.
+
+For Windows command/path facts, `windows-host` means the persistent Machine PATH followed by the persistent User PATH. The collector's current process scope is `collector-process`; its injected PATH and `Get-Command` results are diagnostics-only under ignored `.local` state and must not be published as host truth. A future WSL record uses the reserved `wsl:<distro>` form.
 
 The full multi-scope schema can evolve later, but V1 data must not make future separation impossible.
 

@@ -12,7 +12,13 @@ function New-McProviderPayload {
         [int]$ResultCount = 0,
         [string[]]$Warnings = @(),
         [bool]$CoverageComplete = $false,
-        [bool]$Optional = $false
+        [bool]$Optional = $false,
+
+        [AllowNull()]
+        [object]$Local,
+
+        [AllowNull()]
+        [object[]]$VerificationEvents = @()
     )
 
     return [pscustomobject][ordered]@{
@@ -22,6 +28,8 @@ function New-McProviderPayload {
         warnings          = @($Warnings)
         coverage_complete = $CoverageComplete
         optional          = $Optional
+        local             = $Local
+        verification_events = @($VerificationEvents)
     }
 }
 
@@ -54,12 +62,21 @@ function Invoke-McSafeProvider {
         foreach ($warning in $warnings) {
             Add-McDiagnosticWarning -Diagnostics $CollectionState.diagnostics -Message ("{0}: {1}" -f $Provider, $warning)
         }
-        [void](Add-McProviderDiagnostic -Diagnostics $CollectionState.diagnostics -Provider $Provider -Health ([string]$payload.health) -DurationMs $duration -ResultCount ([int]$payload.result_count) -WarningCount $warnings.Count -CoverageComplete ([bool]$payload.coverage_complete) -Optional ([bool]$payload.optional))
+        foreach ($event in @($payload.verification_events)) {
+            if ($null -ne $event) { [void]$CollectionState.verification_events.Add($event) }
+        }
+        $providerOptional = $Optional -or ([bool]$payload.optional)
+        [void](Add-McProviderDiagnostic -Diagnostics $CollectionState.diagnostics -Provider $Provider -Health ([string]$payload.health) -DurationMs $duration -ResultCount ([int]$payload.result_count) -WarningCount $warnings.Count -CoverageComplete ([bool]$payload.coverage_complete) -Optional $providerOptional)
         return $payload
     }
     catch {
         $duration = (([System.Diagnostics.Stopwatch]::GetTimestamp() - $started) * 1000.0) / [System.Diagnostics.Stopwatch]::Frequency
         Add-McDiagnosticError -Diagnostics $CollectionState.diagnostics -Message ("{0}: {1}" -f $Provider, $_.Exception.Message)
+        [void]$CollectionState.provider_failures.Add([pscustomobject][ordered]@{
+                provider = $Provider
+                health = 'failed'
+                message = (ConvertTo-McSafeDiagnosticText -Text $_.Exception.Message)
+            })
         [void](Add-McProviderDiagnostic -Diagnostics $CollectionState.diagnostics -Provider $Provider -Health 'failed' -DurationMs $duration -ResultCount 0 -WarningCount 1 -Message $_.Exception.Message -CoverageComplete $false -Optional $Optional)
         return (New-McProviderPayload -Value $null -Health 'failed' -Warnings @($_.Exception.Message) -Optional $Optional)
     }
@@ -145,6 +162,9 @@ function New-McCollectionState {
         diagnostics  = New-McDiagnosticsContext -Mode $RunContext.mode
         observations = $observations
         candidates   = [System.Collections.Generic.List[object]]::new()
+        local_diagnostics = [ordered]@{}
+        verification_events = [System.Collections.Generic.List[object]]::new()
+        provider_failures = [System.Collections.Generic.List[object]]::new()
     }
 }
 
@@ -164,9 +184,141 @@ function Add-McModuleObservations {
 
     foreach ($entity in @($Entities)) {
         if ($null -ne $entity) {
-            [void]$CollectionState.observations.software[$Module].Add($entity)
+            $list = $CollectionState.observations.software[$Module]
+            $existingIndex = -1
+            for ($index = 0; $index -lt $list.Count; $index++) {
+                if ([string]$list[$index].id -ieq [string]$entity.id) {
+                    $existingIndex = $index
+                    break
+                }
+            }
+            if ($existingIndex -ge 0) {
+                $list[$existingIndex] = $entity
+            }
+            else {
+                [void]$list.Add($entity)
+            }
         }
     }
+}
+
+function Get-McCollectionProperty {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if ($null -eq $InputObject) { return $null }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        if ($InputObject.Contains($Name)) { return $InputObject[$Name] }
+        return $null
+    }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $null }
+    return $property.Value
+}
+
+function Set-McCollectionProperty {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name,
+
+        [AllowNull()]
+        [object]$Value
+    )
+
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        $InputObject[$Name] = $Value
+        return
+    }
+    if ($null -ne $InputObject.PSObject.Properties[$Name]) {
+        $InputObject.$Name = $Value
+    }
+    else {
+        Add-Member -InputObject $InputObject -MemberType NoteProperty -Name $Name -Value $Value
+    }
+}
+
+function Add-McCollectionMachineShells {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Machine,
+
+        [AllowNull()]
+        [object[]]$Shells
+    )
+
+    $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($shell in @(Get-McCollectionProperty -InputObject $Machine -Name 'shells')) {
+        if ($null -ne $shell -and -not [string]::IsNullOrWhiteSpace([string]$shell.id)) {
+            $map[[string]$shell.id] = $shell
+        }
+    }
+    foreach ($shell in @($Shells)) {
+        if ($null -ne $shell -and -not [string]::IsNullOrWhiteSpace([string]$shell.id)) {
+            $map[[string]$shell.id] = $shell
+        }
+    }
+    Set-McCollectionProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object id)
+}
+
+function Merge-McCollectionGpuVerifications {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Machine,
+
+        [AllowNull()]
+        [object[]]$Verifications
+    )
+
+    if ($null -eq (Get-McCollectionProperty -InputObject $Machine -Name 'hardware')) {
+        Set-McCollectionProperty -InputObject $Machine -Name 'hardware' -Value ([pscustomobject][ordered]@{})
+    }
+    $hardware = Get-McCollectionProperty -InputObject $Machine -Name 'hardware'
+    $gpus = [System.Collections.Generic.List[object]]::new()
+    foreach ($gpu in @(Get-McCollectionProperty -InputObject $hardware -Name 'gpus')) {
+        if ($null -ne $gpu) { [void]$gpus.Add($gpu) }
+    }
+
+    foreach ($verification in @($Verifications)) {
+        if ($null -eq $verification -or [string]::IsNullOrWhiteSpace([string]$verification.name)) { continue }
+        $match = @($gpus | Where-Object { [string]$_.name -eq [string]$verification.name } | Select-Object -First 1)
+        if ($match.Count -eq 0) {
+            $record = [ordered]@{
+                name = [string]$verification.name
+                verification = [string]$verification.verification
+                vram_source = [string]$verification.vram_source
+            }
+            if ($null -ne $verification.PSObject.Properties['driver_version']) { $record.driver_version = [string]$verification.driver_version }
+            if ($null -ne $verification.PSObject.Properties['vram_bytes']) { $record.vram_bytes = [int64]$verification.vram_bytes; $record.vram_status = 'verified' }
+            [void]$gpus.Add([pscustomobject]$record)
+            continue
+        }
+        $record = $match[0]
+        foreach ($name in @('driver_version', 'vram_bytes', 'vram_source', 'verification')) {
+            $property = $verification.PSObject.Properties[$name]
+            if ($null -ne $property -and $null -ne $property.Value) {
+                Set-McCollectionProperty -InputObject $record -Name $name -Value (Copy-McValue -InputObject $property.Value)
+            }
+        }
+        if ($null -ne $verification.PSObject.Properties['vram_bytes']) {
+            Set-McCollectionProperty -InputObject $record -Name 'vram_status' -Value 'verified'
+        }
+        $existingEvidence = @((Get-McCollectionProperty -InputObject $record -Name 'evidence') | Where-Object { $null -ne $_ })
+        $newEvidence = @((Get-McCollectionProperty -InputObject $verification -Name 'evidence') | Where-Object { $null -ne $_ })
+        Set-McCollectionProperty -InputObject $record -Name 'evidence' -Value @($existingEvidence + $newEvidence)
+    }
+    Set-McCollectionProperty -InputObject $hardware -Name 'gpus' -Value @($gpus | Sort-Object name)
 }
 
 function Invoke-McCollection {
@@ -193,8 +345,14 @@ function Invoke-McCollection {
     }
     if ($null -ne $shells.value) {
         foreach ($property in (Get-McPropertyEntries -InputObject $shells.value)) {
-            $machine[$property.Name] = $property.Value
+            if ($property.Name -ne 'candidates') { $machine[$property.Name] = $property.Value }
         }
+        foreach ($candidate in @($shells.value.candidates)) {
+            if ($null -ne $candidate) { Add-McCandidateListItem -CollectionState $state -Candidate $candidate }
+        }
+    }
+    if ($null -ne $shells.local) {
+        $state.local_diagnostics.shells = $shells.local
     }
 
     $runtimes = Invoke-McSafeProvider -CollectionState $state -Provider 'runtimes-package-managers-toolchain' -Action {
@@ -230,6 +388,46 @@ function Invoke-McCollection {
             }
         }
     }
+
+    $gitForWindows = Invoke-McSafeProvider -CollectionState $state -Provider 'git-for-windows' -Action {
+        Get-McGitForWindowsObservation
+    }
+    if ($null -ne $gitForWindows.value) {
+        Add-McModuleObservations -CollectionState $state -Module 'development' -Entities @($gitForWindows.value.development_entities)
+        Add-McCollectionMachineShells -Machine $machine -Shells @($gitForWindows.value.shells)
+        foreach ($candidate in @($gitForWindows.value.candidates)) {
+            if ($null -ne $candidate) { Add-McCandidateListItem -CollectionState $state -Candidate $candidate }
+        }
+    }
+
+    $visualStudio = Invoke-McSafeProvider -CollectionState $state -Provider 'visual-studio-msvc-sdk' -Action {
+        Get-McVisualStudioObservation
+    } -Optional $true
+    if ($null -ne $visualStudio.value) {
+        Add-McModuleObservations -CollectionState $state -Module 'development' -Entities @($visualStudio.value.development_entities)
+        foreach ($candidate in @($visualStudio.value.candidates)) {
+            if ($null -ne $candidate) { Add-McCandidateListItem -CollectionState $state -Candidate $candidate }
+        }
+    }
+
+    $hardwareVerifiers = Invoke-McSafeProvider -CollectionState $state -Provider 'nvidia-smi' -Action {
+        Get-McNvidiaSmiObservation
+    } -Optional $true
+    if ($null -ne $hardwareVerifiers.value) {
+        Merge-McCollectionGpuVerifications -Machine $machine -Verifications @($hardwareVerifiers.value.gpu_verifications)
+    }
+
+    $hostTools = Invoke-McSafeProvider -CollectionState $state -Provider 'host-authoritative-tools' -Action {
+        Get-McHostAuthoritativeToolObservation
+    }
+    if ($null -ne $hostTools.value) {
+        Add-McModuleObservations -CollectionState $state -Module 'development' -Entities @($hostTools.value.development_entities)
+        Add-McModuleObservations -CollectionState $state -Module 'ai' -Entities @($hostTools.value.ai_entities)
+        foreach ($candidate in @($hostTools.value.candidates)) {
+            if ($null -ne $candidate) { Add-McCandidateListItem -CollectionState $state -Candidate $candidate }
+        }
+    }
+    if ($null -ne $hostTools.local) { $state.local_diagnostics.host_authoritative_tools = $hostTools.local }
 
     $network = Invoke-McSafeProvider -CollectionState $state -Provider 'network-local-services' -Action {
         Get-McNetworkObservation
@@ -280,6 +478,8 @@ function Invoke-McCollection {
         }
     }
 
+    $state.observations.verification_events = @($state.verification_events)
+    $state.observations.provider_failures = @($state.provider_failures)
     $state.observations.machine = [pscustomobject]$machine
     $state.diagnostics.finished_at = (Get-Date).ToUniversalTime().ToString('o')
     $state.diagnostics.overall_health = Get-McOverallProviderHealth -Providers $state.diagnostics.providers
@@ -294,7 +494,7 @@ function Invoke-McCollection {
             run_id         = $RunContext.run_id
             mode           = $RunContext.mode
             candidates     = $state.candidates
-        }) -Diagnostics $state.diagnostics
+        }) -Diagnostics $state.diagnostics -LocalDiagnostics $state.local_diagnostics
     Write-McLocalState -RunContext $RunContext -Diagnostics $state.diagnostics
 
     return [pscustomobject][ordered]@{
@@ -311,6 +511,10 @@ $collectorRoot = Join-Path (Split-Path -Parent $PSScriptRoot) 'collectors'
 foreach ($collector in @(
         'system.ps1',
         'shells.ps1',
+        'git-for-windows.ps1',
+        'hardware-verifiers.ps1',
+        'visual-studio.ps1',
+        'host-tool-verifiers.ps1',
         'runtimes.ps1',
         'ai-tools.ps1',
         'network.ps1',

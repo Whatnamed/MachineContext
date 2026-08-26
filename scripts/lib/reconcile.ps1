@@ -46,6 +46,97 @@ function Set-McObjectProperty {
     }
 }
 
+function Remove-McObjectProperty {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if ($null -eq $InputObject) { return }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        if ($InputObject.Contains($Name)) { [void]$InputObject.Remove($Name) }
+        return
+    }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -ne $property) { $InputObject.PSObject.Properties.Remove($Name) }
+}
+
+function Set-McObservedVerification {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Record,
+
+        [Parameter(Mandatory)]
+        [object]$Event
+    )
+
+    $state = [string]$Event.verification
+    if ($state -notin @('verified-present', 'unverified', 'stale', 'verified-absent')) { return }
+    $observed = Get-McObjectPropertyOrNull -InputObject $Record -Name 'observed'
+    if ($null -eq $observed) {
+        $observed = [pscustomobject][ordered]@{}
+        Set-McObjectProperty -InputObject $Record -Name 'observed' -Value $observed
+    }
+
+    if ($state -eq 'verified-absent') {
+        $lastKnown = Copy-McJsonObject -InputObject $observed
+        Remove-McObjectProperty -InputObject $lastKnown -Name 'last_known'
+        Set-McObjectProperty -InputObject $observed -Name 'last_known' -Value $lastKnown
+        Set-McObjectProperty -InputObject $observed -Name 'present' -Value $false
+    }
+    elseif ($state -eq 'verified-present') {
+        Set-McObjectProperty -InputObject $observed -Name 'present' -Value $true
+    }
+
+    Set-McObjectProperty -InputObject $observed -Name 'verification' -Value $state
+    if ($null -ne $Event.PSObject.Properties['provider']) {
+        Set-McObjectProperty -InputObject $observed -Name 'verification_provider' -Value ([string]$Event.provider)
+    }
+    if ($null -ne $Event.PSObject.Properties['reason']) {
+        Set-McObjectProperty -InputObject $observed -Name 'verification_reason' -Value ([string]$Event.reason)
+    }
+}
+
+function Get-McProviderFailureEvents {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object[]]$Failures
+    )
+
+    $targets = [ordered]@{
+        'runtimes-package-managers-toolchain' = @([pscustomobject]@{ module = 'development'; ids = @('node', 'python', 'python-launcher', 'go', 'rustc', 'cargo', 'rustup', 'java', 'flutter', 'dart', 'ruby', 'php', 'deno', 'npm', 'pnpm', 'yarn', 'bun', 'pip', 'pipx', 'uv', 'uvx', 'conda', 'mamba', 'nvm', 'fnm', 'volta', 'pyenv', 'mise', 'git-lfs', 'cmake', 'ninja', 'adb', 'nvcc', 'gh', 'docker', 'kubectl', 'vercel', 'wrangler', 'firebase', 'aws', 'az', 'gcloud', 'terraform', 'winget', 'choco', 'scoop') })
+        'ai-tooling' = @([pscustomobject]@{ module = 'ai'; ids = @('dsh', 'agy', 'claude-code', 'gemini-cli', 'cursor-cli', 'windsurf-cli') })
+        'shells-path-resolution' = @([pscustomobject]@{ module = 'machine.shells'; ids = @('shell-pwsh', 'shell-windows-powershell', 'shell-cmd', 'shell-ssh') })
+        'git-for-windows' = @([pscustomobject]@{ module = 'development'; ids = @('git') }, [pscustomobject]@{ module = 'machine.shells'; ids = @('shell-git-bash') })
+        'visual-studio-msvc-sdk' = @([pscustomobject]@{ module = 'development'; ids = @('visual-studio') })
+        'host-authoritative-tools' = @([pscustomobject]@{ module = 'development'; ids = @('dotnet', 'code', 'supabase') }, [pscustomobject]@{ module = 'ai'; ids = @('codex-cli', 'codex-desktop') })
+        'network-local-services' = @([pscustomobject]@{ module = 'network.wsl'; ids = @('wsl') })
+    }
+    $events = [System.Collections.Generic.List[object]]::new()
+    foreach ($failure in @($Failures)) {
+        if ($null -eq $failure) { continue }
+        $provider = [string]$failure.provider
+        foreach ($target in @($targets[$provider])) {
+            foreach ($id in @($target.ids)) {
+                [void]$events.Add([pscustomobject][ordered]@{
+                        module = [string]$target.module
+                        id = [string]$id
+                        provider = $provider
+                        verification = 'unverified'
+                        reason = 'provider-failed'
+                    })
+            }
+        }
+    }
+    return @($events)
+}
+
 function Merge-McObservedObject {
     [CmdletBinding()]
     param(
@@ -64,8 +155,8 @@ function Merge-McObservedObject {
         if ($null -eq $value) { continue }
         if ($property.Name -eq 'evidence') {
             $items = [System.Collections.Generic.List[object]]::new()
-            foreach ($item in @((Get-McObjectPropertyOrNull -InputObject $merged -Name 'evidence'))) { [void]$items.Add($item) }
-            foreach ($item in @($value)) { [void]$items.Add($item) }
+            foreach ($item in @((Get-McObjectPropertyOrNull -InputObject $merged -Name 'evidence') | Where-Object { $null -ne $_ })) { [void]$items.Add($item) }
+            foreach ($item in @($value | Where-Object { $null -ne $_ })) { [void]$items.Add($item) }
             $unique = [System.Collections.Generic.List[object]]::new()
             $seen = [System.Collections.Generic.HashSet[string]]::new()
             foreach ($item in $items) {
@@ -96,18 +187,32 @@ function New-McObservedEntityRecord {
         $record = Copy-McJsonObject -InputObject $Existing
         $previousObserved = Get-McObjectPropertyOrNull -InputObject $record -Name 'observed'
         $currentObserved = Get-McObjectPropertyOrNull -InputObject $Observation -Name 'observed'
+        $currentVerification = Get-McObjectPropertyOrNull -InputObject $currentObserved -Name 'verification'
+        $currentPresent = Get-McObjectPropertyOrNull -InputObject $currentObserved -Name 'present'
+        $previousPresent = Get-McObjectPropertyOrNull -InputObject $previousObserved -Name 'present'
+        if ($currentVerification -in @('unverified', 'stale') -and $currentPresent -eq $false -and $previousPresent -eq $true) {
+            $safeCurrent = Copy-McJsonObject -InputObject $currentObserved
+            Remove-McObjectProperty -InputObject $safeCurrent -Name 'present'
+            $currentObserved = $safeCurrent
+        }
         Set-McObjectProperty -InputObject $record -Name 'observed' -Value (Merge-McObservedObject -Previous $previousObserved -Current $currentObserved)
         $name = Get-McObjectPropertyOrNull -InputObject $Observation -Name 'name'
         if (-not [string]::IsNullOrWhiteSpace([string]$name)) { Set-McObjectProperty -InputObject $record -Name 'name' -Value ([string]$name) }
         return $record
     }
 
+    $observed = Copy-McJsonObject -InputObject $Observation.observed
+    $observedPresent = Get-McObjectPropertyOrNull -InputObject $observed -Name 'present'
+    $observedVerification = Get-McObjectPropertyOrNull -InputObject $observed -Name 'verification'
+    if ($null -ne $observed -and $observedPresent -eq $true -and $null -eq $observedVerification) {
+        Set-McObjectProperty -InputObject $observed -Name 'verification' -Value 'verified-present'
+    }
     $record = [ordered]@{
         schema_version = 1
         id = [string]$Observation.id
         kind = [string]$Observation.kind
         name = [string]$Observation.name
-        observed = Copy-McJsonObject -InputObject $Observation.observed
+        observed = $observed
         curated = [ordered]@{ status = 'unknown' }
     }
     return [pscustomobject]$record
@@ -120,7 +225,13 @@ function Merge-McSoftwareModule {
         [object]$Module,
 
         [AllowNull()]
-        [object[]]$Observations
+        [object[]]$Observations,
+
+        [AllowNull()]
+        [object[]]$VerificationEvents = @(),
+
+        [ValidateSet('development', 'ai')]
+        [string]$ModuleName = 'development'
     )
 
     $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -133,6 +244,26 @@ function Merge-McSoftwareModule {
     foreach ($observation in @($Observations | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
         $existing = if ($map.ContainsKey([string]$observation.id)) { $map[[string]$observation.id] } else { $null }
         $map[[string]$observation.id] = New-McObservedEntityRecord -Observation $observation -Existing $existing
+    }
+
+    foreach ($event in @($VerificationEvents | Where-Object { $null -ne $_ -and [string]$_.module -eq $ModuleName -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
+        if ($map.ContainsKey([string]$event.id)) {
+            Set-McObservedVerification -Record $map[[string]$event.id] -Event $event
+        }
+    }
+
+    if ($ModuleName -eq 'ai' -and $map.ContainsKey('codex') -and $map.ContainsKey('codex-cli')) {
+        $legacyCodex = $map['codex']
+        $codexCli = $map['codex-cli']
+        $legacyObserved = Get-McObjectPropertyOrNull -InputObject $legacyCodex -Name 'observed'
+        $currentObserved = Get-McObjectPropertyOrNull -InputObject $codexCli -Name 'observed'
+        Set-McObjectProperty -InputObject $codexCli -Name 'observed' -Value (Merge-McObservedObject -Previous $legacyObserved -Current $currentObserved)
+        $legacyCurated = Get-McObjectPropertyOrNull -InputObject $legacyCodex -Name 'curated'
+        $currentCurated = Get-McObjectPropertyOrNull -InputObject $codexCli -Name 'curated'
+        if ($null -ne $legacyCurated -and ($null -eq $currentCurated -or [string]$currentCurated.status -eq 'unknown')) {
+            Set-McObjectProperty -InputObject $codexCli -Name 'curated' -Value (Copy-McJsonObject -InputObject $legacyCurated)
+        }
+        [void]$map.Remove('codex')
     }
 
     $Module.software = @($map.Values | Sort-Object id)
@@ -173,6 +304,37 @@ function Set-McCanonicalObservedSection {
         Set-McObjectProperty -InputObject $section -Name 'curated' -Value ([pscustomobject][ordered]@{})
     }
     Set-McObjectProperty -InputObject $section -Name 'observed' -Value (Copy-McJsonObject -InputObject $ObservedValue)
+}
+
+function Merge-McMachineShells {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Machine,
+
+        [AllowNull()]
+        [object[]]$Current,
+
+        [AllowNull()]
+        [object[]]$VerificationEvents = @()
+    )
+
+    $map = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($shell in @((Get-McObjectPropertyOrNull -InputObject $Machine -Name 'shells'))) {
+        if ($null -ne $shell -and -not [string]::IsNullOrWhiteSpace([string]$shell.id)) {
+            $map[[string]$shell.id] = Copy-McJsonObject -InputObject $shell
+        }
+    }
+    foreach ($shell in @($Current | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
+        $existing = if ($map.ContainsKey([string]$shell.id)) { $map[[string]$shell.id] } else { $null }
+        $map[[string]$shell.id] = New-McObservedEntityRecord -Observation $shell -Existing $existing
+    }
+    foreach ($event in @($VerificationEvents | Where-Object { $null -ne $_ -and [string]$_.module -eq 'machine.shells' -and -not [string]::IsNullOrWhiteSpace([string]$_.id) })) {
+        if ($map.ContainsKey([string]$event.id)) {
+            Set-McObservedVerification -Record $map[[string]$event.id] -Event $event
+        }
+    }
+    Set-McObjectProperty -InputObject $Machine -Name 'shells' -Value @($map.Values | Sort-Object id)
 }
 
 function Get-McProjectRecordFileName {
@@ -331,13 +493,15 @@ function Invoke-McReconciliation {
     Copy-McCanonicalToStage -RunContext $RunContext
     $contextRoot = $RunContext.proposed_context
     $observations = $CollectionResult.observations
+    $verificationEvents = @((Get-McObjectPropertyOrNull -InputObject $observations -Name 'verification_events'))
+    $verificationEvents += @(Get-McProviderFailureEvents -Failures @((Get-McObjectPropertyOrNull -InputObject $observations -Name 'provider_failures')))
 
     $machinePath = Join-Path $contextRoot 'machine.json'
     $machine = Read-McJson -Path $machinePath
     Set-McCanonicalObservedSection -Document $machine -SectionName 'system' -ObservedValue $observations.machine.system
     Set-McCanonicalObservedSection -Document $machine -SectionName 'hardware' -ObservedValue $observations.machine.hardware
     if ($null -ne $observations.machine.storage) { Set-McObjectProperty -InputObject $machine -Name 'storage' -Value @($observations.machine.storage) }
-    if ($null -ne $observations.machine.shells) { Set-McObjectProperty -InputObject $machine -Name 'shells' -Value @($observations.machine.shells) }
+    Merge-McMachineShells -Machine $machine -Current @($observations.machine.shells) -VerificationEvents $verificationEvents
     if ($null -ne $observations.machine.paths) {
         $existingKnownRoots = @((Get-McObjectPropertyOrNull -InputObject $machine.paths -Name 'known_roots'))
         Set-McObjectProperty -InputObject $machine -Name 'paths' -Value (Copy-McJsonObject -InputObject $observations.machine.paths)
@@ -355,13 +519,31 @@ function Invoke-McReconciliation {
     if ($null -ne $observations.network.local_services) { Set-McObjectProperty -InputObject $network -Name 'local_services' -Value @($observations.network.local_services) }
     if ($null -ne $observations.network.ports) { Set-McObjectProperty -InputObject $network -Name 'ports' -Value @($observations.network.ports) }
     if ($null -ne $observations.network.constraints) { Set-McObjectProperty -InputObject $network -Name 'constraints' -Value @($observations.network.constraints) }
-    if ($null -ne $observations.network.wsl) { Set-McObjectProperty -InputObject $network -Name 'wsl' -Value (Copy-McJsonObject -InputObject $observations.network.wsl) }
+    if ($null -ne $observations.network.wsl) {
+        $currentWsl = $observations.network.wsl
+        $existingWsl = Get-McObjectPropertyOrNull -InputObject $network -Name 'wsl'
+        $currentWslVerification = Get-McObjectPropertyOrNull -InputObject $currentWsl -Name 'verification'
+        if ($null -ne $existingWsl -and $currentWslVerification -in @('unverified', 'stale')) {
+            Set-McObjectProperty -InputObject $network -Name 'wsl' -Value (Merge-McObservedObject -Previous $existingWsl -Current $currentWsl)
+        }
+        else {
+            Set-McObjectProperty -InputObject $network -Name 'wsl' -Value (Copy-McJsonObject -InputObject $currentWsl)
+        }
+    }
+    $wslRecord = Get-McObjectPropertyOrNull -InputObject $network -Name 'wsl'
+    foreach ($event in @($verificationEvents | Where-Object { $null -ne $_ -and [string]$_.module -eq 'network.wsl' -and [string]$_.id -eq 'wsl' })) {
+        if ($null -ne $wslRecord) {
+            $wrapper = [pscustomobject][ordered]@{ id = 'wsl'; observed = $wslRecord }
+            Set-McObservedVerification -Record $wrapper -Event $event
+            Set-McObjectProperty -InputObject $network -Name 'wsl' -Value $wrapper.observed
+        }
+    }
     Write-McJson -Path $networkPath -InputObject $network
 
     foreach ($moduleName in @('development', 'ai')) {
         $path = Join-Path $contextRoot ("software\{0}.json" -f $moduleName)
         $module = Read-McJson -Path $path
-        $module = Merge-McSoftwareModule -Module $module -Observations @($observations.software.$moduleName)
+        $module = Merge-McSoftwareModule -Module $module -ModuleName $moduleName -Observations @($observations.software.$moduleName) -VerificationEvents $verificationEvents
         Write-McJson -Path $path -InputObject $module
     }
 

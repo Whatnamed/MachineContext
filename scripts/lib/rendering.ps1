@@ -101,7 +101,15 @@ function Invoke-McRender {
     $hardwareSection = Get-McRenderProperty -InputObject $machine -Name 'hardware' -Default ([pscustomobject][ordered]@{})
     $system = Get-McRenderProperty -InputObject $systemSection -Name 'observed' -Default ([pscustomobject][ordered]@{})
     $hardware = Get-McRenderProperty -InputObject $hardwareSection -Name 'observed' -Default ([pscustomobject][ordered]@{})
-    $productName = Get-McRenderProperty -InputObject $system -Name 'product_name'
+    $normalizedFamily = Get-McRenderProperty -InputObject $system -Name 'normalized_family'
+    $productName = if (-not [string]::IsNullOrWhiteSpace([string]$normalizedFamily)) {
+        $normalizedFamily
+    }
+    else {
+        $rawProductName = Get-McRenderProperty -InputObject $system -Name 'raw_product_name'
+        if ($null -eq $rawProductName) { $rawProductName = Get-McRenderProperty -InputObject $system -Name 'product_name' }
+        $rawProductName
+    }
     $edition = Get-McRenderProperty -InputObject $system -Name 'edition'
     $displayVersion = Get-McRenderProperty -InputObject $system -Name 'display_version'
     $buildNumber = Get-McRenderProperty -InputObject $system -Name 'build_number'
@@ -146,7 +154,9 @@ function Invoke-McRender {
     }
     else {
         foreach ($item in $developmentItems) {
-            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $item.observed.version), (ConvertTo-McMarkdownValue -Value $item.observed.executable)))
+            $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+            $itemExecutable = Get-McRenderProperty -InputObject $item.observed -Name 'executable'
+            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemExecutable)))
         }
     }
 
@@ -158,7 +168,11 @@ function Invoke-McRender {
         [void]$lines.Add('- No verified AI tools recorded yet.')
     }
     else {
-        foreach ($item in $aiItems) { [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $item.observed.version), (ConvertTo-McMarkdownValue -Value $item.observed.executable))) }
+        foreach ($item in $aiItems) {
+            $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+            $itemExecutable = Get-McRenderProperty -InputObject $item.observed -Name 'executable'
+            [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemExecutable)))
+        }
     }
 
     [void]$lines.Add('')

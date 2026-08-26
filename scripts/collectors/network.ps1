@@ -55,9 +55,12 @@ function Get-McNetworkObservation {
     }
 
     $wsl = [ordered]@{}
+    $verificationEvents = [System.Collections.Generic.List[object]]::new()
+    $wslHealth = 'success'
     $wslProbe = Invoke-McProbe -Executable 'wsl.exe' -Arguments @('--status') -Provider 'network-local-services' -ProbeName 'wsl-status' -TimeoutMs 8000 -OutputCapBytes 16384
     if ($wslProbe.status -eq 'success') {
         $wsl.present = $true
+        $wsl.verification = 'verified-present'
         $statusSummary = Get-McProbeVersionText -Probe $wslProbe
         if (-not [string]::IsNullOrWhiteSpace($statusSummary) -and $statusSummary -notmatch "`0") {
             $wsl.status_summary = $statusSummary
@@ -73,10 +76,26 @@ function Get-McNetworkObservation {
             }
             $wsl.distros = @($distros | Sort-Object)
         }
+        else {
+            $wsl.list_verification = 'unverified'
+            $wsl.list_status = [string]$listProbe.status
+            $wslHealth = 'partial'
+            [void]$warnings.Add("wsl distro list probe: $($listProbe.status)")
+        }
     }
-    elseif ($wslProbe.status -ne 'unavailable') {
-        $wsl.present = $false
+    else {
+        $wsl.verification = 'unverified'
+        $wsl.status = [string]$wslProbe.status
+        $wslHealth = 'partial'
         [void]$warnings.Add("wsl status probe: $($wslProbe.status)")
+        [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                module = 'network.wsl'
+                id = 'wsl'
+                provider = 'network-local-services'
+                verification = 'unverified'
+                reason = [string]$wslProbe.status
+                source_key = 'wsl-status'
+            })
     }
 
     $value = [pscustomobject][ordered]@{
@@ -96,5 +115,6 @@ function Get-McNetworkObservation {
         wsl = [pscustomobject]$wsl
         constraints = @()
     }
-    return New-McProviderPayload -Value $value -Health 'success' -ResultCount ($ports.Count + 1) -Warnings @($warnings) -CoverageComplete $false
+    $health = if ($wslHealth -eq 'partial') { 'partial' } else { 'success' }
+    return New-McProviderPayload -Value $value -Health $health -ResultCount ($ports.Count + 1) -Warnings @($warnings) -CoverageComplete $false -VerificationEvents @($verificationEvents)
 }

@@ -13,7 +13,6 @@ function Get-McRuntimeDefinitions {
         [pscustomobject]@{ id = 'cargo'; name = 'Cargo'; kind = 'package-manager'; command = 'cargo'; args = @('--version') },
         [pscustomobject]@{ id = 'rustup'; name = 'rustup'; kind = 'version-manager'; command = 'rustup'; args = @('--version') },
         [pscustomobject]@{ id = 'java'; name = 'Java'; kind = 'runtime'; command = 'java'; args = @('-version') },
-        [pscustomobject]@{ id = 'dotnet'; name = '.NET SDK/runtime'; kind = 'runtime'; command = 'dotnet'; args = @('--version') },
         [pscustomobject]@{ id = 'flutter'; name = 'Flutter'; kind = 'sdk'; command = 'flutter'; args = @('--version') },
         [pscustomobject]@{ id = 'dart'; name = 'Dart'; kind = 'runtime'; command = 'dart'; args = @('--version') },
         [pscustomobject]@{ id = 'ruby'; name = 'Ruby'; kind = 'runtime'; command = 'ruby'; args = @('--version') },
@@ -34,18 +33,14 @@ function Get-McRuntimeDefinitions {
         [pscustomobject]@{ id = 'volta'; name = 'Volta'; kind = 'version-manager'; command = 'volta'; args = @('--version') },
         [pscustomobject]@{ id = 'pyenv'; name = 'pyenv'; kind = 'version-manager'; command = 'pyenv'; args = @('--version') },
         [pscustomobject]@{ id = 'mise'; name = 'mise'; kind = 'version-manager'; command = 'mise'; args = @('--version') },
-        [pscustomobject]@{ id = 'git'; name = 'Git'; kind = 'cli'; command = 'git'; args = @('--version') },
         [pscustomobject]@{ id = 'git-lfs'; name = 'Git LFS'; kind = 'cli'; command = 'git-lfs'; args = @('--version') },
         [pscustomobject]@{ id = 'cmake'; name = 'CMake'; kind = 'build-tool'; command = 'cmake'; args = @('--version') },
         [pscustomobject]@{ id = 'ninja'; name = 'Ninja'; kind = 'build-tool'; command = 'ninja'; args = @('--version') },
-        [pscustomobject]@{ id = 'vswhere'; name = 'Visual Studio locator'; kind = 'tool'; command = 'vswhere'; args = @('-version') },
         [pscustomobject]@{ id = 'adb'; name = 'Android Debug Bridge'; kind = 'sdk-tool'; command = 'adb'; args = @('version') },
         [pscustomobject]@{ id = 'nvcc'; name = 'CUDA compiler'; kind = 'compiler'; command = 'nvcc'; args = @('--version') },
-        [pscustomobject]@{ id = 'code'; name = 'Visual Studio Code'; kind = 'developer-application'; command = 'code'; args = @('--version') },
         [pscustomobject]@{ id = 'gh'; name = 'GitHub CLI'; kind = 'cloud-cli'; command = 'gh'; args = @('--version') },
         [pscustomobject]@{ id = 'docker'; name = 'Docker CLI'; kind = 'developer-application'; command = 'docker'; args = @('--version') },
         [pscustomobject]@{ id = 'kubectl'; name = 'kubectl'; kind = 'cloud-cli'; command = 'kubectl'; args = @('version', '--client=true', '--output=json') },
-        [pscustomobject]@{ id = 'supabase'; name = 'Supabase CLI'; kind = 'cloud-cli'; command = 'supabase'; args = @('--version') },
         [pscustomobject]@{ id = 'vercel'; name = 'Vercel CLI'; kind = 'cloud-cli'; command = 'vercel'; args = @('--version') },
         [pscustomobject]@{ id = 'wrangler'; name = 'Wrangler'; kind = 'cloud-cli'; command = 'wrangler'; args = @('--version') },
         [pscustomobject]@{ id = 'firebase'; name = 'Firebase CLI'; kind = 'cloud-cli'; command = 'firebase'; args = @('--version') },
@@ -102,11 +97,20 @@ function Get-McRuntimeToolObservations {
     $entities = [System.Collections.Generic.List[object]]::new()
     $candidates = [System.Collections.Generic.List[object]]::new()
     $relationships = [System.Collections.Generic.List[object]]::new()
+    $verificationEvents = [System.Collections.Generic.List[object]]::new()
     $failureCount = 0
 
     foreach ($definition in (Get-McRuntimeDefinitions)) {
         $candidatesForCommand = @(Get-McExecutableCandidates -Executable $definition.command)
         if ($candidatesForCommand.Count -eq 0) {
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'development'
+                    id = [string]$definition.id
+                    provider = 'runtimes-package-managers-toolchain'
+                    verification = 'unverified'
+                    reason = 'persistent-command-not-found'
+                    source_key = [string]$definition.command
+                })
             continue
         }
 
@@ -126,7 +130,15 @@ function Get-McRuntimeToolObservations {
                     type = 'command_resolves'
                     verifier_status = [string]$probe.status
                 })
-            })
+                })
+            [void]$verificationEvents.Add([pscustomobject][ordered]@{
+                    module = 'development'
+                    id = [string]$definition.id
+                    provider = 'runtimes-package-managers-toolchain'
+                    verification = 'unverified'
+                    reason = [string]$probe.status
+                    source_key = [string]$definition.command
+                })
             continue
         }
 
@@ -134,6 +146,7 @@ function Get-McRuntimeToolObservations {
         $installRoot = ConvertTo-McNormalizedPath -Path (Split-Path -Parent ([string]$primary.path))
         $observed = [ordered]@{
             present = $true
+            verification = 'verified-present'
             version = (Get-McProbeVersionText -Probe $probe)
             executable = $executable
             command_resolution = @(
@@ -194,5 +207,5 @@ function Get-McRuntimeToolObservations {
             entities = @($entities)
             candidates = @($candidates)
             relationships = @($relationships)
-        }) -Health $health -ResultCount $entities.Count -CoverageComplete $false
+        }) -Health $health -ResultCount $entities.Count -CoverageComplete $false -VerificationEvents @($verificationEvents)
 }

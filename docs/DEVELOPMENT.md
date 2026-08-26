@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-当前处于 **V1 Phase G / Initial real-machine Full Audit**。Phase A-F 的首轮可执行基础已落地：共享 runtime、structured providers、candidate discovery、reconciliation、project records、validation/render/sync 均已接通；下一步是继续复核真实候选、补齐 provider/verifier 覆盖，并进行人工语义整理。
+当前处于 **V1 Phase G0 / Correctness Hardening**。Phase A-F 的首轮可执行基础已落地；G0-A 的 JSON Mapping/Sequence/Scalar 契约与 canonical validator、G0-B 的 Windows host 持久化环境和 collector-process 隔离已实现。下一步先完成剩余 G0 硬化，再进入 G1 Initial Audit Closure；在 G0 完成前不重跑 Full Audit。
 
 开始实现前必须阅读：
 
@@ -117,7 +117,18 @@ Everything adapter 必须 optional：不存在时不安装、不报 whole-scan f
 
 V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` / `-Push`。
 
-### Phase G — Initial real-machine Full Audit
+### Phase G0 — Correctness Hardening
+
+在 Initial Audit Closure 前，先修复会污染长期 canonical 信任边界的基础问题：
+
+- G0-A：明确 Scalar/Mapping/Sequence 分类；递归 clone 和 deterministic JSON 不得通过 JSON round-trip 猜类型，也不得展开 .NET collection metadata；补齐 software/project/machine/relationship contract validation 与 fresh fixture gate；
+- G0-B：将持久化 Windows host PATH 与当前 collector process PATH 分离；host canonical 只发布 Machine/User persistent PATH，进程 PATH/`Get-Command` 结果只进入 `.local` diagnostics；保留 `wsl:<distro>` 作为未来 scoped context 的保留命名；
+- G0-C：已接入 dedicated verifiers：Git-for-Windows/Git Bash 安装根、Windows normalized family、NVIDIA `nvidia-smi` VRAM、Visual Studio/vswhere + MSVC/Windows SDK、Codex CLI/Desktop、Supabase CLI、VS Code CLI 与 .NET SDK/runtime 列表；generic command probes 不再承担这些高价值 identity 的最终事实。
+- G0-D：已加入 `verified-present` / `unverified` / `stale` / `verified-absent` observation state；failed/timeout 通过 `.local` verification events 保留旧 observed，只有高置信度适用的成功 absence check 才能写 `present: false` + `last_known`；provider health 继续独立聚合，optional provider 不升级 whole-run failure。
+- G0-C/G0-D 当前 gate：测试与 Quick/`sync -NoPublish` 闭环已运行；仍需继续处理旧 canonical validation pollution 后，才进入 G1 Initial Full Audit；当前不自动重写旧 canonical。
+- 每个 G0 子阶段先实现、测试、自审计；G0-A/G0-B gate 期间不执行 Full Audit，不自动重写当前 canonical。
+
+### Phase G1 — Initial real-machine Full Audit Closure
 
 第一次 Full Audit：
 
@@ -129,6 +140,15 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - 根据真实路径归纳安装/更新规范；
 - 检查生成后的 `CURRENT.md` 是否足够支持网页 GPT 规划；
 - 运行第二次 no-change scan 验证 idempotency。
+
+### Phase G2 — Curated semantics and maintenance baseline
+
+在 G1 事实收敛后，由用户/agent 明确确认高价值语义：
+
+- active/legacy/testing/broken 等状态、primary/secondary/project-only 角色；
+- 安装/更新目录习惯、例外与工具之间的关系；
+- 仍为 unknown/conflict 的事实及需要再次验证的 provider；
+- 只把稳定、可解释、对后续规划有帮助的判断写入 `curated`。
 
 ## 代码组织建议
 
@@ -152,6 +172,7 @@ scripts/
   lib/
     probe.ps1
     normalize.ps1
+    environment.ps1
     reconcile.ps1
     privacy.ps1
     json.ps1
