@@ -10,14 +10,6 @@ Reason: the dataset is small, AI-readable files are the product's core value, Gi
 
 Status: accepted.
 
-## D034 — Idempotency separates canonical semantics from volatile diagnostics
-
-Decision: Full/Quick no-publish acceptance compares proposed canonical context separately from expected heartbeat metadata in `context/status.json`. Ignored `.local` diagnostics and live observations such as storage free space or bounded-discovery visit counts may vary between scans; those changes must be reported as volatility and must not be treated as canonical semantic drift.
-
-Reason: A real machine can change while a scan is running, and diagnostic counters are intentionally observations of the scan itself. Requiring every raw artifact to be byte-identical would either hide useful facts or encourage collectors to falsify live state. The stable contract is zero semantic diff for unchanged canonical facts, with explicitly documented metadata/volatile exceptions.
-
-Status: accepted.
-
 ## D002 — Canonical JSON and generated `CURRENT.md`
 
 Decision: `context/` is authoritative structured JSON. `CURRENT.md` is a compact, generated convenience view for fast AI reading.
@@ -277,5 +269,21 @@ Status: accepted.
 Decision: when a package-manager executable is not verified through the persistent Windows host scope, an allowlisted store/cache path may be recorded only in ignored `.local` diagnostics. Store/cache existence must not create canonical `present`, `verified-present`, `verified-absent`, or installation/update ownership facts.
 
 Reason: package-manager stores can survive after a CLI is removed, and a store can also be created by another environment or a previous agent/runtime. Treating the store as an executable would turn historical residue into a false installation fact.
+
+Status: accepted.
+
+## D034 — Idempotency separates canonical semantics from volatile diagnostics
+
+Decision: Full/Quick no-publish acceptance compares proposed canonical context separately from expected heartbeat metadata in `context/status.json`. Ignored `.local` diagnostics and live observations such as storage free space or bounded-discovery visit counts may vary between scans; those changes must be reported as volatility and must not be treated as canonical semantic drift.
+
+Reason: A real machine can change while a scan is running, and diagnostic counters are intentionally observations of the scan itself. Requiring every raw artifact to be byte-identical would either hide useful facts or encourage collectors to falsify live state. The stable contract is zero semantic diff for unchanged canonical facts, with explicitly documented metadata/volatile exceptions.
+
+Status: accepted.
+
+## D035 — Curated writes require an explicit confirmation manifest
+
+Decision: G2 semantic updates are expressed through a separate `g2-curation-confirmation` manifest. The curation command is dry-run/read-only by default; only explicit `-Apply` may update allowlisted `curated` fields or confirmed conventions for existing stable IDs. `observed` updates, unknown IDs, missing evidence, and unconfirmed manifests are rejected. The command never commits or pushes.
+
+Reason: Human meaning must not be inferred from installation evidence or silently mixed into collector reconciliation. A reviewable manifest makes the authority boundary explicit, keeps the default maintenance path safe, and provides a staged validation/rollback path when the user eventually confirms semantics.
 
 Status: accepted.

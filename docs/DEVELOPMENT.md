@@ -169,6 +169,7 @@ V1 默认不无 review 自动 commit/push。可靠后再增加显式 `-Commit` /
 - 安装/更新目录习惯、例外与工具之间的关系；
 - 仍为 unknown/conflict 的事实及需要再次验证的 provider；
 - 只把稳定、可解释、对后续规划有帮助的判断写入 `curated`。
+- `scripts/curate.ps1` 已提供 confirmation-manifest 基础设施：默认只生成 dry-run plan，只有显式 `-Apply` 才能更新现有实体的 allowlisted `curated` 字段或已确认 conventions；manifest 中出现 `observed`、未知 stable ID 或缺少 evidence/confirmation 时直接拒绝。当前没有任何确认 manifest 被应用。
 
 ## 代码组织建议
 

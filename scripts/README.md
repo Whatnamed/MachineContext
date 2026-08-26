@@ -10,6 +10,7 @@ V1 uses small Windows-first PowerShell entry points plus source-specific collect
 - `validate.ps1` — JSON/reference/privacy/invariant checks;
 - `audit.ps1` — read-only structural review and closure projection of ignored `.local/audit-closure.json`;
 - `review.ps1` — read-only combined Initial Audit/G2 semantic-review gate for ignored local evidence;
+- `curate.ps1` — confirmation-manifest curation plan; read-only by default, with explicit `-Apply` for curated-only canonical updates;
 - `sync.ps1` — staging -> collect/discover -> reconcile/verify -> validate/privacy -> render -> atomic publish -> git diff.
 
 The entry points now implement the first Windows-first V1 pipeline. They remain deliberately small and require PowerShell 7 (`pwsh.exe`). `sync.ps1` stops on a dirty tree by default, writes raw candidates/diagnostics only under ignored `.local/`, and never commits or pushes automatically.
@@ -22,6 +23,7 @@ pwsh.exe -File .\scripts\sync.ps1 -Mode Full
 pwsh.exe -File .\scripts\validate.ps1
 pwsh.exe -File .\scripts\audit.ps1
 pwsh.exe -File .\scripts\review.ps1
+pwsh.exe -File .\scripts\curate.ps1 -ConfirmationPath .\.local\g2-confirmation.json
 pwsh.exe -File .\tests\run-tests.ps1
 ```
 
@@ -49,3 +51,5 @@ Read:
 - `docs/DEVELOPMENT.md` for implementation order.
 
 Do not build a GUI, database, MCP server, cross-platform abstraction, or always-running daemon before this workflow is reliable on the real machine.
+
+`curate.ps1` requires a `g2-curation-confirmation` manifest. Its default plan mode never writes canonical data; applying it requires `-Apply`, validates a staged context, preserves `observed`, and still leaves commit/push to the explicit review workflow.
