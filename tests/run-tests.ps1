@@ -361,6 +361,29 @@ Invoke-McTest -Name 'semantic version and banner normalization' -Body {
     Assert-McEqual -Actual $machine.shells[0].observed.version -Expected '5.2.21' -Message 'historical shell banners must be normalized during reconciliation'
 }
 
+Invoke-McTest -Name 'package-manager local evidence stays non-authoritative' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-pnpm-evidence'
+    $localAppData = Join-Path $fixtureRoot 'LocalAppData'
+    $appData = Join-Path $fixtureRoot 'AppData'
+    $userProfile = Join-Path $fixtureRoot 'UserProfile'
+    try {
+        [void](New-Item -ItemType Directory -Path (Join-Path $localAppData 'pnpm\store') -Force)
+        Write-McJson -Path (Join-Path $localAppData 'pnpm\pnpm.cmd') -InputObject ([ordered]@{ fixture = $true })
+        $evidence = Get-McRuntimeLocalDiagnostics -LocalAppDataPath $localAppData -AppDataPath $appData -UserProfilePath $userProfile -PersistentPathEntries @()
+        $pnpm = $evidence.package_managers.pnpm
+        Assert-McTrue -Condition $pnpm.store_present -Message 'pnpm store presence should be retained as local evidence'
+        Assert-McTrue -Condition $pnpm.store_is_not_cli_proof -Message 'pnpm store evidence must explicitly remain non-authoritative'
+        $localCmd = @($pnpm.known_path_checks | Where-Object id -eq 'local-pnpm-cmd' | Select-Object -First 1)
+        Assert-McEqual -Actual $localCmd.present -Expected $true -Message 'allowlisted pnpm executable path check should detect the fixture file'
+        Assert-McEqual -Actual @($pnpm.persistent_candidates).Count -Expected 0 -Message 'fixture persistent PATH should not invent a pnpm command'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) {
+            Remove-Item -LiteralPath $fixtureRoot -Recurse -Force
+        }
+    }
+}
+
 Invoke-McTest -Name 'collector process paths never become canonical host facts' -Body {
     Assert-McTrue -Condition (Test-McCollectorProcessOnlyPath -Path '%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd') -Message 'Codex runtime paths must be recognized as process-only'
     Assert-McTrue -Condition (-not (Test-McCollectorProcessOnlyPath -Path 'D:\Node.js\Node.js\npm.cmd')) -Message 'persistent host tool paths must remain eligible'

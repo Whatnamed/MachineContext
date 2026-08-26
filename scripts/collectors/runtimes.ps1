@@ -90,6 +90,82 @@ function Get-McPackageManagerDetails {
     return [pscustomobject]$details
 }
 
+function Get-McRuntimeLocalDiagnostics {
+    [CmdletBinding()]
+    param(
+        [string]$LocalAppDataPath = [Environment]::GetEnvironmentVariable('LOCALAPPDATA'),
+
+        [string]$AppDataPath = [Environment]::GetEnvironmentVariable('APPDATA'),
+
+        [string]$UserProfilePath = [Environment]::GetEnvironmentVariable('USERPROFILE'),
+
+        [AllowNull()]
+        [object[]]$PersistentPathEntries
+    )
+
+    $knownPaths = [System.Collections.Generic.List[object]]::new()
+    $pathSpecs = @(
+        [pscustomobject]@{ id = 'local-pnpm-exe'; root = $LocalAppDataPath; relative = 'pnpm\pnpm.exe' }
+        [pscustomobject]@{ id = 'local-pnpm-cmd'; root = $LocalAppDataPath; relative = 'pnpm\pnpm.cmd' }
+        [pscustomobject]@{ id = 'npm-pnpm-cmd'; root = $AppDataPath; relative = 'npm\pnpm.cmd' }
+        [pscustomobject]@{ id = 'npm-pnpm-ps1'; root = $AppDataPath; relative = 'npm\pnpm.ps1' }
+        [pscustomobject]@{ id = 'user-pnpm'; root = $UserProfilePath; relative = '.local\share\pnpm\pnpm' }
+        [pscustomobject]@{ id = 'user-pnpm-cmd'; root = $UserProfilePath; relative = '.local\share\pnpm\pnpm.cmd' }
+        [pscustomobject]@{ id = 'user-pnpm-exe'; root = $UserProfilePath; relative = '.local\share\pnpm\pnpm.exe' }
+    )
+    foreach ($spec in $pathSpecs) {
+        if ([string]::IsNullOrWhiteSpace([string]$spec.root)) {
+            continue
+        }
+        $path = Join-Path ([string]$spec.root) ([string]$spec.relative)
+        [void]$knownPaths.Add([pscustomobject][ordered]@{
+                id = [string]$spec.id
+                path = ConvertTo-McNormalizedPath -Path $path
+                present = (Test-Path -LiteralPath $path -PathType Leaf -ErrorAction SilentlyContinue)
+            })
+    }
+
+    $persistentCandidates = if ($PSBoundParameters.ContainsKey('PersistentPathEntries')) {
+        @(Resolve-McPersistentCommand -Executable 'pnpm' -PathEntries @($PersistentPathEntries))
+    }
+    else {
+        @(Get-McExecutableCandidates -Executable 'pnpm' -Scope 'windows-host')
+    }
+
+    $storeRoot = if ([string]::IsNullOrWhiteSpace([string]$LocalAppDataPath)) {
+        $null
+    }
+    else {
+        Join-Path $LocalAppDataPath 'pnpm\store'
+    }
+    $storePresent = $false
+    if ($null -ne $storeRoot) {
+        $storePresent = Test-Path -LiteralPath $storeRoot -PathType Container -ErrorAction SilentlyContinue
+    }
+
+    return [pscustomobject][ordered]@{
+        scope = 'windows-host'
+        package_managers = [pscustomobject][ordered]@{
+            pnpm = [pscustomobject][ordered]@{
+                verification = 'unverified'
+                persistent_candidates = @(
+                    foreach ($candidate in $persistentCandidates) {
+                        [pscustomobject][ordered]@{
+                            path = ConvertTo-McNormalizedPath -Path ([string]$candidate.path)
+                            command_type = [string]$candidate.command_type
+                            source = [string]$candidate.source
+                        }
+                    }
+                )
+                known_path_checks = @($knownPaths | Sort-Object id)
+                store_present = [bool]$storePresent
+                store_root = if ($null -ne $storeRoot) { ConvertTo-McNormalizedPath -Path $storeRoot } else { $null }
+                store_is_not_cli_proof = $true
+            }
+        }
+    }
+}
+
 function Get-McRuntimeToolObservations {
     [CmdletBinding()]
     param()
@@ -203,9 +279,10 @@ function Get-McRuntimeToolObservations {
     }
 
     $health = if ($failureCount -gt 0) { 'partial' } else { 'success' }
+    $local = Get-McRuntimeLocalDiagnostics
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{
             entities = @($entities)
             candidates = @($candidates)
             relationships = @($relationships)
-        }) -Health $health -ResultCount $entities.Count -CoverageComplete $false -VerificationEvents @($verificationEvents)
+        }) -Health $health -ResultCount $entities.Count -CoverageComplete $false -Local $local -VerificationEvents @($verificationEvents)
 }

@@ -429,6 +429,7 @@ function Invoke-McCollection {
             }
         }
     }
+    if ($null -ne $runtimes.local) { $state.local_diagnostics.runtimes = $runtimes.local }
 
     $ai = Invoke-McSafeProvider -CollectionState $state -Provider 'ai-tooling' -Action {
         Get-McAiToolObservations -RepoRoot $RunContext.repo_root
