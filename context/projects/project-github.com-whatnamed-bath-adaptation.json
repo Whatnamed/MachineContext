@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "id": "project-github.com-whatnamed-bath-adaptation",
+  "name": "app",
+  "observed": {
+    "evidence": [
+      {
+        "path": "E:\\Projects\\Bath\\Bath\\app\\.git",
+        "type": "git_fingerprint"
+      },
+      {
+        "kind": "lockfile",
+        "path": "E:\\Projects\\Bath\\Bath\\app\\package-lock.json",
+        "type": "manifest_present"
+      },
+      {
+        "kind": "package-manifest",
+        "path": "E:\\Projects\\Bath\\Bath\\app\\package.json",
+        "type": "manifest_present"
+      }
+    ],
+    "commands": {
+      "build": "tsc -b && vite build",
+      "dev": "vite",
+      "lint": "eslint ."
+    },
+    "local_endpoints": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "local_path": "E:\\Projects\\Bath\\Bath\\app",
+    "manifests": {
+      "Count": 2,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 2,
+      "LongLength": 2,
+      "Rank": 1,
+      "SyncRoot": [
+        {
+          "kind": "lockfile",
+          "path": "E:\\Projects\\Bath\\Bath\\app\\package-lock.json"
+        },
+        {
+          "kind": "package-manifest",
+          "path": "E:\\Projects\\Bath\\Bath\\app\\package.json"
+        }
+      ]
+    },
+    "package_manager": "npm",
+    "package_manager_refs": {
+      "Count": 1,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 1,
+      "LongLength": 1,
+      "Rank": 1,
+      "SyncRoot": [
+        "npm"
+      ]
+    },
+    "repository": "github.com/Whatnamed/bath-adaptation",
+    "runtime_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "service_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "tool_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "workspace_type": "git-project"
+  },
+  "curated": {
+    "status": "unknown"
+  }
+}

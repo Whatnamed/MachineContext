@@ -3,22 +3,391 @@
   "meta": {
     "state": "bootstrap"
   },
+  "command_resolution": [
+    {
+      "all": [
+        "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\bash.exe",
+        "%SYSTEMROOT%\\system32\\bash.exe"
+      ],
+      "command": "bash",
+      "resolved": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\bash.exe"
+    },
+    {
+      "all": [
+        "%SYSTEMROOT%\\system32\\cmd.exe"
+      ],
+      "command": "cmd",
+      "resolved": "%SYSTEMROOT%\\system32\\cmd.exe"
+    },
+    {
+      "all": [
+        "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe",
+        "D:\\Git\\Git\\cmd\\git.exe"
+      ],
+      "command": "git",
+      "resolved": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe"
+    },
+    {
+      "all": [
+        "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+      ],
+      "command": "powershell",
+      "resolved": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    },
+    {
+      "all": [
+        "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+      ],
+      "command": "pwsh",
+      "resolved": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+    },
+    {
+      "all": [
+        "%SYSTEMROOT%\\System32\\OpenSSH\\ssh.exe"
+      ],
+      "command": "ssh",
+      "resolved": "%SYSTEMROOT%\\System32\\OpenSSH\\ssh.exe"
+    },
+    {
+      "all": [
+        "%SYSTEMROOT%\\system32\\where.exe"
+      ],
+      "command": "where",
+      "resolved": "%SYSTEMROOT%\\system32\\where.exe"
+    }
+  ],
+  "constraints": [
+    {
+      "name": "developer_mode",
+      "observed": true
+    },
+    {
+      "name": "long_paths_enabled",
+      "observed": true
+    },
+    {
+      "name": "hypervisor_present",
+      "observed": true
+    }
+  ],
   "system": {
-    "observed": {},
+    "observed": {
+      "scope": "windows-host",
+      "architecture": "64 位",
+      "build_number": "26200",
+      "display_version": "25H2",
+      "edition": "Core",
+      "locale": "zh-CN",
+      "locale_id": "0804",
+      "machine_context_root": "E:\\MachineContext",
+      "product_name": "Windows 10 Home",
+      "time_zone": "China Standard Time",
+      "ui_language": "zh-CN",
+      "update_build_revision": 9168
+    },
     "curated": {}
   },
   "hardware": {
-    "observed": {},
+    "observed": {
+      "cpu_architecture": "x64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12400",
+      "gpus": [
+        {
+          "name": "NVIDIA GeForce RTX 3070 Laptop GPU",
+          "driver_version": "32.0.16.1088",
+          "vram_bytes": 4293918720
+        },
+        {
+          "name": "GameViewer Virtual Display Adapter",
+          "driver_version": "15.6.5.199"
+        },
+        {
+          "name": "Intel(R) UHD Graphics 730",
+          "driver_version": "31.0.101.5333",
+          "vram_bytes": 134217728
+        }
+      ],
+      "logical_cores": 12,
+      "memory_total_bytes": 17179869184,
+      "physical_cores": 6
+    },
     "curated": {}
   },
-  "storage": [],
-  "shells": [],
+  "storage": [
+    {
+      "filesystem": "NTFS",
+      "free_bytes": 27648851968,
+      "mount_point": "C:\\",
+      "total_bytes": 210348535808
+    },
+    {
+      "filesystem": "NTFS",
+      "free_bytes": 55566139392,
+      "mount_point": "D:\\",
+      "total_bytes": 299891683328
+    },
+    {
+      "filesystem": "NTFS",
+      "free_bytes": 31943819264,
+      "mount_point": "E:\\",
+      "total_bytes": 1024207089664
+    }
+  ],
+  "shells": [
+    {
+      "id": "shell-pwsh",
+      "kind": "shell",
+      "name": "PowerShell 7",
+      "observed": {
+        "present": true,
+        "version": "PowerShell 7.6.4",
+        "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+            "command_type": "Application"
+          },
+          {
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+            "command_type": "Application"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "pwsh.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shell-windows-powershell",
+      "kind": "shell",
+      "name": "Windows PowerShell",
+      "observed": {
+        "present": true,
+        "version": "5.1.26100.9168",
+        "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "command_resolution": [
+          {
+            "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "command_type": "Application"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "powershell.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shell-cmd",
+      "kind": "shell",
+      "name": "Command Prompt",
+      "observed": {
+        "present": true,
+        "version": "Microsoft Windows [�汾 10.0.26200.9168]",
+        "executable": "%SYSTEMROOT%\\system32\\cmd.exe",
+        "command_resolution": [
+          {
+            "executable": "%SYSTEMROOT%\\system32\\cmd.exe",
+            "command_type": "Application"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "cmd.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shell-git-bash",
+      "kind": "shell",
+      "name": "Git Bash",
+      "observed": {
+        "present": true,
+        "version": "GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)",
+        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\bash.exe",
+        "command_resolution": [
+          {
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\bash.exe",
+            "command_type": "Application"
+          },
+          {
+            "executable": "%SYSTEMROOT%\\system32\\bash.exe",
+            "command_type": "Application"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "bash.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shell-ssh",
+      "kind": "shell",
+      "name": "OpenSSH client",
+      "observed": {
+        "present": true,
+        "version": "OpenSSH_for_Windows_9.5p2, LibreSSL 3.8.2",
+        "executable": "%SYSTEMROOT%\\System32\\OpenSSH\\ssh.exe",
+        "command_resolution": [
+          {
+            "executable": "%SYSTEMROOT%\\System32\\OpenSSH\\ssh.exe",
+            "command_type": "Application"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "ssh.exe",
+            "fields": [
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  ],
   "paths": {
+    "entry_count": 41,
+    "known_roots": [],
     "machine_context_root": "E:\\MachineContext",
-    "known_roots": []
+    "path_entries": [
+      "%LOCALAPPDATA%\\agy\\bin",
+      "%LOCALAPPDATA%\\Microsoft\\WindowsApps",
+      "%PROGRAMFILES(X86)%\\Common Files\\Intel\\Shared Libraries\\redist\\intel64_win\\compiler",
+      "%PROGRAMFILES(X86)%\\NVIDIA Corporation\\PhysX\\Common",
+      "%PROGRAMFILES%\\dotnet",
+      "%PROGRAMFILES%\\GitHub CLI",
+      "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
+      "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.818.8289.0_x64__2p2nqsd0c76g0\\app\\resources",
+      "%SYSTEMROOT%",
+      "%SYSTEMROOT%\\system32",
+      "%SYSTEMROOT%\\System32\\OpenSSH",
+      "%SYSTEMROOT%\\System32\\Wbem",
+      "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0",
+      "%USERPROFILE%\\.agent-reach-venv\\Scripts",
+      "%USERPROFILE%\\.bun\\bin",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\override",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell",
+      "%USERPROFILE%\\.cargo\\bin",
+      "%USERPROFILE%\\.codex\\tmp\\arg0\\codex-arg0yVG4RU",
+      "%USERPROFILE%\\.lmstudio\\bin",
+      "%USERPROFILE%\\go\\bin",
+      "D:\\BANDIZIP",
+      "D:\\calibre\\New Folder",
+      "D:\\Claude\\cli",
+      "D:\\Cursor\\cursor\\resources\\app\\bin",
+      "d:\\Cursor\\cursor\\resources\\app\\bin",
+      "D:\\DSH",
+      "D:\\Git\\Git\\cmd",
+      "D:\\Go\\bin",
+      "D:\\GrokBuild\\home\\bin",
+      "D:\\Node.js\\Node.js",
+      "D:\\Python\\3.12.10",
+      "D:\\Python\\3.12.10\\Scripts",
+      "D:\\VSCode\\Microsoft VS Code\\bin",
+      "D:\\Windows Kits\\10\\Windows Performance Toolkit",
+      "E:\\Codex\\codex-cli",
+      "E:\\dev\\flutter\\bin",
+      "E:\\Dev\\npm-global",
+      "E:\\Dev\\uv"
+    ]
   },
   "environment": {
-    "path_summary": []
-  },
-  "constraints": []
+    "path_summary": [
+      "%LOCALAPPDATA%\\agy\\bin",
+      "%LOCALAPPDATA%\\Microsoft\\WindowsApps",
+      "%PROGRAMFILES(X86)%\\Common Files\\Intel\\Shared Libraries\\redist\\intel64_win\\compiler",
+      "%PROGRAMFILES(X86)%\\NVIDIA Corporation\\PhysX\\Common",
+      "%PROGRAMFILES%\\dotnet",
+      "%PROGRAMFILES%\\GitHub CLI",
+      "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
+      "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.818.8289.0_x64__2p2nqsd0c76g0\\app\\resources",
+      "%SYSTEMROOT%",
+      "%SYSTEMROOT%\\system32",
+      "%SYSTEMROOT%\\System32\\OpenSSH",
+      "%SYSTEMROOT%\\System32\\Wbem",
+      "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0",
+      "%USERPROFILE%\\.agent-reach-venv\\Scripts",
+      "%USERPROFILE%\\.bun\\bin",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\override",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd",
+      "%USERPROFILE%\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell",
+      "%USERPROFILE%\\.cargo\\bin",
+      "%USERPROFILE%\\.codex\\tmp\\arg0\\codex-arg0yVG4RU",
+      "%USERPROFILE%\\.lmstudio\\bin",
+      "%USERPROFILE%\\go\\bin",
+      "D:\\BANDIZIP",
+      "D:\\calibre\\New Folder",
+      "D:\\Claude\\cli",
+      "D:\\Cursor\\cursor\\resources\\app\\bin",
+      "d:\\Cursor\\cursor\\resources\\app\\bin",
+      "D:\\DSH",
+      "D:\\Git\\Git\\cmd",
+      "D:\\Go\\bin",
+      "D:\\GrokBuild\\home\\bin",
+      "D:\\Node.js\\Node.js",
+      "D:\\Python\\3.12.10",
+      "D:\\Python\\3.12.10\\Scripts",
+      "D:\\VSCode\\Microsoft VS Code\\bin",
+      "D:\\Windows Kits\\10\\Windows Performance Toolkit",
+      "E:\\Codex\\codex-cli",
+      "E:\\dev\\flutter\\bin",
+      "E:\\Dev\\npm-global",
+      "E:\\Dev\\uv"
+    ],
+    "shell_profiles": [
+      {
+        "path": "%USERPROFILE%\\Documents\\PowerShell\\Microsoft.PowerShell_profile.ps1",
+        "exists": false
+      },
+      {
+        "path": "%USERPROFILE%\\Documents\\WindowsPowerShell\\Microsoft.PowerShell_profile.ps1",
+        "exists": false
+      },
+      {
+        "path": "%USERPROFILE%\\Documents\\PowerShell\\profile.ps1",
+        "exists": false
+      },
+      {
+        "path": "%USERPROFILE%\\Documents\\WindowsPowerShell\\profile.ps1",
+        "exists": false
+      }
+    ]
+  }
 }

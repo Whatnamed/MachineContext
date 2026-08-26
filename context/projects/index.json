@@ -1,8 +1,62 @@
 {
   "schema_version": 1,
-  "projects": [],
+  "projects": [
+    {
+      "id": "project-e:-projects-axisui-axisui",
+      "name": "AXISUI",
+      "path": "E:\\Projects\\AXISUI\\AXISUI",
+      "context_file": "context/projects/project-b431bf355ea3e6946d0f.json"
+    },
+    {
+      "id": "project-github.com-flutter-flutter",
+      "name": "flutter",
+      "path": "E:\\Dev\\flutter",
+      "context_file": "context/projects/project-github.com-flutter-flutter.json"
+    },
+    {
+      "id": "project-github.com-hotchpotch-openai-api-server-via-codex",
+      "name": "monitor",
+      "path": "E:\\Projects\\agent-bridge-legacy\\monitor",
+      "context_file": "context/projects/project-github.com-hotchpotch-openai-api-server-via-codex.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-agent-bridge",
+      "name": "agent-bridge",
+      "path": "E:\\Projects\\agent-bridge\\agent-bridge",
+      "context_file": "context/projects/project-github.com-whatnamed-agent-bridge.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-bath-adaptation",
+      "name": "app",
+      "path": "E:\\Projects\\Bath\\Bath\\app",
+      "context_file": "context/projects/project-github.com-whatnamed-bath-adaptation.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-codex-bridge-tray-controller",
+      "name": "controller",
+      "path": "E:\\Projects\\agent-bridge-legacy\\controller",
+      "context_file": "context/projects/project-github.com-whatnamed-codex-bridge-tray-controller.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-morpho",
+      "name": "Morpho",
+      "path": "D:\\Morpho",
+      "context_file": "context/projects/project-github.com-whatnamed-morpho.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-paste-as-file-for-chatgpt",
+      "name": "GPTPaste",
+      "path": "E:\\Projects\\GPTPaste\\GPTPaste",
+      "context_file": "context/projects/project-github.com-whatnamed-paste-as-file-for-chatgpt.json"
+    },
+    {
+      "id": "project-github.com-whatnamed-proxylens",
+      "name": "ProxyLens",
+      "path": "E:\\Projects\\ProxyLens\\ProxyLens",
+      "context_file": "context/projects/project-github.com-whatnamed-proxylens.json"
+    }
+  ],
   "project_policy": {
-    "store_environment_level_context_only": true,
     "duplicate_full_dependency_manifests": false,
     "statuses": [
       "active",
@@ -10,6 +64,7 @@
       "maintenance",
       "archived",
       "experimental"
-    ]
+    ],
+    "store_environment_level_context_only": true
   }
 }

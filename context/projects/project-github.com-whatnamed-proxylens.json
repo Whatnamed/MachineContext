@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "project-github.com-whatnamed-proxylens",
+  "name": "ProxyLens",
+  "observed": {
+    "evidence": [
+      {
+        "path": "E:\\Projects\\ProxyLens\\ProxyLens\\.git",
+        "type": "git_fingerprint"
+      }
+    ],
+    "commands": {},
+    "local_endpoints": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "local_path": "E:\\Projects\\ProxyLens\\ProxyLens",
+    "manifests": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "package_manager_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "repository": "github.com/Whatnamed/ProxyLens",
+    "runtime_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "service_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "tool_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "workspace_type": "git-repository"
+  },
+  "curated": {
+    "status": "unknown"
+  }
+}

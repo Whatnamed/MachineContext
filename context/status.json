@@ -1,9 +1,46 @@
 {
   "schema_version": 1,
-  "state": "bootstrap",
+  "state": "partial",
   "published_verification": {
-    "mode": null,
-    "verified_at": null,
-    "provider_summary": []
+    "mode": "Full",
+    "verified_at": "2026-08-25T18:59:53.6705479Z",
+    "provider_summary": [
+      {
+        "provider": "ai-tooling",
+        "health": "success"
+      },
+      {
+        "provider": "everything-index",
+        "health": "unavailable"
+      },
+      {
+        "provider": "network-local-services",
+        "health": "success"
+      },
+      {
+        "provider": "project-fingerprints",
+        "health": "success"
+      },
+      {
+        "provider": "registry-uninstall",
+        "health": "success"
+      },
+      {
+        "provider": "runtimes-package-managers-toolchain",
+        "health": "partial"
+      },
+      {
+        "provider": "shells-path-resolution",
+        "health": "success"
+      },
+      {
+        "provider": "system-hardware-storage",
+        "health": "success"
+      },
+      {
+        "provider": "winget-export",
+        "health": "success"
+      }
+    ]
   }
 }

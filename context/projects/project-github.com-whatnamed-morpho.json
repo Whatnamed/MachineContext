@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "id": "project-github.com-whatnamed-morpho",
+  "name": "Morpho",
+  "observed": {
+    "evidence": [
+      {
+        "path": "D:\\Morpho\\.git",
+        "type": "git_fingerprint"
+      },
+      {
+        "kind": "lockfile",
+        "path": "D:\\Morpho\\package-lock.json",
+        "type": "manifest_present"
+      },
+      {
+        "kind": "package-manifest",
+        "path": "D:\\Morpho\\package.json",
+        "type": "manifest_present"
+      }
+    ],
+    "commands": {
+      "build": "node ./scripts/build-production.mjs",
+      "dev": "next dev",
+      "lint": "eslint .",
+      "start": "node ./scripts/start-production.mjs",
+      "test": "vitest run",
+      "typecheck": "tsc --noEmit"
+    },
+    "local_endpoints": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "local_path": "D:\\Morpho",
+    "manifests": {
+      "Count": 2,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 2,
+      "LongLength": 2,
+      "Rank": 1,
+      "SyncRoot": [
+        {
+          "kind": "lockfile",
+          "path": "D:\\Morpho\\package-lock.json"
+        },
+        {
+          "kind": "package-manifest",
+          "path": "D:\\Morpho\\package.json"
+        }
+      ]
+    },
+    "package_manager": "npm",
+    "package_manager_refs": {
+      "Count": 1,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 1,
+      "LongLength": 1,
+      "Rank": 1,
+      "SyncRoot": [
+        "npm"
+      ]
+    },
+    "repository": "github.com/Whatnamed/Morpho",
+    "runtime_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "service_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "tool_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "workspace_type": "git-project"
+  },
+  "curated": {
+    "status": "unknown"
+  }
+}

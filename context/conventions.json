@@ -5,14 +5,14 @@
     "note": "Conventions should be inferred from the real machine and then confirmed; do not invent a directory taxonomy merely to make the inventory look neat."
   },
   "directories": {
-    "machine_context_root": "E:\\MachineContext",
-    "known_roots": []
+    "known_roots": [],
+    "machine_context_root": "E:\\MachineContext"
   },
   "installation": {
     "prefer_existing_directory_conventions": true,
     "record_install_method": true,
-    "record_update_method": true,
-    "record_path_and_scope": true
+    "record_path_and_scope": true,
+    "record_update_method": true
   },
   "updates": {
     "prefer_original_package_manager_or_vendor_updater": true,

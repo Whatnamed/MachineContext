@@ -1,7 +1,196 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "bootstrap"
+    "state": "observed"
   },
-  "software": []
+  "software": [
+    {
+      "schema_version": 1,
+      "id": "agy",
+      "kind": "ai-tool",
+      "name": "Agy",
+      "observed": {
+        "present": true,
+        "version": "1.1.20",
+        "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
+        "command_resolution": {
+          "Count": 1,
+          "IsFixedSize": true,
+          "IsReadOnly": false,
+          "IsSynchronized": false,
+          "Length": 1,
+          "LongLength": 1,
+          "Rank": 1,
+          "SyncRoot": [
+            {
+              "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
+              "command_type": "Application"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "agy",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "claude-code",
+      "kind": "ai-tool",
+      "name": "Claude Code",
+      "observed": {
+        "present": true,
+        "version": "2.1.241 (Claude Code)",
+        "executable": "D:\\Claude\\cli\\claude.cmd",
+        "command_resolution": {
+          "Count": 3,
+          "IsFixedSize": true,
+          "IsReadOnly": false,
+          "IsSynchronized": false,
+          "Length": 3,
+          "LongLength": 3,
+          "Rank": 1,
+          "SyncRoot": [
+            {
+              "executable": "D:\\Claude\\cli\\claude.cmd",
+              "command_type": "Application"
+            },
+            {
+              "executable": "D:\\Claude\\cli\\claude.ps1",
+              "command_type": "ExternalScript"
+            },
+            {
+              "executable": "D:\\Claude\\cli\\claude",
+              "command_type": "Application"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "claude",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "cursor-cli",
+      "kind": "ai-tool",
+      "name": "Cursor CLI",
+      "observed": {
+        "present": true,
+        "version": "3.8.11",
+        "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor.cmd",
+        "command_resolution": {
+          "Count": 2,
+          "IsFixedSize": true,
+          "IsReadOnly": false,
+          "IsSynchronized": false,
+          "Length": 2,
+          "LongLength": 2,
+          "Rank": 1,
+          "SyncRoot": [
+            {
+              "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor.cmd",
+              "command_type": "Application"
+            },
+            {
+              "executable": "d:\\Cursor\\cursor\\resources\\app\\bin\\cursor",
+              "command_type": "Application"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "cursor",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dsh",
+      "kind": "ai-tool",
+      "name": "DSH",
+      "observed": {
+        "present": true,
+        "version": "0.1.0-rc.6",
+        "executable": "D:\\DSH\\dsh.cmd",
+        "command_resolution": {
+          "Count": 3,
+          "IsFixedSize": true,
+          "IsReadOnly": false,
+          "IsSynchronized": false,
+          "Length": 3,
+          "LongLength": 3,
+          "Rank": 1,
+          "SyncRoot": [
+            {
+              "executable": "D:\\DSH\\dsh.cmd",
+              "command_type": "Application"
+            },
+            {
+              "executable": "D:\\DSH\\dsh.ps1",
+              "command_type": "ExternalScript"
+            },
+            {
+              "executable": "D:\\DSH\\dsh",
+              "command_type": "Application"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "dsh",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "status": "unknown"
+      }
+    }
+  ]
 }

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "project-github.com-whatnamed-codex-bridge-tray-controller",
+  "name": "controller",
+  "observed": {
+    "evidence": [
+      {
+        "path": "E:\\Projects\\agent-bridge-legacy\\controller\\.git",
+        "type": "git_fingerprint"
+      }
+    ],
+    "commands": {},
+    "local_endpoints": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "local_path": "E:\\Projects\\agent-bridge-legacy\\controller",
+    "manifests": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "package_manager_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "repository": "github.com/Whatnamed/codex-bridge-tray-controller",
+    "runtime_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "service_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "tool_refs": {
+      "Count": 0,
+      "IsFixedSize": true,
+      "IsReadOnly": false,
+      "IsSynchronized": false,
+      "Length": 0,
+      "LongLength": 0,
+      "Rank": 1,
+      "SyncRoot": []
+    },
+    "workspace_type": "git-repository"
+  },
+  "curated": {
+    "status": "unknown"
+  }
+}
