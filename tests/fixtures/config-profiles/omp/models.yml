@@ -1,0 +1,56 @@
+providers:
+  openai-codex:
+    modelOverrides:
+      test-model-a:
+        contextWindow: 372000
+      test-model-b:
+        contextWindow: 372000
+
+  zhipu-coding-plan:
+    modelOverrides:
+      test-glm:
+        reasoning: true
+        tokenizer: glm5
+        contextWindow: 1000000
+        thinking:
+          mode: effort
+          efforts:
+            - low
+            - high
+            - max
+          defaultLevel: max
+          requiresEffort: true
+        compat:
+          supportsReasoningEffort: true
+
+  tokenrhythm:
+    baseUrl: https://tokenrhythm.example.com/v1
+    apiKey: TESTFIXTURE_API_KEY
+    api: openai-completions
+    authHeader: true
+    models:
+      - id: test-glm
+        name: Test GLM (TokenRhythm)
+        reasoning: true
+        input:
+          - text
+          - image
+        contextWindow: 1050000
+        maxTokens: 131072
+        thinking:
+          mode: effort
+          efforts:
+            - low
+            - max
+          defaultLevel: max
+        compat:
+          supportsReasoningEffort: true
+
+  leaky-provider:
+    baseUrl: https://leaky.example.com/v1
+    apiKey: sk-test-do-not-publish
+    api: openai-completions
+    models:
+      - id: leaky-model
+        name: Leaky Model
+        contextWindow: 8000

@@ -241,7 +241,7 @@ Canonical module：`context/software/ai.json`。
 - skills/preset/plugin/MCP related directory/config existence；
 - default shell / local endpoint / port 等非敏感关系。
 
-Config parser 只能提取 allowlisted safe fields，例如 MCP server **name/scope**。不得把 env、token、credential、完整 args/config 序列化进 context。
+Config parser 只能提取 allowlisted safe fields，例如 MCP server **name/scope**。不得把 env、token、credential、完整 args/config 序列化进 context。完整的 AI 配置投影与 MCP inventory 规范见下方 R 节。
 
 认证文件只能记录 `exists` 与必要 normalized path。
 
@@ -366,6 +366,51 @@ Raw discovery 输出永远留在 `.local`，不直接进入 Git。
 - `media.json`（只有确实影响规划时）。
 
 普通软件仍复用 observed/curated、version/path/install/update/evidence 模型。不要演变成 Windows 所有 package、游戏、system component 的完整 CMDB。
+
+## R. AI & tool configuration profiles
+
+AI harness 的 provider/model/MCP 配置会被用户频繁手工修改，并直接决定 Agent 行为。MachineContext 保存的不是 raw config 备份，而是 **source-specific allowlist sanitized projection**：本地真实配置 → 每个工具一个明确 allowlist 的解析器 → 结构化、可审计、可编辑的安全投影。
+
+Canonical module：`context/configs/`（index + 每工具一个 profile 文件 + `mcp.json`）。
+
+### 值得投影的字段（按工具真实 schema 保存，不改造成抽象统一模型）
+
+- provider / model 的 id、name、display name；
+- protocol / api / adapter（Chat Completions、Responses 等）；
+- safe base URL（strip userinfo/query/fragment）；
+- contextWindow / maxTokens / limit.context / limit.output；
+- reasoning / thinking 配置：enabled、variants/efforts、defaultLevel/defaultVariant、requiresEffort、compat flags；
+- modalities（input/output）；
+- default model / modelRoles / routing / listen port / provider family selection 等 harness 级选择状态；
+- web search provider 顺序、shellPath 等长期影响行为的安全字段；
+- credential 字段只能以 `credentialEnvName`（就地改名）或 profile 级 `credential_env_names` 保存环境变量**名称**；无法映射为环境变量名的 credential 一律丢弃并记入 `redactions`。
+
+### 语义标注
+
+- profile 级 `value_basis: configured-local` 表示这些是本地配置声明；
+- `wire_verification: not-wire-verified` 表示本地 override（如 contextWindow、reasoning efforts）未经上游 wire 验证，不得解读为模型客观能力；
+- `observed` 是 collector 拥有的投影；`curated` 保留给用户/agent 语义，routine sync 不得覆盖。
+
+### 敏感文件边界
+
+- `.env*`、auth DB、credential store、session/history/usage 数据库只记录 normalized path + exists + role，永不读取内容；
+- config 中混有真实 API key 的文件（如 ZCode config.json）使用 source-specific allowlist parser 读取，禁止“先复制再 regex”；
+- 旧副本（如含 key 的 stale config copy）只登记 path/exists。
+
+### MCP inventory
+
+`context/configs/mcp.json` 只收存在用户配置的 MCP：
+
+- server name、tool/scope、enabled（可得时）、transport、command（normalized）、safe URL；
+- args 逐项 allowlist：含 credential 赋值、token-like 参数、credential URL 的 arg 丢弃并记 redaction；
+- env 只保存变量名。
+
+无文件级 MCP 配置的工具在 `unresolved` 中说明（OMP 的状态数据库永远不被读取）。
+
+### 刷新与删除
+
+- config profile 随 routine core scan 刷新（读取小文件，成本低）；
+- 源文件消失时 profile 保留（与“provider 失败 ≠ 卸载”一致），删除 profile 需要显式清理。
 
 ## Refresh policy
 

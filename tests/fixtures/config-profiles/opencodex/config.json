@@ -1,0 +1,53 @@
+{
+  "port": 10100,
+  "defaultProvider": "testai",
+  "contextCapValue": 250000,
+  "providerContextCaps": {
+    "testai": 250000
+  },
+  "clientIntegrations": {
+    "grok": false,
+    "codex": false
+  },
+  "websockets": false,
+  "codexAutoStart": true,
+  "subagentModels": ["test-a", "test-b"],
+  "disabledModels": ["testai/test-old"],
+  "webSearchSidecar": {
+    "model": "test-a",
+    "reasoning": "medium",
+    "backend": "openai"
+  },
+  "providers": {
+    "testai": {
+      "adapter": "openai-responses",
+      "baseUrl": "https://testai.example.com/v1",
+      "apiKey": "sk-test-do-not-publish",
+      "liveModels": false,
+      "models": ["test-a", "test-b", "test-c"],
+      "modelContextWindows": {
+        "test-a": 272000,
+        "test-b": 272000
+      },
+      "modelReasoningEfforts": {
+        "test-a": ["low", "medium", "high"]
+      },
+      "apiKeyPool": ["pool-token-one", "pool-token-two"]
+    },
+    "mirror": {
+      "adapter": "openai-chat",
+      "baseUrl": "https://user:pass@mirror.example.com/v1",
+      "apiKey": "fake-refresh-token",
+      "defaultModel": "test-d"
+    }
+  },
+  "claudeCode": {
+    "enabled": false,
+    "authMode": "subscription",
+    "desktopProfile": {
+      "defaults": {
+        "sonnet": "test-a"
+      }
+    }
+  }
+}

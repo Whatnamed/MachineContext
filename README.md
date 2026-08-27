@@ -61,6 +61,7 @@ MachineContext/
     relationships.json
     software/
     projects/
+    configs/
   scripts/
     collect.ps1
     verify.ps1

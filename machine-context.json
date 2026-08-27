@@ -11,7 +11,8 @@
     "conventions": "context/conventions.json",
     "relationships": "context/relationships.json",
     "software_index": "context/software/index.json",
-    "projects_index": "context/projects/index.json"
+    "projects_index": "context/projects/index.json",
+    "configs_index": "context/configs/index.json"
   },
   "documentation": {
     "index": "docs/README.md",

@@ -11,3 +11,4 @@ Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'diagnostics.ps1')
 . (Join-Path $PSScriptRoot 'staging.ps1')
 . (Join-Path $PSScriptRoot 'privacy.ps1')
+. (Join-Path $PSScriptRoot 'config-projection.ps1')

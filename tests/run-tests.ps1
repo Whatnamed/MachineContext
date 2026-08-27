@@ -1290,6 +1290,215 @@ Invoke-McTest -Name 'project activity remains local-only' -Body {
     Assert-McEqual -Actual $missing.local.project_activity[0].tracked_dirty -Expected $null -Message 'failed tracked status must remain unknown'
 }
 
+# ── Configuration projection (AI config profiles + MCP inventory) ──
+. (Join-Path $RepoRoot 'scripts\collectors\config-profiles.ps1')
+$configFixtureRoot = Join-Path $RepoRoot 'tests\fixtures\config-profiles'
+
+Invoke-McTest -Name 'YAML subset parser handles mappings, sequences, scalars, and Unicode' -Body {
+    $yaml = @'
+shellPath: D:\Git\Git\bin\bash.exe
+count: 42
+enabled: true
+disabled: false
+nothing: null
+quoted: "a: b # c"
+chinese: 测试模型
+list:
+  - first
+  - second
+providers:
+  demo:
+    modelOverrides:
+      model-a:
+        contextWindow: 372000
+    models:
+      - id: model-a
+        name: 模型 A
+        input:
+          - text
+        thinking:
+          efforts:
+            - low
+            - max
+'@
+    $parsed = Read-McConfigYamlText -Text $yaml
+    Assert-McEqual -Actual $parsed.shellPath -Expected 'D:\Git\Git\bin\bash.exe' -Message 'YAML scalar string'
+    Assert-McEqual -Actual $parsed.count -Expected 42 -Message 'YAML integer scalar'
+    Assert-McEqual -Actual $parsed.enabled -Expected $true -Message 'YAML boolean true'
+    Assert-McEqual -Actual $parsed.disabled -Expected $false -Message 'YAML boolean false'
+    Assert-McEqual -Actual $parsed.nothing -Expected $null -Message 'YAML null scalar'
+    Assert-McEqual -Actual $parsed.quoted -Expected 'a: b # c' -Message 'YAML quoted scalar keeps colon and hash'
+    Assert-McEqual -Actual $parsed.chinese -Expected '测试模型' -Message 'YAML Unicode scalar'
+    Assert-McEqual -Actual (@($parsed.list).Count) -Expected 2 -Message 'YAML scalar sequence'
+    Assert-McEqual -Actual $parsed.providers.demo.modelOverrides.'model-a'.contextWindow -Expected 372000 -Message 'YAML nested mapping'
+    $modelArray = @($parsed.providers.demo.models)
+    Assert-McEqual -Actual $modelArray.Count -Expected 1 -Message 'single-item YAML sequence must stay an array'
+    Assert-McEqual -Actual $modelArray[0].id -Expected 'model-a' -Message 'YAML sequence-of-mapping item'
+    Assert-McEqual -Actual (@($modelArray[0].thinking.efforts).Count) -Expected 2 -Message 'YAML nested sequence inside sequence item'
+}
+
+Invoke-McTest -Name 'credential key denylist and env-name shapes' -Body {
+    Assert-McTrue -Condition (Test-McSensitiveConfigKeyName -Name 'apiKey') -Message 'apiKey must be denied'
+    Assert-McTrue -Condition (Test-McSensitiveConfigKeyName -Name 'api_key') -Message 'api_key must be denied'
+    Assert-McTrue -Condition (Test-McSensitiveConfigKeyName -Name 'apiKeyPool') -Message 'apiKeyPool must be denied'
+    Assert-McTrue -Condition (Test-McSensitiveConfigKeyName -Name 'refreshToken') -Message 'refreshToken must be denied'
+    Assert-McTrue -Condition (Test-McSensitiveConfigKeyName -Name 'credentials') -Message 'credentials must be denied'
+    Assert-McTrue -Condition (-not (Test-McSensitiveConfigKeyName -Name 'authHeader')) -Message 'authHeader must stay allowed'
+    Assert-McTrue -Condition (-not (Test-McSensitiveConfigKeyName -Name 'authMode')) -Message 'authMode must stay allowed'
+    Assert-McTrue -Condition (-not (Test-McSensitiveConfigKeyName -Name 'credentialEnvName')) -Message 'credentialEnvName projection key must stay allowed'
+    Assert-McTrue -Condition (Test-McEnvVarNameShape -Value 'TOKENRHYTHM_API_KEY') -Message 'environment variable name shape accepted'
+    Assert-McTrue -Condition (-not (Test-McEnvVarNameShape -Value 'sk-test-do-not-publish')) -Message 'secret-like value must not count as env name'
+    Assert-McTrue -Condition (-not (Test-McEnvVarNameShape -Value 'lowercase_name')) -Message 'lowercase value must not count as env name'
+}
+
+Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-name credentials only' -Body {
+    $profile = Get-McOmpConfigProfile -AgentRoot (Join-Path $configFixtureRoot 'omp')
+    Assert-McEqual -Actual $profile.id -Expected 'omp-config' -Message 'OMP profile id'
+    Assert-McEqual -Actual ([string]$profile.observed.projection.config.shellPath) -Expected 'D:\Git\Git\bin\bash.exe' -Message 'OMP shellPath projected'
+    Assert-McEqual -Actual ([string]$profile.observed.projection.config.modelRoles.default) -Expected 'tokenrhythm/test-model:max' -Message 'OMP model role projected'
+    $providers = $profile.observed.projection.models.providers
+    Assert-McEqual -Actual ([string]$providers.tokenrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'tokenrhythm apiKey projected as env name'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.tokenrhythm -Name 'apiKey')) -Message 'apiKey key must not survive projection'
+    Assert-McTrue -Condition (@($profile.observed.credential_env_names) -contains 'TESTFIXTURE_API_KEY') -Message 'credential_env_names records the env name'
+    $leakyText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($leakyText -notmatch 'sk-test-do-not-publish') -Message 'OMP projection must not contain the fake key value'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.'leaky-provider' -Name 'credentialEnvName')) -Message 'non-env-name apiKey must not become a credential reference'
+    $redactedKeys = @($profile.observed.redactions | Where-Object { $_.reason -eq 'credential-value' })
+    Assert-McTrue -Condition ($redactedKeys.Count -ge 1) -Message 'OMP projection must record the redacted credential field'
+    $tokenrhythmModels = @($providers.tokenrhythm.models)
+    Assert-McEqual -Actual $tokenrhythmModels.Count -Expected 1 -Message 'single-model sequence must survive as array'
+    Assert-McEqual -Actual ([string]$tokenrhythmModels[0].thinking.defaultLevel) -Expected 'max' -Message 'source-native thinking fields preserved'
+    $first = ConvertTo-McJsonText -InputObject $profile
+    $second = ConvertTo-McJsonText -InputObject $profile
+    Assert-McEqual -Actual $first -Expected $second -Message 'OMP profile serialization must be deterministic'
+}
+
+Invoke-McTest -Name 'DSH fixture projection sanitizes URLs and credential env references' -Body {
+    $profile = Get-McDshConfigProfile -ConfigRoot (Join-Path $configFixtureRoot 'dsh')
+    Assert-McEqual -Actual $profile.id -Expected 'dsh-config' -Message 'DSH profile id'
+    Assert-McEqual -Actual ([string]$profile.observed.projection.'agent-default-model'.provider) -Expected 'testrhythm' -Message 'DSH default model provider projected'
+    $testrhythm = $profile.observed.projection.'llm-pi-ai'.providers.testrhythm
+    Assert-McEqual -Actual ([string]$testrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'DSH apiKeyEnv projected as env name'
+    Assert-McEqual -Actual ([string]$testrhythm.baseURL) -Expected 'https://tokenrhythm.example.com/v1' -Message 'DSH baseURL kept when clean'
+    Assert-McEqual -Actual (@($testrhythm.models).Count) -Expected 2 -Message 'DSH model sequence projected'
+    $badholder = $profile.observed.projection.'llm-pi-ai'.providers.badholder
+    Assert-McEqual -Actual ([string]$badholder.baseURL) -Expected 'https://leaky.example.com/v1' -Message 'credential-bearing URL must be sanitized'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $badholder -Name 'credentialEnvName')) -Message 'raw credential value must not become env name'
+    Assert-McEqual -Actual ([string]$profile.observed.projection.'llm-deepseek'.baseURL) -Expected 'https://deepseek-mirror.example.com/v1' -Message 'provider-shaped llm section projected'
+    Assert-McTrue -Condition (@($profile.observed.credential_env_names) -contains 'TESTFIXTURE_API_KEY') -Message 'DSH credential env names collected'
+    $profileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'DSH projection must not contain the fake credential value'
+    Assert-McTrue -Condition ($profileText -notmatch 'user:pass') -Message 'DSH projection must not contain userinfo'
+    Assert-McEqual -Actual ([string]$profile.observed.projection.'agent-presets'.default) -Expected 'pristine' -Message 'DSH agent preset default projected'
+}
+
+Invoke-McTest -Name 'ZCode fixture projection drops apiKey values and keeps model semantics' -Body {
+    $profile = Get-McZcodeConfigProfile -AppDataRoot (Join-Path $configFixtureRoot 'zcode') -UserProfileRoot $null
+    Assert-McEqual -Actual $profile.id -Expected 'zcode-config' -Message 'ZCode profile id'
+    $providers = $profile.observed.projection.providers
+    $bigmodel = $providers.'builtin:bigmodel'
+    Assert-McEqual -Actual ([string]$bigmodel.baseURL) -Expected 'https://bigmodel.example.com/api/anthropic' -Message 'ZCode baseURL projected'
+    Assert-McEqual -Actual ([bool]$bigmodel.'credential_configured') -Expected $true -Message 'ZCode credential presence recorded as boolean'
+    $model = $bigmodel.models.'Test-GLM'
+    Assert-McEqual -Actual ([string]$model.reasoning.defaultVariant) -Expected 'max' -Message 'ZCode reasoning variants projected'
+    Assert-McEqual -Actual ([string]$model.modalities.input[1]) -Expected 'image' -Message 'ZCode modality list projected'
+    $profileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($profileText -notmatch 'sk-test-do-not-publish') -Message 'ZCode projection must not contain the fake key value'
+    Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'ZCode projection must not contain the fake credential value'
+    $credentialRedactions = @($profile.observed.redactions | Where-Object { $_.reason -eq 'credential-value' })
+    Assert-McEqual -Actual $credentialRedactions.Count -Expected 2 -Message 'both fake keys must be recorded as redacted'
+}
+
+Invoke-McTest -Name 'OpenCodex fixture projection preserves routing semantics without credentials' -Body {
+    $profile = Get-McOpencodexConfigProfile -ConfigRoot (Join-Path $configFixtureRoot 'opencodex')
+    Assert-McEqual -Actual $profile.id -Expected 'opencodex-config' -Message 'OpenCodex profile id'
+    $projection = $profile.observed.projection
+    Assert-McEqual -Actual ([int]$projection.port) -Expected 10100 -Message 'OpenCodex listen port projected'
+    Assert-McEqual -Actual ([string]$projection.defaultProvider) -Expected 'testai' -Message 'OpenCodex default provider projected'
+    $testai = $projection.providers.testai
+    Assert-McEqual -Actual (@($testai.models).Count) -Expected 3 -Message 'OpenCodex model list projected'
+    Assert-McEqual -Actual ([int]$testai.modelContextWindows.'test-a') -Expected 272000 -Message 'OpenCodex per-model context window projected'
+    Assert-McEqual -Actual ([bool]$testai.'credential_configured') -Expected $true -Message 'OpenCodex credential pool recorded as boolean'
+    $mirror = $projection.providers.mirror
+    Assert-McEqual -Actual ([string]$mirror.baseUrl) -Expected 'https://mirror.example.com/v1' -Message 'credential-bearing upstream URL sanitized'
+    Assert-McEqual -Actual ([string]$projection.claudeCode.desktop_defaults.sonnet) -Expected 'test-a' -Message 'claudeCode desktop defaults projected'
+    $profileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($profileText -notmatch 'sk-test-do-not-publish') -Message 'OpenCodex projection must not contain the fake key value'
+    Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'OpenCodex projection must not contain the fake credential value'
+    Assert-McTrue -Condition ($profileText -notmatch 'pool-token-one') -Message 'OpenCodex projection must not contain pool tokens'
+}
+
+Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing arguments' -Body {
+    $mcp = Get-McMcpInventoryRecord `
+        -ClaudeConfigPath (Join-Path $configFixtureRoot 'mcp\claude.json') `
+        -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
+        -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
+        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+    $servers = @($mcp.observed.servers)
+    Assert-McEqual -Actual $servers.Count -Expected 5 -Message 'MCP servers collected from all four sources'
+    $http = $servers | Where-Object name -eq 'fixture-http'
+    Assert-McEqual -Actual ([string]$http.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'safe MCP URL kept'
+    $safe = $servers | Where-Object name -eq 'fixture-safe-stdio'
+    Assert-McEqual -Actual (@($safe.args) -join ' ') -Expected '--app cursor --agent cli' -Message 'safe MCP args kept'
+    $secret = $servers | Where-Object name -eq 'fixture-secret-stdio'
+    Assert-McTrue -Condition (@($secret.args) -notcontains '--token=sk-test-do-not-publish') -Message 'credential-bearing MCP arg must be dropped'
+    Assert-McEqual -Actual (@($secret.args) -join ' ') -Expected '/c npx -y server@latest' -Message 'remaining MCP args preserved'
+    $codexServer = $servers | Where-Object tool -eq 'codex-cli'
+    Assert-McEqual -Actual ([string]$codexServer.name) -Expected 'fixture-codex' -Message 'TOML MCP server parsed'
+    $mcpText = ConvertTo-McJsonText -InputObject $mcp
+    Assert-McTrue -Condition ($mcpText -notmatch 'sk-test-do-not-publish') -Message 'MCP inventory must not contain the fake token value'
+    Assert-McTrue -Condition ($mcpText -notmatch 'fixture-user-id-must-not-leak') -Message 'MCP inventory must not leak unrelated config state'
+    Assert-McTrue -Condition ($mcpText -notmatch 'fixture-uuid-must-not-leak') -Message 'MCP inventory must not leak account identifiers'
+}
+
+Invoke-McTest -Name 'config profile validation rejects sensitive keys and accepts good records' -Body {
+    $findings = [System.Collections.Generic.List[object]]::new()
+    $goodProfile = Get-McOmpConfigProfile -AgentRoot (Join-Path $configFixtureRoot 'omp')
+    Validate-McConfigProfileRecord -Record $goodProfile -Findings $findings -Path 'test'
+    Assert-McEqual -Actual @($findings).Count -Expected 0 -Message 'good OMP profile must validate cleanly'
+
+    $badProjection = [ordered]@{
+        providers = [ordered]@{
+            evil = [ordered]@{ apiKey = 'not-a-real-value' }
+        }
+    }
+    $sensitive = Get-McSensitiveConfigKeyFindings -InputObject $badProjection
+    Assert-McTrue -Condition (@($sensitive).Count -ge 1) -Message 'planted apiKey key must be detected in projections'
+}
+
+Invoke-McTest -Name 'config profile reconciliation writes index and preserves curated intent' -Body {
+    $tempRoot = Join-Path $RepoRoot '.local\test-config-context'
+    $aiRoot = Join-Path $tempRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $aiRoot -Force)
+    $existing = [pscustomobject][ordered]@{
+        schema_version = 1
+        id             = 'omp-config'
+        kind           = 'ai-config-profile'
+        tool           = 'omp'
+        observed       = [pscustomobject][ordered]@{ projection = [pscustomobject][ordered]@{ stale = $true } }
+        curated        = [pscustomobject][ordered]@{ notes = @('version pinned by user') }
+    }
+    Write-McJson -Path (Join-Path $aiRoot 'omp.json') -InputObject $existing
+
+    $profile = Get-McOmpConfigProfile -AgentRoot (Join-Path $configFixtureRoot 'omp')
+    $mcp = Get-McMcpInventoryRecord `
+        -ClaudeConfigPath (Join-Path $configFixtureRoot 'mcp\claude.json') `
+        -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
+        -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
+        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+    Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @($profile) -McpInventory $mcp
+
+    $written = Read-McJson -Path (Join-Path $aiRoot 'omp.json')
+    Assert-McEqual -Actual ([string]$written.curated.notes[0]) -Expected 'version pinned by user' -Message 'curated intent must survive config reconciliation'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $written.observed.projection -Name 'stale')) -Message 'stale projection must be replaced'
+    Assert-McEqual -Actual ([string]$written.observed.projection.config.shellPath) -Expected 'D:\Git\Git\bin\bash.exe' -Message 'fresh projection written'
+
+    $index = Read-McJson -Path (Join-Path $tempRoot 'configs\index.json')
+    Assert-McTrue -Condition (@($index.modules | Where-Object { $_.path -eq 'ai/omp.json' }).Count -eq 1) -Message 'config index registers profile modules'
+    Assert-McTrue -Condition (@($index.modules | Where-Object { $_.path -eq 'mcp.json' }).Count -eq 1) -Message 'config index registers MCP inventory'
+    Remove-Item -LiteralPath $tempRoot -Recurse -Force
+}
+
 if ($failures.Count -gt 0) {
     Write-Host "FAILED $($failures.Count) assertion(s)"
     $failures | ForEach-Object { Write-Host " - $_" }

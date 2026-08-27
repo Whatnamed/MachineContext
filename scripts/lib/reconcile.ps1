@@ -775,6 +775,97 @@ function Update-McPublishedStatus {
     return $Status
 }
 
+function Merge-McConfigProfiles {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$ContextRoot,
+
+        [AllowNull()]
+        [object[]]$Profiles,
+
+        [AllowNull()]
+        [object]$McpInventory
+    )
+
+    $configRoot = Join-Path $ContextRoot 'configs'
+    $aiRoot = Join-Path $configRoot 'ai'
+    if (@($Profiles).Count -eq 0 -and $null -eq $McpInventory -and -not (Test-Path -LiteralPath $configRoot -PathType Container)) {
+        return
+    }
+
+    [void](New-Item -ItemType Directory -Path $aiRoot -Force)
+
+    foreach ($profile in @($Profiles | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.tool) })) {
+        $tool = [string]$profile.tool
+        if ($tool -notmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
+        $path = Join-Path $aiRoot ("{0}.json" -f $tool)
+        $record = Copy-McJsonObject -InputObject $profile
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+            try {
+                $existing = Read-McJson -Path $path
+                $existingCurated = Get-McObjectPropertyOrNull -InputObject $existing -Name 'curated'
+                if ($null -ne $existingCurated) {
+                    Set-McObjectProperty -InputObject $record -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
+                }
+            }
+            catch {
+            }
+        }
+        Write-McJson -Path $path -InputObject $record
+    }
+
+    if ($null -ne $McpInventory) {
+        $mcpPath = Join-Path $configRoot 'mcp.json'
+        $mcpRecord = Copy-McJsonObject -InputObject $McpInventory
+        if (Test-Path -LiteralPath $mcpPath -PathType Leaf) {
+            try {
+                $existingMcp = Read-McJson -Path $mcpPath
+                $existingCurated = Get-McObjectPropertyOrNull -InputObject $existingMcp -Name 'curated'
+                if ($null -ne $existingCurated) {
+                    Set-McObjectProperty -InputObject $mcpRecord -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
+                }
+            }
+            catch {
+            }
+        }
+        Write-McJson -Path $mcpPath -InputObject $mcpRecord
+    }
+
+    $modules = [System.Collections.Generic.List[object]]::new()
+    foreach ($file in @(Get-ChildItem -LiteralPath $aiRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Sort-Object Name)) {
+        try {
+            $record = Read-McJson -Path $file.FullName
+            [void]$modules.Add([pscustomobject][ordered]@{
+                path = "ai/{0}" -f $file.Name
+                tool = [string]$record.tool
+                kind = [string]$record.kind
+            })
+        }
+        catch {
+        }
+    }
+    if (Test-Path -LiteralPath (Join-Path $configRoot 'mcp.json') -PathType Leaf) {
+        [void]$modules.Add([pscustomobject][ordered]@{
+            path = 'mcp.json'
+            tool = 'multi'
+            kind = 'mcp-inventory'
+        })
+    }
+
+    $index = [pscustomobject][ordered]@{
+        schema_version = 1
+        meta           = [pscustomobject][ordered]@{ state = 'observed' }
+        policy         = [pscustomobject][ordered]@{
+            privacy_model  = 'allowlist-projection'
+            refresh_policy = 'routine-core-scan'
+            removal_policy = 'explicit-cleanup-only'
+        }
+        modules        = @($modules)
+    }
+    Write-McJson -Path (Join-Path $configRoot 'index.json') -InputObject $index
+}
+
 function Invoke-McReconciliation {
     [CmdletBinding()]
     param(
@@ -843,6 +934,8 @@ function Invoke-McReconciliation {
         $module = Merge-McSoftwareModule -Module $module -ModuleName $moduleName -Observations @($observations.software.$moduleName) -VerificationEvents $verificationEvents
         Write-McJson -Path $path -InputObject $module
     }
+
+    Merge-McConfigProfiles -ContextRoot $contextRoot -Profiles @((Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs').profiles) -McpInventory (Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs') -Name 'mcp')
 
     $projectIndexPath = Join-Path $contextRoot 'projects\index.json'
     $projectIndex = Read-McJson -Path $projectIndexPath

@@ -220,6 +220,38 @@ function Invoke-McRender {
         }
     }
 
+    $configsIndexPath = Join-Path $ContextRoot 'configs\index.json'
+    $mcpPath = Join-Path $ContextRoot 'configs\mcp.json'
+    $hasMcp = Test-Path $mcpPath
+    if ((Test-Path $configsIndexPath) -or $hasMcp) {
+        [void]$lines.Add('')
+        [void]$lines.Add('## AI configuration profiles')
+        [void]$lines.Add('')
+        if (Test-Path $configsIndexPath) {
+            $configsIndex = Read-McJson -Path $configsIndexPath
+            foreach ($module in @($configsIndex.modules | Where-Object { [string]$_.kind -eq 'ai-config-profile' } | Sort-Object tool)) {
+                $profilePath = Join-Path $ContextRoot ('configs\' + (([string]$module.path) -replace '/', '\'))
+                $profileRoot = $null
+                if (Test-Path -LiteralPath $profilePath -PathType Leaf) {
+                    try {
+                        $profile = Read-McJson -Path $profilePath
+                        $profileRoot = [string](Get-McRenderProperty -InputObject (Get-McRenderProperty -InputObject $profile -Name 'source') -Name 'config_root')
+                    }
+                    catch {}
+                }
+                [void]$lines.Add(('- `{0}` — {1} — `context/configs/{2}`' -f (ConvertTo-McMarkdownValue -Value $module.tool), (ConvertTo-McMarkdownValue -Value $profileRoot), (ConvertTo-McMarkdownValue -Value $module.path)))
+            }
+        }
+        if ($hasMcp) {
+            $mcp = Read-McJson -Path $mcpPath
+            $serverGroups = @($mcp.observed.servers | Group-Object tool | Sort-Object Name)
+            if ($serverGroups.Count -gt 0) {
+                [void]$lines.Add(('- MCP servers: {0}' -f (($serverGroups | ForEach-Object { '{0} ({1})' -f $_.Name, $_.Count }) -join ', ')))
+            }
+            [void]$lines.Add('  - Full inventory: `context/configs/mcp.json`')
+        }
+    }
+
     $creativePath = Join-Path $ContextRoot 'software\creative.json'
     $productivityPath = Join-Path $ContextRoot 'software\productivity.json'
     $hasCreative = Test-Path $creativePath
@@ -308,6 +340,10 @@ function Invoke-McRender {
         }
     }
     $systemRoots = @(Get-McRenderProperty -InputObject $conventions -Name 'system_managed_roots' -Default @())
+    $aiInstallRoots = Get-McRenderProperty -InputObject $conventions -Name 'ai_cli_install_roots'
+    if ($null -ne $aiInstallRoots) {
+        [void]$lines.Add(('- AI CLI install roots (non-strict): {0}' -f (ConvertTo-McMarkdownValue -Value (Get-McRenderProperty -InputObject $aiInstallRoots -Name 'tendency'))))
+    }
     if ($systemRoots.Count -gt 0) {
         [void]$lines.Add(('- System-managed roots: {0}' -f ($systemRoots -join ', ')))
     }

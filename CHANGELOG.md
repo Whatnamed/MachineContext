@@ -15,6 +15,7 @@ MachineContext uses Git for detailed history. This file records only notable pro
 - `context/status.json` for compact published verification/provider-health state.
 - Script, collector, library, test-fixture, and schema scaffolding for V1.
 - Development log convention.
+- `context/configs/` AI configuration profile module with source-specific allowlisted projections (OMP, DSH, ZCode, OpenCodex), a cross-tool MCP inventory, credential redaction to environment-variable names, validator privacy gates, and fixture tests.
 
 ### Changed
 

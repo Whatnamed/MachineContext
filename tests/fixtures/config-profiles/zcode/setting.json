@@ -1,0 +1,12 @@
+{
+  "modelProviderFamilyModes": {
+    "zai": "oauth",
+    "bigmodel": "oauth"
+  },
+  "modelProviderFamilySelectedKeys": {
+    "zai": "builtin:zai-coding-plan",
+    "bigmodel": "builtin:bigmodel-coding-plan"
+  },
+  "enabledBuiltinAgentCliProviders": "glm",
+  "locale": "zh-CN"
+}

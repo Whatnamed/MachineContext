@@ -1,0 +1,23 @@
+{
+  "numStartups": 42,
+  "userID": "fixture-user-id-must-not-leak",
+  "oauthAccount": {
+    "accountUuid": "fixture-uuid-must-not-leak"
+  },
+  "mcpServers": {
+    "fixture-http": {
+      "type": "http",
+      "url": "https://mcp.fixture.example.com/mcp"
+    },
+    "fixture-safe-stdio": {
+      "type": "stdio",
+      "command": "C:\\Users\\fixture\\.pencil\\mcp\\out\\server.exe",
+      "args": ["--app", "cursor", "--agent", "cli"]
+    },
+    "fixture-secret-stdio": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "server@latest", "--token=sk-test-do-not-publish"]
+    }
+  }
+}

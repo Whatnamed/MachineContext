@@ -212,6 +212,41 @@ For Windows command/path facts, `windows-host` means the persistent Machine PATH
 
 The full multi-scope schema can evolve later, but V1 data must not make future separation impossible.
 
+## Configuration profiles
+
+`context/configs/` stores safe, source-native projections of frequently edited AI harness configuration, registered by `context/configs/index.json` and `machine-context.json#canonical.configs_index`.
+
+Module layout:
+
+```text
+context/configs/
+  index.json      generated module registry + policy
+  ai/<tool>.json  one profile per harness (omp, dsh, zcode, opencodex, ...)
+  mcp.json        cross-tool MCP inventory
+```
+
+Profile records keep the record envelope (`schema_version`, `id`, `kind: ai-config-profile`, `tool`, `observed`, `curated`) plus a `source` block:
+
+```text
+source.config_root        normalized config root
+source.files[]            path/format/exists/role per relevant file
+                          (env files, auth stores, history DBs: path+exists only)
+observed.value_basis      'configured-local' — these are config declarations
+observed.wire_verification 'not-wire-verified' when capability-like values
+                          (contextWindow overrides, reasoning efforts) are local
+                          policy, not verified upstream behavior
+observed.projection       the sanitized source-native config subtree; real field
+                          names (modelOverrides, thinking.efforts, compat, ...)
+                          are kept so an AI can patch the actual config
+observed.credential_env_names   environment-variable names referenced by the config
+observed.redactions       paths/reasons for every dropped credential or unsafe value
+observed.evidence         per-source-file provenance
+```
+
+Ownership and refresh follow the standard rules: the collector owns `observed` and refreshes it on routine scans; `curated` is user/agent-owned and preserved. A profile whose source files disappear is retained (matching the "provider failure is not removal" rule) and removed only through explicit cleanup.
+
+The projection must never contain credential-named properties or credential values; `credential` fields survive only as environment-variable names. MCP records (`kind: mcp-inventory`) hold per-server tool/scope/name/transport/command/safe-URL plus individually allowlisted `args` and `env_names`. Validators enforce these contracts (`config_sensitive_key`, `config_invalid_env_name`, profile/MCP record shapes) before publication.
+
 ## Compatibility
 
 V1 evolution should be additive whenever practical. New software categories are new JSON modules registered by `context/software/index.json`; new long-lived projects are new JSON files registered by `context/projects/index.json`.

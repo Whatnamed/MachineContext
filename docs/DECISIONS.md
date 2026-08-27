@@ -304,6 +304,14 @@ Reason: project lifecycle and software operational state are different meanings.
 
 Status: accepted.
 
+## D039 — AI configuration profiles are allowlisted projections, not raw backups
+
+Decision: MachineContext maintains a `context/configs/` module of source-specific, allowlisted, sanitized projections for frequently edited AI harness configuration (OMP, DSH, ZCode, OpenCodex, plus a cross-tool MCP inventory). Each supported tool has an explicit parser that reads only approved keys from its real config files; projections keep source-native field names and hierarchy. Credential values never enter canonical state: a credential field survives only as an environment-variable name (`credentialEnvName` / `credential_env_names`) or as `credential_configured: true`, and every drop is recorded in `redactions`. Sensitive files (auth DBs, `.env`, usage/history stores) are recorded as path + exists + role only. The validator rejects credential-named keys in published projections. Config class A/B/C applies: no-secret high-value fields project directly; secret-mixed configs project via allowlist parsing without copying raw files; pure machine state stays a canonical observed fact and gets no config profile.
+
+Reason: provider/model/MCP declarations change often and directly steer agent behavior, but raw config backups would smuggle secrets into Git and rot quickly. Source-native sanitized projections keep the information patchable by a future AI while making the privacy boundary structural (allowlist first) and validator-enforced (defense in depth) instead of regex-based.
+
+Status: accepted.
+
 ## D038 — V1 Simplification, Supplemental Inventory Provenance, and Optional Lifecycle
 
 Decision:

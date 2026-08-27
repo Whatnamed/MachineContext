@@ -155,6 +155,10 @@ function New-McCollectionState {
         }
         projects       = [System.Collections.Generic.List[object]]::new()
         relationships  = [System.Collections.Generic.List[object]]::new()
+        configs        = [ordered]@{
+            profiles = [System.Collections.Generic.List[object]]::new()
+            mcp      = $null
+        }
     }
 
     return [pscustomobject][ordered]@{
@@ -498,6 +502,16 @@ function Invoke-McCollection {
     }
     if ($null -ne $network.local) { $state.local_diagnostics.network = $network.local }
 
+    $configProfiles = Invoke-McSafeProvider -CollectionState $state -Provider 'config-profiles' -Action {
+        Get-McConfigProfileObservations -RepoRoot $RunContext.repo_root
+    }
+    if ($null -ne $configProfiles.value) {
+        foreach ($profile in @($configProfiles.value.profiles)) {
+            if ($null -ne $profile) { [void]$state.observations.configs.profiles.Add($profile) }
+        }
+        if ($null -ne $configProfiles.value.mcp) { $state.observations.configs.mcp = $configProfiles.value.mcp }
+    }
+
     $discoveryMode = $RunContext.mode -in @('Discover', 'Full')
     if ($discoveryMode) {
         $registry = Invoke-McSafeProvider -CollectionState $state -Provider 'registry-uninstall' -Action {
@@ -608,6 +622,7 @@ foreach ($collector in @(
         'host-tool-verifiers.ps1',
         'runtimes.ps1',
         'ai-tools.ps1',
+        'config-profiles.ps1',
         'network.ps1',
         'registry-apps.ps1',
         'projects.ps1',

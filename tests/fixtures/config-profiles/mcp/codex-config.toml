@@ -1,0 +1,9 @@
+model = "gpt-5.6"
+model_reasoning_effort = "max"
+
+[mcp_servers.fixture-codex]
+command = "C:\\Users\\fixture\\.pencil\\mcp\\out\\server.exe"
+args = [ "--app", "cursor", "--agent", "codexCLI" ]
+
+[projects."e:\\fixture"]
+trust_level = "trusted"

@@ -6,6 +6,7 @@ function Get-McAiDefinitions {
 
     return @(
         [pscustomobject]@{ id = 'dsh'; name = 'DSH'; command = 'dsh'; args = @('--version') },
+        [pscustomobject]@{ id = 'omp'; name = 'Oh My Pi'; command = 'omp'; args = @('--version') },
         [pscustomobject]@{ id = 'agy'; name = 'Agy'; command = 'agy'; args = @('--version') },
         [pscustomobject]@{ id = 'claude-code'; name = 'Claude Code'; command = 'claude'; args = @('--version') },
         [pscustomobject]@{ id = 'gemini-cli'; name = 'Gemini CLI'; command = 'gemini'; args = @('--version') },
@@ -29,7 +30,14 @@ function Get-McSafeAiPathChecks {
                 [pscustomobject]@{ id = 'codex-visualizations'; path = Join-Path $userProfile '.codex\visualizations'; kind = 'data' },
                 [pscustomobject]@{ id = 'dsh-data'; path = Join-Path $userProfile '.dsh'; kind = 'data' },
                 [pscustomobject]@{ id = 'dsh-presets'; path = Join-Path $userProfile '.dsh\.agent-presets'; kind = 'config-directory' },
-                [pscustomobject]@{ id = 'codex-bridge-config'; path = Join-Path $userProfile '.config\openai-api-server-via-codex\config.toml'; kind = 'config-file' }
+                [pscustomobject]@{ id = 'codex-bridge-config'; path = Join-Path $userProfile '.config\openai-api-server-via-codex\config.toml'; kind = 'config-file' },
+                [pscustomobject]@{ id = 'omp-agent-root'; path = Join-Path $userProfile '.omp\agent'; kind = 'config-directory' },
+                [pscustomobject]@{ id = 'omp-config'; path = Join-Path $userProfile '.omp\agent\config.yml'; kind = 'config-file' },
+                [pscustomobject]@{ id = 'omp-models'; path = Join-Path $userProfile '.omp\agent\models.yml'; kind = 'config-file' },
+                [pscustomobject]@{ id = 'omp-settings'; path = Join-Path $userProfile '.omp\agent\settings.json'; kind = 'config-file' },
+                [pscustomobject]@{ id = 'omp-env'; path = Join-Path $userProfile '.omp\agent\.env'; kind = 'sensitive-env-file' },
+                [pscustomobject]@{ id = 'omp-agent-db'; path = Join-Path $userProfile '.omp\agent\agent.db'; kind = 'auth-store' },
+                [pscustomobject]@{ id = 'omp-history-db'; path = Join-Path $userProfile '.omp\agent\history.db'; kind = 'history-store' }
             )) {
             [void]$checks.Add($check)
         }

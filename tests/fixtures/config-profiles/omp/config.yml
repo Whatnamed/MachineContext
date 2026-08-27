@@ -1,0 +1,10 @@
+shellPath: D:\Git\Git\bin\bash.exe
+providers:
+  webSearchOrder:
+    - parallel
+    - gemini
+    - duckduckgo
+modelRoles:
+  default: tokenrhythm/test-model:max
+defaultThinkingLevel: auto
+setupVersion: 2

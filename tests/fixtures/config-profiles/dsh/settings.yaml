@@ -1,0 +1,50 @@
+agent-default-model:
+  provider: testrhythm
+  model: test-glm
+
+llm-pi-ai:
+  providers:
+    testrhythm:
+      displayName: 测试律动
+      apiKeyEnv: TESTFIXTURE_API_KEY
+      api: openai-completions
+      baseURL: https://tokenrhythm.example.com/v1
+      defaultInput:
+        - text
+        - image
+      defaultMaxTokens: 131072
+      models:
+        - id: test-glm
+          name: Test GLM
+          contextWindow: 1050000
+          maxTokens: 131072
+          reasoningEfforts:
+            low: low
+            max: max
+        - id: test-mini
+          name: Test Mini
+          contextWindow: 200000
+          input: text
+
+    badholder:
+      displayName: 泄漏提供方
+      apiKey: fake-refresh-token
+      api: openai-responses
+      baseURL: https://user:pass@leaky.example.com/v1?api_key=zzzz#frag
+      models:
+        - id: leaky
+          name: Leaky
+          contextWindow: 8000
+
+llm-deepseek:
+  baseURL: https://deepseek-mirror.example.com/v1
+  models:
+    - id: test-deepseek
+      name: Test DeepSeek
+      contextWindow: 1000000
+
+ui-theme:
+  preference: dark
+
+agent-presets:
+  default: pristine

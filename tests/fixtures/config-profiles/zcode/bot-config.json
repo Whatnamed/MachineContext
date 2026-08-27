@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "bots": [
+    {
+      "id": "bot-fixture",
+      "name": "Test Bot",
+      "provider": "builtin:bigmodel",
+      "enabled": true,
+      "allowedCommands": ["read"]
+    }
+  ]
+}

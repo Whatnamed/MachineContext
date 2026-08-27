@@ -1,0 +1,11 @@
+{
+  "ui": {
+    "theme": "dark"
+  },
+  "mcpServers": {
+    "fixture-gemini": {
+      "command": "C:\\Users\\fixture\\.pencil\\mcp\\out\\server.exe",
+      "args": ["--app", "cursor", "--agent", "geminiCLI"]
+    }
+  }
+}

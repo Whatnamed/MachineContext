@@ -1,0 +1,43 @@
+{
+  "provider": {
+    "builtin:bigmodel": {
+      "name": "Test BigModel",
+      "kind": "anthropic",
+      "options": {
+        "apiKey": "sk-test-do-not-publish",
+        "baseURL": "https://bigmodel.example.com/api/anthropic"
+      },
+      "enabled": true,
+      "source": "custom",
+      "models": {
+        "Test-GLM": {
+          "name": "test-glm",
+          "reasoning": {
+            "enabled": true,
+            "variants": ["low", "high", "max"],
+            "defaultVariant": "max"
+          },
+          "limit": {
+            "context": 1000000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        }
+      }
+    },
+    "custom-provider": {
+      "name": "Test Custom",
+      "kind": "openai-compatible",
+      "options": {
+        "apiKey": "fake-refresh-token",
+        "baseURL": "https://custom.example.com/v1"
+      },
+      "enabled": false,
+      "source": "custom",
+      "models": {}
+    }
+  }
+}

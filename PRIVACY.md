@@ -42,6 +42,18 @@ Examples:
 
 Do not solve privacy by first copying full config and hoping a final regex removes everything.
 
+## AI configuration projections
+
+`context/configs/` stores sanitized projections of frequently edited AI harness configuration. The boundary between a projection and a "sanitized-looking raw config dump" is:
+
+1. **Allowlist by source**: every supported tool has an explicit parser that reads only approved keys/sections. There is no generic "read any JSON/YAML and strip secret-looking keys" sanitizer.
+2. **Credential values never survive**: a credential field may be published only as an environment-variable **name** (`credentialEnvName` in place, `credential_env_names` at profile level). Values that are not environment-variable-shaped are dropped and recorded in `redactions` with the source path.
+3. **Credential-named keys never survive**: published projections must not contain keys such as `apiKey`, `token`, `secret`, `apiKeyPool`; the validator rejects them (`config_sensitive_key`).
+4. **URLs are sanitized**: userinfo, query strings, and fragments are stripped from base URLs; credential-bearing query parameters cause redaction records.
+5. **MCP arguments are individually allowlisted**: arguments containing credential assignments or token-like values are dropped and counted in redactions; MCP `env` is reduced to variable names only.
+6. **Sensitive files stay opaque**: auth DBs, `.env`, credential stores, session/history/usage databases are recorded as normalized path + exists + role only.
+7. **Defense in depth**: projected strings are scanned for secret-like patterns, and the validator re-scans every published config file for sensitive key names and credential-bearing values before publication.
+
 ## Environment variables
 
 Collectors may record approved environment-variable **names or existence** when useful. They must not dump values by default.

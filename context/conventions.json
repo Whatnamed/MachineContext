@@ -60,6 +60,20 @@
       "tendency": "flexible storage, user development projects, global tools and SDKs"
     }
   ],
+  "ai_cli_install_roots": {
+    "tendency": "primary/production AI coding CLIs and harnesses prefer dedicated install roots instead of npm-global",
+    "strict": false,
+    "dedicated_roots": [
+      "E:\\Codex\\codex-cli",
+      "D:\\Claude\\cli",
+      "D:\\DSH",
+      "D:\\GrokBuild",
+      "D:\\OMP"
+    ],
+    "npm_global_root": "E:\\Dev\\npm-global",
+    "npm_global_usage": "ordinary/lightweight npm global CLIs (e.g. OpenCodex)",
+    "user_data_note": "program bodies may live in dedicated D:/E: roots; user data/auth/config stays in the official default user directory (%USERPROFILE%\\.xxx)"
+  },
   "system_managed_roots": [
     "%LOCALAPPDATA%\\Programs",
     "%PROGRAMFILES%\\WindowsApps"

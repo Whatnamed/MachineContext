@@ -290,6 +290,133 @@ function Validate-McProjectRecord {
     }
 }
 
+function Validate-McConfigProfileRecord {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Record,
+
+        [Parameter(Mandatory)]
+        [object]$Findings,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    if (-not (Test-McMapping -InputObject $Record)) {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'contract_type_mismatch' -Message 'Config profile record must be a mapping/object.' -Path $Path
+        return
+    }
+
+    foreach ($name in @('id', 'tool', 'kind')) {
+        if (Test-McContractProperty -InputObject $Record -Name $name) {
+            Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $Record -Name $name) -Path ("{0}.{1}" -f $Path, $name)
+        }
+    }
+    if ([string](Get-McContractProperty -InputObject $Record -Name 'kind') -ne 'ai-config-profile') {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'config_profile_kind' -Message 'Config profile records must declare kind ai-config-profile.' -Path ("{0}.kind" -f $Path)
+    }
+    $id = [string](Get-McContractProperty -InputObject $Record -Name 'id')
+    if (-not (Test-McSafeId -Id $id)) {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'unsafe_id' -Message 'Config profile id is not stable/safe.' -Path ("{0}.id" -f $Path)
+    }
+
+    Assert-McContractMapping -Findings $Findings -Value (Get-McContractProperty -InputObject $Record -Name 'source') -Path ("{0}.source" -f $Path) -Required
+    $source = Get-McContractProperty -InputObject $Record -Name 'source'
+    if (Test-McMapping -InputObject $source) {
+        Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $source -Name 'files') -Path ("{0}.source.files" -f $Path)
+    }
+
+    foreach ($name in @('observed', 'curated')) {
+        Assert-McContractMapping -Findings $Findings -Value (Get-McContractProperty -InputObject $Record -Name $name) -Path ("{0}.{1}" -f $Path, $name) -Required
+    }
+
+    $observed = Get-McContractProperty -InputObject $Record -Name 'observed'
+    if (Test-McMapping -InputObject $observed) {
+        Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name 'value_basis') -Path ("{0}.observed.value_basis" -f $Path)
+        $projection = Get-McContractProperty -InputObject $observed -Name 'projection'
+        if ($null -ne $projection) {
+            Assert-McContractMapping -Findings $Findings -Value $projection -Path ("{0}.observed.projection" -f $Path)
+        }
+        foreach ($name in @('credential_env_names', 'redactions', 'evidence')) {
+            Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name $name) -Path ("{0}.observed.{1}" -f $Path, $name)
+        }
+        if (Test-McContractProperty -InputObject $observed -Name 'credential_env_names') {
+            $envIndex = 0
+            foreach ($envName in (Get-McContractProperty -InputObject $observed -Name 'credential_env_names')) {
+                if (-not (Test-McEnvVarNameShape -Value ([string]$envName))) {
+                    Add-McValidationFinding -Findings $Findings -Severity error -Code 'config_invalid_env_name' -Message 'credential_env_names entries must be environment-variable names.' -Path ("{0}.observed.credential_env_names[{1}]" -f $Path, $envIndex)
+                }
+                $envIndex++
+            }
+        }
+    }
+}
+
+function Validate-McMcpInventoryRecord {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Record,
+
+        [Parameter(Mandatory)]
+        [object]$Findings,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    if (-not (Test-McMapping -InputObject $Record)) {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'contract_type_mismatch' -Message 'MCP inventory record must be a mapping/object.' -Path $Path
+        return
+    }
+
+    if ([string](Get-McContractProperty -InputObject $Record -Name 'kind') -ne 'mcp-inventory') {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'mcp_inventory_kind' -Message 'MCP inventory records must declare kind mcp-inventory.' -Path ("{0}.kind" -f $Path)
+    }
+    Assert-McContractMapping -Findings $Findings -Value (Get-McContractProperty -InputObject $Record -Name 'observed') -Path ("{0}.observed" -f $Path) -Required
+    Assert-McContractMapping -Findings $Findings -Value (Get-McContractProperty -InputObject $Record -Name 'curated') -Path ("{0}.curated" -f $Path) -Required
+
+    $observed = Get-McContractProperty -InputObject $Record -Name 'observed'
+    if (Test-McMapping -InputObject $observed) {
+        Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name 'servers') -Path ("{0}.observed.servers" -f $Path)
+        Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name 'redactions') -Path ("{0}.observed.redactions" -f $Path)
+        $serverIndex = 0
+        foreach ($server in @(Get-McContractProperty -InputObject $observed -Name 'servers')) {
+            $serverPath = "{0}.observed.servers[{1}]" -f $Path, $serverIndex
+            if (Test-McMapping -InputObject $server) {
+                foreach ($name in @('tool', 'scope', 'name', 'transport', 'command', 'url')) {
+                    if (Test-McContractProperty -InputObject $server -Name $name) {
+                        Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $server -Name $name) -Path ("{0}.{1}" -f $serverPath, $name)
+                    }
+                }
+                foreach ($name in @('args', 'env_names')) {
+                    Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $server -Name $name) -Path ("{0}.{1}" -f $serverPath, $name)
+                }
+            }
+            $serverIndex++
+        }
+    }
+}
+
+function Add-McConfigSensitiveKeyFindings {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Document,
+
+        [Parameter(Mandatory)]
+        [object]$Findings,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    foreach ($finding in (Get-McSensitiveConfigKeyFindings -InputObject $Document)) {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'config_sensitive_key' -Message 'Config projection must not contain a credential-named property.' -Path ("{0}:{1}" -f $Path, $finding.path)
+    }
+}
+
 function Validate-McMachineRecord {
     [CmdletBinding()]
     param(
@@ -519,6 +646,18 @@ function Invoke-McValidation {
 
             if ($file -match '\\projects\\[^\\]+\.json$' -and $file -notmatch '\\projects\\index\.json$') {
                 Validate-McProjectRecord -Record $document -Findings $findings -Path $file
+            }
+
+            if ($file -match '\\configs\\ai\\[^\\]+\.json$') {
+                Validate-McConfigProfileRecord -Record $document -Findings $findings -Path "$file`:$"
+            }
+
+            if ($file -match '\\configs\\mcp\.json$') {
+                Validate-McMcpInventoryRecord -Record $document -Findings $findings -Path "$file`:$"
+            }
+
+            if ($file -match '\\configs\\') {
+                Add-McConfigSensitiveKeyFindings -Document $document -Findings $findings -Path $file
             }
 
             if ($file -match '\\relationships\.json$') {

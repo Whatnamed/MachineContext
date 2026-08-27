@@ -222,5 +222,15 @@ function Get-McCanonicalFiles {
         }
     }
 
+    # Config profile records are additive files referenced by the config index.
+    $configRoot = Join-Path $ContextRoot 'configs'
+    if (Test-Path -LiteralPath $configRoot -PathType Container) {
+        Get-ChildItem -LiteralPath $configRoot -Recurse -File -Filter '*.json' -ErrorAction SilentlyContinue | Where-Object {
+            $_.Name -ne 'index.json' -and $_.Name -ne '_template.json'
+        } | ForEach-Object {
+            [void]$files.Add($_.FullName)
+        }
+    }
+
     return @($files | Sort-Object -Unique)
 }
