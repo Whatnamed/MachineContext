@@ -17,7 +17,7 @@
     "fixture-secret-stdio": {
       "type": "stdio",
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "server@latest", "--token=sk-test-do-not-publish"]
+      "args": ["/c", "npx", "-y", "server@latest", "--token=sk-test-do-not-publish", "--token", "opaque-secret-value"]
     }
   }
 }

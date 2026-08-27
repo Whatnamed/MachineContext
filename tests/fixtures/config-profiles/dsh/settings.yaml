@@ -9,6 +9,8 @@ llm-pi-ai:
       apiKeyEnv: TESTFIXTURE_API_KEY
       api: openai-completions
       baseURL: https://tokenrhythm.example.com/v1
+      headers:
+        X-Trace-Id: trace-value-not-allowlisted
       defaultInput:
         - text
         - image

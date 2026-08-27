@@ -785,17 +785,21 @@ function Merge-McConfigProfiles {
         [object[]]$Profiles,
 
         [AllowNull()]
+        [object[]]$ProfileStates,
+
+        [AllowNull()]
         [object]$McpInventory
     )
 
     $configRoot = Join-Path $ContextRoot 'configs'
     $aiRoot = Join-Path $configRoot 'ai'
-    if (@($Profiles).Count -eq 0 -and $null -eq $McpInventory -and -not (Test-Path -LiteralPath $configRoot -PathType Container)) {
+    if (@($Profiles).Count -eq 0 -and @($ProfileStates).Count -eq 0 -and $null -eq $McpInventory -and -not (Test-Path -LiteralPath $configRoot -PathType Container)) {
         return
     }
 
     [void](New-Item -ItemType Directory -Path $aiRoot -Force)
 
+    $freshTools = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($profile in @($Profiles | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.tool) })) {
         $tool = [string]$profile.tool
         if ($tool -notmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
@@ -813,6 +817,28 @@ function Merge-McConfigProfiles {
             }
         }
         Write-McJson -Path $path -InputObject $record
+        [void]$freshTools.Add($tool)
+    }
+
+    # A confirmed source absence downgrades the last-known profile to stale so
+    # it is never mistaken for current configuration. A parser/provider failure
+    # (state 'failed') deliberately keeps the previous record untouched.
+    foreach ($state in @($ProfileStates | Where-Object { $null -ne $_ -and [string]$_.state -eq 'source-missing' })) {
+        $tool = [string]$state.tool
+        if ([string]::IsNullOrWhiteSpace($tool) -or $freshTools.Contains($tool)) { continue }
+        if ($tool -notmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
+        $path = Join-Path $aiRoot ("{0}.json" -f $tool)
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { continue }
+        try {
+            $existing = Read-McJson -Path $path
+            $observed = Get-McObjectPropertyOrNull -InputObject $existing -Name 'observed'
+            if (-not (Test-McMapping -InputObject $observed)) { continue }
+            Set-McObjectProperty -InputObject $observed -Name 'source_state' -Value 'stale'
+            Set-McObjectProperty -InputObject $observed -Name 'source_state_reason' -Value 'config source confirmed absent during scan'
+            Write-McJson -Path $path -InputObject $existing
+        }
+        catch {
+        }
     }
 
     if ($null -ne $McpInventory) {
@@ -836,11 +862,14 @@ function Merge-McConfigProfiles {
     foreach ($file in @(Get-ChildItem -LiteralPath $aiRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Sort-Object Name)) {
         try {
             $record = Read-McJson -Path $file.FullName
-            [void]$modules.Add([pscustomobject][ordered]@{
+            $module = [ordered]@{
                 path = "ai/{0}" -f $file.Name
                 tool = [string]$record.tool
                 kind = [string]$record.kind
-            })
+            }
+            $moduleSourceState = [string](Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $record -Name 'observed') -Name 'source_state')
+            if (-not [string]::IsNullOrWhiteSpace($moduleSourceState)) { $module['source_state'] = $moduleSourceState }
+            [void]$modules.Add([pscustomobject]$module)
         }
         catch {
         }
@@ -935,7 +964,7 @@ function Invoke-McReconciliation {
         Write-McJson -Path $path -InputObject $module
     }
 
-    Merge-McConfigProfiles -ContextRoot $contextRoot -Profiles @((Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs').profiles) -McpInventory (Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs') -Name 'mcp')
+    Merge-McConfigProfiles -ContextRoot $contextRoot -Profiles @((Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs').profiles) -ProfileStates @((Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs') -Name 'profile_states')) -McpInventory (Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $observations -Name 'configs') -Name 'mcp')
 
     $projectIndexPath = Join-Path $contextRoot 'projects\index.json'
     $projectIndex = Read-McJson -Path $projectIndexPath

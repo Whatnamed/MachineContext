@@ -2,7 +2,10 @@ Set-StrictMode -Version Latest
 
 # Shared helpers for source-specific, allowlisted configuration projections.
 # The privacy model is "parse allowlisted fields from the real source file";
-# raw config content is never copied and regex-redacted afterwards.
+# projectors use per-field allowlists (ConvertTo-McAllowlistedProjection) so
+# unknown fields are dropped by default, and the shared generic sanitizer
+# (ConvertTo-McSafeProjectionValue) remains as defense in depth on every
+# surviving value. Raw config content is never copied and regex-redacted.
 
 function Read-McConfigYamlText {
     [CmdletBinding()]
@@ -397,6 +400,271 @@ function ConvertTo-McSafeProjectionValue {
     return $null
 }
 
+function ConvertTo-McScalarLeafValue {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[object]]$Redactions
+    )
+
+    if ($null -eq $Value) { return $null }
+    if ($Value -is [string] -or $Value -is [bool] -or $Value -is [long] -or $Value -is [int] -or $Value -is [double]) {
+        return (ConvertTo-McSafeProjectionValue -Value $Value -Path $Path -Redactions $Redactions)
+    }
+    if (Test-McSequence -InputObject $Value) {
+        $items = [System.Collections.Generic.List[object]]::new()
+        $index = 0
+        foreach ($item in $Value) {
+            if ($null -eq $item -or $item -is [string] -or $item -is [bool] -or $item -is [long] -or $item -is [int] -or $item -is [double]) {
+                $projected = ConvertTo-McSafeProjectionValue -Value $item -Path ("{0}[{1}]" -f $Path, $index) -Redactions $Redactions
+                if ($null -ne $projected) { [void]$items.Add($projected) }
+            }
+            else {
+                Add-McProjectionRedaction -Redactions $Redactions -Path ("{0}[{1}]" -f $Path, $index) -Reason 'unsupported-value'
+            }
+            $index++
+        }
+        Write-Output -NoEnumerate -InputObject ([object[]]$items.ToArray())
+        return
+    }
+    Add-McProjectionRedaction -Redactions $Redactions -Path $Path -Reason 'unsupported-value'
+    return $null
+}
+
+function ConvertTo-McScalarCollectionValue {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[object]]$Redactions
+    )
+
+    # Strict leaf for dynamic-key namespaces whose values are known scalars or
+    # scalar sequences (model→int maps, slot→name maps, model→effort lists).
+    # Nested mappings are rejected, so an unexpected object under an innocent
+    # name can never be walked generically.
+    if ($null -eq $Value) { return $null }
+    if (Test-McMapping -InputObject $Value) {
+        $projected = [ordered]@{}
+        foreach ($entry in (Get-McPropertyEntries -InputObject $Value)) {
+            $entryValue = ConvertTo-McScalarLeafValue -Value $entry.Value -Path ("{0}.{1}" -f $Path, $entry.Name) -Redactions $Redactions
+            if ($null -ne $entryValue) { $projected[[string]$entry.Name] = $entryValue }
+        }
+        return $projected
+    }
+    return (ConvertTo-McScalarLeafValue -Value $Value -Path $Path -Redactions $Redactions)
+}
+
+function ConvertTo-McAllowlistedProjection {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [System.Collections.IDictionary]$Allowlist,
+
+        [Parameter(Mandatory)]
+        [string]$Path,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[object]]$Redactions,
+
+        [AllowNull()]
+        [System.Collections.Generic.List[string]]$UnprojectedKeys = $null,
+
+        [switch]$RecordUnprojectedKeys,
+
+        [int]$Depth = 0
+    )
+
+    # Per-field allowlist walker: a mapping survives only through keys declared
+    # in $Allowlist; unknown keys are dropped by default. Allowlist entries:
+    #   $null                  -> leaf, value passes the shared safe walker
+    #   'scalars'              -> leaf, scalar/scalar-sequence values only
+    #   'safe-url'             -> leaf, value sanitized as a URL
+    #   'credential-env'       -> env-var NAME only, renamed credentialEnvName
+    #   'credential-configured'-> value dropped, credential_configured: true
+    #   nested IDictionary     -> recurse; a nested '{ __items__ = X }' allowlist
+    #                             means user-defined keys, each value via X
+    # The shared safe walker still runs on every surviving leaf value, so the
+    # denylist and unsafe-text checks remain as defense in depth.
+    if ($Depth -gt 12) {
+        Add-McProjectionRedaction -Redactions $Redactions -Path $Path -Reason 'depth-limit'
+        return $null
+    }
+    if ($null -eq $Value) { return $null }
+    if (-not (Test-McMapping -InputObject $Value)) {
+        if (Test-McSequence -InputObject $Value) {
+            $items = [System.Collections.Generic.List[object]]::new()
+            $index = 0
+            foreach ($item in $Value) {
+                $projected = ConvertTo-McAllowlistedProjection -Value $item -Allowlist $Allowlist -Path ("{0}[{1}]" -f $Path, $index) -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+                if ($null -ne $projected) { [void]$items.Add($projected) }
+                $index++
+            }
+            Write-Output -NoEnumerate -InputObject ([object[]]$items.ToArray())
+            return
+        }
+        return (ConvertTo-McSafeProjectionValue -Value $Value -Path $Path -Redactions $Redactions)
+    }
+
+    if ($Allowlist.Contains('__items__')) {
+        $itemAllowlist = $Allowlist['__items__']
+        $projectedItems = [ordered]@{}
+        foreach ($entry in (Get-McPropertyEntries -InputObject $Value)) {
+            $entryPath = "{0}.{1}" -f $Path, $entry.Name
+            $projected = ConvertTo-McAllowlistedProjection -Value $entry.Value -Allowlist $itemAllowlist -Path $entryPath -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+            if ($null -ne $projected) { $projectedItems[[string]$entry.Name] = $projected }
+        }
+        return $projectedItems
+    }
+
+    $projectedMapping = [ordered]@{}
+    foreach ($entry in (Get-McPropertyEntries -InputObject $Value)) {
+        $key = [string]$entry.Name
+        if (-not $Allowlist.Contains($key)) {
+            if ($RecordUnprojectedKeys -and $null -ne $UnprojectedKeys) { [void]$UnprojectedKeys.Add(("{0}.{1}" -f $Path, $key)) }
+            continue
+        }
+        $spec = $Allowlist[$key]
+        $entryPath = "{0}.{1}" -f $Path, $key
+        if ($spec -is [System.Collections.IDictionary]) {
+            $projected = ConvertTo-McAllowlistedProjection -Value $entry.Value -Allowlist $spec -Path $entryPath -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+            if ($null -ne $projected) { $projectedMapping[$key] = $projected }
+            continue
+        }
+        switch ([string]$spec) {
+            'credential-env' {
+                $reference = ConvertTo-McCredentialReferenceValue -Value ([string]$entry.Value) -Redactions $Redactions -Path $entryPath
+                if (-not [string]::IsNullOrWhiteSpace($reference)) { $projectedMapping['credentialEnvName'] = $reference }
+            }
+            'credential-configured' {
+                Add-McProjectionRedaction -Redactions $Redactions -Path $entryPath -Reason 'credential-value'
+                $projectedMapping['credential_configured'] = $true
+            }
+            'safe-url' {
+                $url = ConvertTo-McProjectionSafeUrl -Url ([string]$entry.Value) -Redactions $Redactions -Path $entryPath
+                if (-not [string]::IsNullOrWhiteSpace($url)) { $projectedMapping[$key] = $url }
+            }
+            'scalars' {
+                $projected = ConvertTo-McScalarCollectionValue -Value $entry.Value -Path $entryPath -Redactions $Redactions
+                if ($null -ne $projected) { $projectedMapping[$key] = $projected }
+            }
+            default {
+                $projected = ConvertTo-McSafeProjectionValue -Value $entry.Value -Path $entryPath -Redactions $Redactions -Depth ($Depth + 1)
+                if ($null -ne $projected) { $projectedMapping[$key] = $projected }
+            }
+        }
+    }
+    return $projectedMapping
+}
+
+function Get-McCredentialEnvNamesFromProjection {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Value,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[string]]$Names
+    )
+
+    if ($null -eq $Value) { return }
+    if (Test-McMapping -InputObject $Value) {
+        foreach ($entry in (Get-McPropertyEntries -InputObject $Value)) {
+            if ([string]$entry.Name -eq 'credentialEnvName' -and (Test-McEnvVarNameShape -Value ([string]$entry.Value))) {
+                if (-not $Names.Contains([string]$entry.Value)) { [void]$Names.Add([string]$entry.Value) }
+                continue
+            }
+            Get-McCredentialEnvNamesFromProjection -Value $entry.Value -Names $Names
+        }
+        return
+    }
+    if (Test-McSequence -InputObject $Value) {
+        foreach ($item in $Value) {
+            Get-McCredentialEnvNamesFromProjection -Value $item -Names $Names
+        }
+    }
+}
+
+function Test-McCredentialMcpFlagName {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [string]$Argument
+    )
+
+    # True when this argv is a bare flag whose value would be credential
+    # material; such a flag consumes the following argv in real command lines.
+    if ([string]::IsNullOrWhiteSpace($Argument)) { return $false }
+    if ($Argument -notmatch '^--[A-Za-z][A-Za-z0-9_-]*$|^-[A-Za-z]$') { return $false }
+    $normalized = ($Argument -replace '^--?', '' -replace '[-_]', '').ToLowerInvariant()
+    if ($normalized -in @('h', 'key', 'token', 'secret', 'auth', 'apikey', 'passwd', 'password', 'credential', 'header', 'headers', 'authorization')) { return $true }
+    if ($normalized -match '(?:token|apikey|secret|passwd|password|credential|header|authorization)$') { return $true }
+    return $false
+}
+
+function Get-McSafeMcpArguments {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [object[]]$Arguments,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[object]]$Redactions,
+
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    # Sequence-aware MCP argument filter: a credential flag is dropped together
+    # with the argv it consumes, so split forms like ["--token", "<value>"]
+    # cannot leak the value that individual per-argument checks would miss.
+    $safe = [System.Collections.Generic.List[string]]::new()
+    $skipNext = $false
+    $index = 0
+    foreach ($argument in @($Arguments)) {
+        $text = [string]$argument
+        if ($skipNext) {
+            $skipNext = $false
+            $index++
+            continue
+        }
+        if (Test-McCredentialMcpFlagName -Argument $text) {
+            Add-McProjectionRedaction -Redactions $Redactions -Path ("{0}[{1}]" -f $Path, $index) -Reason 'credential-argument'
+            $skipNext = $true
+            $index++
+            continue
+        }
+        if (Test-McSafeMcpArgument -Argument $text) {
+            [void]$safe.Add($text)
+        }
+        else {
+            Add-McProjectionRedaction -Redactions $Redactions -Path ("{0}[{1}]" -f $Path, $index) -Reason 'unsafe-argument'
+        }
+        $index++
+    }
+    return ,([object[]]$safe.ToArray())
+}
+
 function ConvertTo-McProjectionSafeUrl {
     [CmdletBinding()]
     param(
@@ -456,7 +724,9 @@ function Test-McSafeMcpArgument {
     if ([string]::IsNullOrWhiteSpace($Argument)) { return $false }
     if ($Argument.Length -gt 512) { return $false }
     if ($null -ne (Find-McUnsafeProjectedText -Text $Argument)) { return $false }
-    if ($Argument -match '(?i)--?[A-Za-z0-9_-]*(?:token|key|secret|password)[A-Za-z0-9_-]*=') { return $false }
+    if ($Argument -match '(?i)--?[A-Za-z0-9_-]*(?:token|api[-_]?key|secret|password|credential|header|auth)[A-Za-z0-9_-]*=') { return $false }
+    if ($Argument -match '(?i)^\s*authorization\s*:') { return $false }
+    if ($Argument -match '(?i)\bbearer\s+[A-Za-z0-9._-]{8,}') { return $false }
     return $true
 }
 
@@ -514,14 +784,24 @@ function New-McConfigProfileRecord {
         [AllowNull()]
         [string]$WireVerification = $null,
 
+        [ValidateSet('current', 'stale')]
+        [string]$SourceState = 'current',
+
+        [AllowNull()]
+        [string]$SourceStateReason = $null,
+
         [Parameter(Mandatory)]
         [AllowEmptyCollection()]
         [object[]]$Evidence
     )
 
     $observed = [ordered]@{
-        value_basis = $ValueBasis
-        projection  = $Projection
+        value_basis  = $ValueBasis
+        source_state = $SourceState
+        projection   = $Projection
+    }
+    if (-not [string]::IsNullOrWhiteSpace($SourceStateReason)) {
+        $observed['source_state_reason'] = $SourceStateReason
     }
     if (@($CredentialEnvNames).Count -gt 0) {
         $observed['credential_env_names'] = @($CredentialEnvNames | Sort-Object -Unique)

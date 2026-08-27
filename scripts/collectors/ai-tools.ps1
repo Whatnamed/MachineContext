@@ -6,7 +6,18 @@ function Get-McAiDefinitions {
 
     return @(
         [pscustomobject]@{ id = 'dsh'; name = 'DSH'; command = 'dsh'; args = @('--version') },
-        [pscustomobject]@{ id = 'omp'; name = 'Oh My Pi'; command = 'omp'; args = @('--version') },
+        [pscustomobject]@{
+            id      = 'omp'
+            name    = 'Oh My Pi'
+            command = 'omp'
+            args    = @('--version')
+            install = [ordered]@{
+                root        = 'D:\OMP'
+                method      = 'standalone-binary'
+                scope       = 'user'
+                environment = 'windows-native'
+            }
+        },
         [pscustomobject]@{ id = 'agy'; name = 'Agy'; command = 'agy'; args = @('--version') },
         [pscustomobject]@{ id = 'claude-code'; name = 'Claude Code'; command = 'claude'; args = @('--version') },
         [pscustomobject]@{ id = 'gemini-cli'; name = 'Gemini CLI'; command = 'gemini'; args = @('--version') },
@@ -123,6 +134,19 @@ function Get-McAiToolObservations {
                 fields = @('present', 'version', 'executable', 'command_resolution')
                 confidence = 'high'
             })
+        }
+        $install = Get-McCollectionProperty -InputObject $definition -Name 'install'
+        if ($null -ne $install) {
+            $observed['install'] = (Copy-McJsonObject -InputObject $install)
+            $observed['evidence'] = @(
+                $observed['evidence']
+                [pscustomobject][ordered]@{
+                    provider = 'user-confirmed'
+                    provider_key = [string]$definition.id
+                    fields = @('install')
+                    confidence = 'high'
+                }
+            )
         }
         [void]$entities.Add([pscustomobject][ordered]@{
             id = [string]$definition.id

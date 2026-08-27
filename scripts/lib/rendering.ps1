@@ -232,14 +232,17 @@ function Invoke-McRender {
             foreach ($module in @($configsIndex.modules | Where-Object { [string]$_.kind -eq 'ai-config-profile' } | Sort-Object tool)) {
                 $profilePath = Join-Path $ContextRoot ('configs\' + (([string]$module.path) -replace '/', '\'))
                 $profileRoot = $null
+                $profileStale = $false
                 if (Test-Path -LiteralPath $profilePath -PathType Leaf) {
                     try {
                         $profile = Read-McJson -Path $profilePath
                         $profileRoot = [string](Get-McRenderProperty -InputObject (Get-McRenderProperty -InputObject $profile -Name 'source') -Name 'config_root')
+                        $profileStale = ([string](Get-McRenderProperty -InputObject (Get-McRenderProperty -InputObject $profile -Name 'observed') -Name 'source_state') -eq 'stale')
                     }
                     catch {}
                 }
-                [void]$lines.Add(('- `{0}` — {1} — `context/configs/{2}`' -f (ConvertTo-McMarkdownValue -Value $module.tool), (ConvertTo-McMarkdownValue -Value $profileRoot), (ConvertTo-McMarkdownValue -Value $module.path)))
+                $staleSuffix = if ($profileStale) { ' (stale: config source missing)' } else { '' }
+                [void]$lines.Add(('- `{0}` — {1}{2} — `context/configs/{3}`' -f (ConvertTo-McMarkdownValue -Value $module.tool), (ConvertTo-McMarkdownValue -Value $profileRoot), $staleSuffix, (ConvertTo-McMarkdownValue -Value $module.path)))
             }
         }
         if ($hasMcp) {

@@ -232,20 +232,25 @@ source.config_root        normalized config root
 source.files[]            path/format/exists/role per relevant file
                           (env files, auth stores, history DBs: path+exists only)
 observed.value_basis      'configured-local' — these are config declarations
+observed.source_state     'current' for fresh projections; 'stale' when the
+                          source files were confirmed absent during a scan
+observed.source_state_reason    set alongside 'stale' (static text; git holds when)
 observed.wire_verification 'not-wire-verified' when capability-like values
                           (contextWindow overrides, reasoning efforts) are local
                           policy, not verified upstream behavior
 observed.projection       the sanitized source-native config subtree; real field
                           names (modelOverrides, thinking.efforts, compat, ...)
-                          are kept so an AI can patch the actual config
+                          are kept so an AI can patch the actual config;
+                          fields dropped by the per-field allowlist are listed
+                          by name/path only in projection.unprojected_keys
 observed.credential_env_names   environment-variable names referenced by the config
 observed.redactions       paths/reasons for every dropped credential or unsafe value
 observed.evidence         per-source-file provenance
 ```
 
-Ownership and refresh follow the standard rules: the collector owns `observed` and refreshes it on routine scans; `curated` is user/agent-owned and preserved. A profile whose source files disappear is retained (matching the "provider failure is not removal" rule) and removed only through explicit cleanup.
+Ownership and refresh follow the standard rules: the collector owns `observed` and refreshes it on routine scans; `curated` is user/agent-owned and preserved. A projector/provider failure keeps the previous record untouched; only a **confirmed source absence** downgrades the last-known profile to `source_state: stale`, and `index.json` modules carry the same `source_state`. Profiles are removed only through explicit cleanup.
 
-The projection must never contain credential-named properties or credential values; `credential` fields survive only as environment-variable names. MCP records (`kind: mcp-inventory`) hold per-server tool/scope/name/transport/command/safe-URL plus individually allowlisted `args` and `env_names`. Validators enforce these contracts (`config_sensitive_key`, `config_invalid_env_name`, profile/MCP record shapes) before publication.
+The projection must never contain credential-named properties or credential values; `credential` fields survive only as environment-variable names. Provider/model-level unknown fields are dropped by the per-field allowlist and surfaced as `unprojected_keys` (names only). MCP records (`kind: mcp-inventory`) hold per-server tool/scope/name/transport/command/safe-URL plus allowlisted `args` and `env_names`; credential flags (`--token`, `-H`, ...) are dropped together with the argv they consume. Validators enforce these contracts (`config_sensitive_key`, `config_invalid_env_name`, profile/MCP record shapes) before publication.
 
 ## Compatibility
 

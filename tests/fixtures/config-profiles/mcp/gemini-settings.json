@@ -5,7 +5,7 @@
   "mcpServers": {
     "fixture-gemini": {
       "command": "C:\\Users\\fixture\\.pencil\\mcp\\out\\server.exe",
-      "args": ["--app", "cursor", "--agent", "geminiCLI"]
+      "args": ["--app", "cursor", "--api-key", "opaque-secret-value", "--agent", "geminiCLI"]
     }
   }
 }

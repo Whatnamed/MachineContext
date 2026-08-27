@@ -3,7 +3,7 @@ model_reasoning_effort = "max"
 
 [mcp_servers.fixture-codex]
 command = "C:\\Users\\fixture\\.pencil\\mcp\\out\\server.exe"
-args = [ "--app", "cursor", "--agent", "codexCLI" ]
+args = [ "--app", "cursor", "-H", "X-Api-Key: opaque-secret-value", "--agent", "codexCLI" ]
 
 [projects."e:\\fixture"]
 trust_level = "trusted"

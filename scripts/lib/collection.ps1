@@ -156,8 +156,9 @@ function New-McCollectionState {
         projects       = [System.Collections.Generic.List[object]]::new()
         relationships  = [System.Collections.Generic.List[object]]::new()
         configs        = [ordered]@{
-            profiles = [System.Collections.Generic.List[object]]::new()
-            mcp      = $null
+            profiles       = [System.Collections.Generic.List[object]]::new()
+            profile_states = [System.Collections.Generic.List[object]]::new()
+            mcp            = $null
         }
     }
 
@@ -508,6 +509,9 @@ function Invoke-McCollection {
     if ($null -ne $configProfiles.value) {
         foreach ($profile in @($configProfiles.value.profiles)) {
             if ($null -ne $profile) { [void]$state.observations.configs.profiles.Add($profile) }
+        }
+        foreach ($profileState in @($configProfiles.value.profile_states)) {
+            if ($null -ne $profileState) { [void]$state.observations.configs.profile_states.Add($profileState) }
         }
         if ($null -ne $configProfiles.value.mcp) { $state.observations.configs.mcp = $configProfiles.value.mcp }
     }

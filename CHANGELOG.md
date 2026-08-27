@@ -19,6 +19,7 @@ MachineContext uses Git for detailed history. This file records only notable pro
 
 ### Changed
 
+- Config projections hardened: per-field allowlists with `unprojected_keys`, sequence-aware MCP argument filtering (split credential flags dropped with their values), `source_state: stale` marking on confirmed source absence, and removal of the ZCode stale-copy fallback.
 - Canonical structured context migrated from bootstrap YAML to JSON before real machine data was committed, avoiding a PowerShell YAML parser/runtime dependency.
 - V1 changed from a checklist-style collector plan to a layered structured-discovery + candidate + verification + reconciliation pipeline.
 - Installed-app strategy standardized on Registry/winget enrichment rather than `Win32_Product`/`wmic product`.

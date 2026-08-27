@@ -369,7 +369,7 @@ Raw discovery 输出永远留在 `.local`，不直接进入 Git。
 
 ## R. AI & tool configuration profiles
 
-AI harness 的 provider/model/MCP 配置会被用户频繁手工修改，并直接决定 Agent 行为。MachineContext 保存的不是 raw config 备份，而是 **source-specific allowlist sanitized projection**：本地真实配置 → 每个工具一个明确 allowlist 的解析器 → 结构化、可审计、可编辑的安全投影。
+AI harness 的 provider/model/MCP 配置会被用户频繁手工修改，并直接决定 Agent 行为。MachineContext 保存的不是 raw config 备份，而是 **source-specific per-field allowlist projection**：本地真实配置 → 每个工具一个明确 allowlist 的解析器，provider/model 级未知字段**默认丢弃**（字段名以 `unprojected_keys` 记录，值永不发布）→ 结构化、可审计、可编辑的安全投影。共享 sanitizer 只作为 defense-in-depth，不承担 allowlist 职责。
 
 Canonical module：`context/configs/`（index + 每工具一个 profile 文件 + `mcp.json`）。
 
@@ -402,7 +402,7 @@ Canonical module：`context/configs/`（index + 每工具一个 profile 文件 +
 `context/configs/mcp.json` 只收存在用户配置的 MCP：
 
 - server name、tool/scope、enabled（可得时）、transport、command（normalized）、safe URL；
-- args 逐项 allowlist：含 credential 赋值、token-like 参数、credential URL 的 arg 丢弃并记 redaction；
+- args 按序列检查：credential 类 flag（`--token`、`--api-key`、`-H`/`--header` 等）连同它消费的下一个 argv 一起丢弃并记 redaction，`--token=...` 形式单独丢弃；
 - env 只保存变量名。
 
 无文件级 MCP 配置的工具在 `unresolved` 中说明（OMP 的状态数据库永远不被读取）。
@@ -410,7 +410,8 @@ Canonical module：`context/configs/`（index + 每工具一个 profile 文件 +
 ### 刷新与删除
 
 - config profile 随 routine core scan 刷新（读取小文件，成本低）；
-- 源文件消失时 profile 保留（与“provider 失败 ≠ 卸载”一致），删除 profile 需要显式清理。
+- 解析失败 ≠ 源消失：projector/provider 失败时旧 profile 原样保留；只有**确认源文件不存在**时，reconciliation 将 last-known profile 标为 `observed.source_state: stale`（附 `source_state_reason`），不再静默充当“当前配置”；
+- 删除 profile 需要显式清理；fresh 投影写 `source_state: current`，index 登记每个模块的 `source_state`。
 
 ## Refresh policy
 

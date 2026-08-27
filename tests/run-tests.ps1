@@ -1363,6 +1363,8 @@ Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-n
     $leakyText = ConvertTo-McJsonText -InputObject $profile
     Assert-McTrue -Condition ($leakyText -notmatch 'sk-test-do-not-publish') -Message 'OMP projection must not contain the fake key value'
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.'leaky-provider' -Name 'credentialEnvName')) -Message 'non-env-name apiKey must not become a credential reference'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.'leaky-provider' -Name 'headers')) -Message 'unknown provider fields must be dropped by the per-field allowlist'
+    Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'omp.models.providers.leaky-provider.headers') -Message 'dropped unknown provider fields must be recorded by path'
     $redactedKeys = @($profile.observed.redactions | Where-Object { $_.reason -eq 'credential-value' })
     Assert-McTrue -Condition ($redactedKeys.Count -ge 1) -Message 'OMP projection must record the redacted credential field'
     $tokenrhythmModels = @($providers.tokenrhythm.models)
@@ -1390,6 +1392,8 @@ Invoke-McTest -Name 'DSH fixture projection sanitizes URLs and credential env re
     Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'DSH projection must not contain the fake credential value'
     Assert-McTrue -Condition ($profileText -notmatch 'user:pass') -Message 'DSH projection must not contain userinfo'
     Assert-McEqual -Actual ([string]$profile.observed.projection.'agent-presets'.default) -Expected 'pristine' -Message 'DSH agent preset default projected'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testrhythm -Name 'headers')) -Message 'unknown DSH provider fields must be dropped by the per-field allowlist'
+    Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'dsh.llm-pi-ai.providers.testrhythm.headers') -Message 'DSH dropped unknown provider fields must be recorded by path'
 }
 
 Invoke-McTest -Name 'ZCode fixture projection drops apiKey values and keeps model semantics' -Body {
@@ -1409,6 +1413,11 @@ Invoke-McTest -Name 'ZCode fixture projection drops apiKey values and keeps mode
     Assert-McEqual -Actual $credentialRedactions.Count -Expected 2 -Message 'both fake keys must be recorded as redacted'
 }
 
+Invoke-McTest -Name 'ZCode profile never promotes the userprofile copy when the active config is missing' -Body {
+    $profile = Get-McZcodeConfigProfile -AppDataRoot (Join-Path $configFixtureRoot 'missing-zcode') -UserProfileRoot (Join-Path $configFixtureRoot 'zcode')
+    Assert-McTrue -Condition ($null -eq $profile) -Message 'missing active config must yield no profile instead of parsing the stale userprofile copy'
+}
+
 Invoke-McTest -Name 'OpenCodex fixture projection preserves routing semantics without credentials' -Body {
     $profile = Get-McOpencodexConfigProfile -ConfigRoot (Join-Path $configFixtureRoot 'opencodex')
     Assert-McEqual -Actual $profile.id -Expected 'opencodex-config' -Message 'OpenCodex profile id'
@@ -1421,7 +1430,11 @@ Invoke-McTest -Name 'OpenCodex fixture projection preserves routing semantics wi
     Assert-McEqual -Actual ([bool]$testai.'credential_configured') -Expected $true -Message 'OpenCodex credential pool recorded as boolean'
     $mirror = $projection.providers.mirror
     Assert-McEqual -Actual ([string]$mirror.baseUrl) -Expected 'https://mirror.example.com/v1' -Message 'credential-bearing upstream URL sanitized'
-    Assert-McEqual -Actual ([string]$projection.claudeCode.desktop_defaults.sonnet) -Expected 'test-a' -Message 'claudeCode desktop defaults projected'
+    Assert-McEqual -Actual ([string]$projection.claudeCode.desktopProfile.defaults.sonnet) -Expected 'test-a' -Message 'claudeCode desktop defaults projected'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testai -Name 'headers')) -Message 'unknown OpenCodex provider fields must be dropped by the per-field allowlist'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'opencodex.providers.testai.headers') -Message 'OpenCodex dropped unknown provider fields must be recorded by path'
+    Assert-McEqual -Actual @($projection.disabledModels).Count -Expected 1 -Message 'single-entry model lists must stay arrays'
+    Assert-McEqual -Actual ([string]$projection.disabledModels[0]) -Expected 'testai/test-old' -Message 'disabledModels entry preserved'
     $profileText = ConvertTo-McJsonText -InputObject $profile
     Assert-McTrue -Condition ($profileText -notmatch 'sk-test-do-not-publish') -Message 'OpenCodex projection must not contain the fake key value'
     Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'OpenCodex projection must not contain the fake credential value'
@@ -1443,10 +1456,17 @@ Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing 
     $secret = $servers | Where-Object name -eq 'fixture-secret-stdio'
     Assert-McTrue -Condition (@($secret.args) -notcontains '--token=sk-test-do-not-publish') -Message 'credential-bearing MCP arg must be dropped'
     Assert-McEqual -Actual (@($secret.args) -join ' ') -Expected '/c npx -y server@latest' -Message 'remaining MCP args preserved'
+    Assert-McTrue -Condition (@($secret.args) -notcontains '--token') -Message 'split-form credential flag must be dropped'
+    Assert-McTrue -Condition (@($secret.args) -notcontains 'opaque-secret-value') -Message 'split-form credential value must be dropped with its flag'
+    $geminiServer = $servers | Where-Object tool -eq 'gemini-cli'
+    Assert-McEqual -Actual (@($geminiServer.args) -join ' ') -Expected '--app cursor --agent geminiCLI' -Message 'split --api-key pair must be dropped together'
     $codexServer = $servers | Where-Object tool -eq 'codex-cli'
     Assert-McEqual -Actual ([string]$codexServer.name) -Expected 'fixture-codex' -Message 'TOML MCP server parsed'
+    Assert-McEqual -Actual (@($codexServer.args) -join ' ') -Expected '--app cursor --agent codexCLI' -Message 'split -H header pair must be dropped together'
     $mcpText = ConvertTo-McJsonText -InputObject $mcp
     Assert-McTrue -Condition ($mcpText -notmatch 'sk-test-do-not-publish') -Message 'MCP inventory must not contain the fake token value'
+    Assert-McTrue -Condition ($mcpText -notmatch 'opaque-secret-value') -Message 'MCP inventory must not contain split-form credential values'
+    Assert-McTrue -Condition ($mcpText -notmatch 'X-Api-Key') -Message 'MCP inventory must not contain header credential material'
     Assert-McTrue -Condition ($mcpText -notmatch 'fixture-user-id-must-not-leak') -Message 'MCP inventory must not leak unrelated config state'
     Assert-McTrue -Condition ($mcpText -notmatch 'fixture-uuid-must-not-leak') -Message 'MCP inventory must not leak account identifiers'
 }
@@ -1456,6 +1476,17 @@ Invoke-McTest -Name 'config profile validation rejects sensitive keys and accept
     $goodProfile = Get-McOmpConfigProfile -AgentRoot (Join-Path $configFixtureRoot 'omp')
     Validate-McConfigProfileRecord -Record $goodProfile -Findings $findings -Path 'test'
     Assert-McEqual -Actual @($findings).Count -Expected 0 -Message 'good OMP profile must validate cleanly'
+
+    Set-McObjectProperty -InputObject $goodProfile.observed -Name 'source_state' -Value 'stale'
+    Set-McObjectProperty -InputObject $goodProfile.observed -Name 'source_state_reason' -Value 'config source confirmed absent during scan'
+    $staleFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McConfigProfileRecord -Record $goodProfile -Findings $staleFindings -Path 'test'
+    Assert-McEqual -Actual @($staleFindings).Count -Expected 0 -Message 'stale source_state with reason must validate cleanly'
+
+    Set-McObjectProperty -InputObject $goodProfile.observed -Name 'source_state' -Value 'expired'
+    $badStateFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McConfigProfileRecord -Record $goodProfile -Findings $badStateFindings -Path 'test'
+    Assert-McTrue -Condition (@($badStateFindings | Where-Object { $_.code -eq 'config_profile_source_state' }).Count -ge 1) -Message 'unknown source_state values must be rejected'
 
     $badProjection = [ordered]@{
         providers = [ordered]@{
@@ -1496,6 +1527,39 @@ Invoke-McTest -Name 'config profile reconciliation writes index and preserves cu
     $index = Read-McJson -Path (Join-Path $tempRoot 'configs\index.json')
     Assert-McTrue -Condition (@($index.modules | Where-Object { $_.path -eq 'ai/omp.json' }).Count -eq 1) -Message 'config index registers profile modules'
     Assert-McTrue -Condition (@($index.modules | Where-Object { $_.path -eq 'mcp.json' }).Count -eq 1) -Message 'config index registers MCP inventory'
+    Remove-Item -LiteralPath $tempRoot -Recurse -Force
+}
+
+Invoke-McTest -Name 'config reconciliation marks last-known profiles stale when sources are confirmed absent' -Body {
+    $tempRoot = Join-Path $RepoRoot '.local\test-config-stale'
+    $aiRoot = Join-Path $tempRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $aiRoot -Force)
+    $existing = [pscustomobject][ordered]@{
+        schema_version = 1
+        id             = 'omp-config'
+        kind           = 'ai-config-profile'
+        tool           = 'omp'
+        observed       = [pscustomobject][ordered]@{ value_basis = 'configured-local'; source_state = 'current' }
+        curated        = [pscustomobject][ordered]@{ notes = @('keep me') }
+    }
+    Write-McJson -Path (Join-Path $aiRoot 'omp.json') -InputObject $existing
+
+    $missingState = [pscustomobject][ordered]@{ tool = 'omp'; state = 'source-missing' }
+    Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @() -ProfileStates @($missingState) -McpInventory $null
+
+    $written = Read-McJson -Path (Join-Path $aiRoot 'omp.json')
+    Assert-McEqual -Actual ([string]$written.observed.source_state) -Expected 'stale' -Message 'confirmed source absence must mark the last-known profile stale'
+    Assert-McEqual -Actual ([string]$written.observed.source_state_reason) -Expected 'config source confirmed absent during scan' -Message 'stale profiles must record the reason'
+    Assert-McEqual -Actual ([string]$written.curated.notes[0]) -Expected 'keep me' -Message 'stale marking must preserve curated intent'
+
+    $first = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
+    Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @() -ProfileStates @($missingState) -McpInventory $null
+    $second = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
+    Assert-McEqual -Actual $second -Expected $first -Message 'stale marking must be byte-idempotent across runs'
+
+    $index = Read-McJson -Path (Join-Path $tempRoot 'configs\index.json')
+    $ompModule = @($index.modules | Where-Object { $_.path -eq 'ai/omp.json' })[0]
+    Assert-McEqual -Actual ([string]$ompModule.source_state) -Expected 'stale' -Message 'config index must surface the stale state'
     Remove-Item -LiteralPath $tempRoot -Recurse -Force
 }
 

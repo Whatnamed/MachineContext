@@ -334,6 +334,11 @@ function Validate-McConfigProfileRecord {
     $observed = Get-McContractProperty -InputObject $Record -Name 'observed'
     if (Test-McMapping -InputObject $observed) {
         Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name 'value_basis') -Path ("{0}.observed.value_basis" -f $Path)
+        $sourceState = [string](Get-McContractProperty -InputObject $observed -Name 'source_state')
+        if (-not [string]::IsNullOrWhiteSpace($sourceState) -and $sourceState -notin @('current', 'stale')) {
+            Add-McValidationFinding -Findings $Findings -Severity error -Code 'config_profile_source_state' -Message 'Config profile source_state must be current or stale.' -Path ("{0}.observed.source_state" -f $Path)
+        }
+        Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name 'source_state_reason') -Path ("{0}.observed.source_state_reason" -f $Path)
         $projection = Get-McContractProperty -InputObject $observed -Name 'projection'
         if ($null -ne $projection) {
             Assert-McContractMapping -Findings $Findings -Value $projection -Path ("{0}.observed.projection" -f $Path)
