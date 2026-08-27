@@ -624,6 +624,14 @@ Invoke-McTest -Name 'dedicated verifiers and verification states' -Body {
         Assert-McTrue -Condition ([string]$gitBash[0].observed.executable -notmatch '(?i)WindowsApps\\bash\.exe') -Message 'WindowsApps bash alias must not be published as Git Bash'
     }
 
+    $hostToolPayload = Get-McHostAuthoritativeToolObservation
+    $supabaseHostEntity = @($hostToolPayload.value.development_entities | Where-Object id -eq 'supabase')
+    if ($supabaseHostEntity.Count -eq 1) {
+        Assert-McTrue -Condition ([string]$supabaseHostEntity[0].observed.executable -notmatch '(?i)SupabaseCLI\\2\.109\.1') -Message 'Supabase verifier must not resolve to stale rollback directory 2.109.1'
+        Assert-McTrue -Condition (@($supabaseHostEntity[0].observed.command_resolution | Where-Object { [string]$_.executable -match '(?i)SupabaseCLI\\2\.109\.1' }).Count -eq 0) -Message 'Supabase command resolution must not retain stale rollback directory'
+        Assert-McEqual -Actual $supabaseHostEntity[0].observed.command_resolution[0].source -Expected 'persistent-path' -Message 'Supabase must resolve strictly via persistent host command resolution'
+    }
+
     $baseModule = [pscustomobject][ordered]@{
         schema_version = 1
         meta = [pscustomobject][ordered]@{ state = 'observed' }

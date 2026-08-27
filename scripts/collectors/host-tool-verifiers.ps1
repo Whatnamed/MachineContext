@@ -418,7 +418,7 @@ function Get-McHostAuthoritativeToolObservation {
     if ($null -ne $code.candidate) { [void]$candidates.Add($code.candidate) }
     Add-McHostVerificationEvent -Events $verificationEvents -Module 'development' -Result $code
 
-    $supabase = Invoke-McHostCommandVerifier -Id 'supabase' -Kind 'cli' -Name 'Supabase CLI' -Command 'supabase' -Arguments @('--version') -KnownPaths @('D:\Tools\SupabaseCLI\2.109.1\node_modules\.bin\supabase.cmd')
+    $supabase = Invoke-McHostCommandVerifier -Id 'supabase' -Kind 'cli' -Name 'Supabase CLI' -Command 'supabase' -Arguments @('--version')
     [void]$statuses.Add([string]$supabase.status)
     [void]$checks.Add([pscustomobject][ordered]@{ id = 'supabase'; status = [string]$supabase.status })
     if ($null -ne $supabase.entity) { [void]$development.Add($supabase.entity) }
