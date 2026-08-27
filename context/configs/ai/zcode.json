@@ -222,6 +222,41 @@
           },
           "source": "custom"
         },
+        "a6e9bb97-da4e-4471-8749-dffa2b7fab39": {
+          "kind": "openai-compatible",
+          "name": "TokenRhythm (基元律动)",
+          "baseURL": "https://tokenrhythm.studio/v1",
+          "credential_configured": true,
+          "enabled": true,
+          "models": {
+            "glm-5.3-flash": {
+              "limit": {
+                "context": 1050000,
+                "output": 131072
+              },
+              "modalities": {
+                "input": [
+                  "text",
+                  "image",
+                  "video"
+                ],
+                "output": [
+                  "text"
+                ]
+              },
+              "reasoning": {
+                "defaultVariant": "max",
+                "enabled": true,
+                "variants": [
+                  "low",
+                  "high",
+                  "max"
+                ]
+              }
+            }
+          },
+          "source": "custom"
+        },
         "builtin:bigmodel": {
           "kind": "anthropic",
           "name": "Bigmodel - API Key",
@@ -806,8 +841,13 @@
       {
         "path": "zcode.providers.174cc139-39e0-4d34-8b11-2f4b5e71c2cf.options.apiKey",
         "reason": "credential-value"
+      },
+      {
+        "path": "zcode.providers.a6e9bb97-da4e-4471-8749-dffa2b7fab39.options.apiKey",
+        "reason": "credential-value"
       }
     ],
+    "source_state": "current",
     "value_basis": "configured-local",
     "wire_verification": "not-wire-verified"
   },

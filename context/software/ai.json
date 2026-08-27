@@ -436,6 +436,12 @@
             "command_type": "PersistentApplication"
           }
         ],
+        "install": {
+          "scope": "user",
+          "environment": "windows-native",
+          "method": "standalone-binary",
+          "root": "D:\\OMP"
+        },
         "evidence": [
           {
             "provider": "command",
@@ -447,13 +453,22 @@
               "command_resolution"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "omp",
+            "fields": [
+              "install"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
         "notes": [
           "version intentionally pinned to 18.0.6; do not run omp update"
-        ]
+        ],
+        "update_method": "manual-pin"
       }
     },
     {

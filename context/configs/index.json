@@ -7,21 +7,25 @@
     {
       "kind": "ai-config-profile",
       "path": "ai/dsh.json",
+      "source_state": "current",
       "tool": "dsh"
     },
     {
       "kind": "ai-config-profile",
       "path": "ai/omp.json",
+      "source_state": "current",
       "tool": "omp"
     },
     {
       "kind": "ai-config-profile",
       "path": "ai/opencodex.json",
+      "source_state": "current",
       "tool": "opencodex"
     },
     {
       "kind": "ai-config-profile",
       "path": "ai/zcode.json",
+      "source_state": "current",
       "tool": "zcode"
     },
     {

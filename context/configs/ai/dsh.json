@@ -308,6 +308,7 @@
       }
     },
     "redactions": [],
+    "source_state": "current",
     "value_basis": "configured-local",
     "wire_verification": "not-wire-verified"
   },

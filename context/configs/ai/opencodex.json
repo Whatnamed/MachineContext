@@ -9,13 +9,13 @@
         "fields": [
           "port",
           "defaultProvider",
-          "contextCapValue",
-          "providerContextCaps",
           "clientIntegrations",
+          "providerContextCaps",
+          "contextCapValue",
           "websockets",
           "codexAutoStart",
-          "subagentModels",
           "disabledModels",
+          "subagentModels",
           "claudeCode",
           "webSearchSidecar",
           "visionSidecar",
@@ -27,8 +27,10 @@
     "projection": {
       "claudeCode": {
         "authMode": "subscription",
-        "desktop_defaults": {
-          "opus": "aijws/gpt-5.6-sol"
+        "desktopProfile": {
+          "defaults": {
+            "opus": "aijws/gpt-5.6-sol"
+          }
         },
         "enabled": false
       },
@@ -40,7 +42,9 @@
       "codexAutoStart": true,
       "contextCapValue": 250000,
       "defaultProvider": "openai",
-      "disabledModels": "aijws/gpt-5.6-luna",
+      "disabledModels": [
+        "aijws/gpt-5.6-luna"
+      ],
       "port": 10100,
       "providerContextCaps": {
         "aijws": 250000,
@@ -230,6 +234,7 @@
         "reason": "credential-value"
       }
     ],
+    "source_state": "current",
     "value_basis": "configured-local",
     "wire_verification": "not-wire-verified"
   },

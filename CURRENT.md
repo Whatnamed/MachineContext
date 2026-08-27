@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-27T17:26:04.2159220Z
+- Verified at: 2026-08-27T18:28:52.5184021Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -113,10 +113,8 @@ These domains come from a user-confirmed broad inventory and are refreshed by ex
 
 ## Network and local services
 
-- System proxy enabled: True
+- System proxy enabled: False
 - Local proxy endpoints: 127.0.0.1:7988
-- Observed allowlisted local listening ports:
-  - `7988` (loopback)
 - WSL: present; distros: Ubuntu-24.04
 
 ## Projects

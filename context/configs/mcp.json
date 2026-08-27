@@ -5,7 +5,7 @@
   "observed": {
     "redactions": [
       {
-        "path": "mcp.claude-code.figma.args",
+        "path": "mcp.claude-code.figma.args[0]",
         "reason": "unsafe-argument"
       }
     ],
@@ -74,12 +74,15 @@
       "omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext",
       "dsh: no file-based MCP configuration discovered",
       "zcode: no file-based MCP configuration discovered",
-      "pi: tool not located on this machine; MCP configuration unknown",
       "agy: no file-based MCP configuration discovered"
     ],
     "value_basis": "configured-local"
   },
-  "curated": {},
+  "curated": {
+    "notes": [
+      "vanilla Pi is intentionally not installed on this machine (user decision, 2026-08); OMP is the Pi-lineage CLI in use"
+    ]
+  },
   "source": {
     "files": [
       {
