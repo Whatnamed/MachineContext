@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "meta": {
+    "state": "observed"
+  },
+  "modules": [
+    {
+      "kind": "ai-config-profile",
+      "path": "ai/dsh.json",
+      "tool": "dsh"
+    },
+    {
+      "kind": "ai-config-profile",
+      "path": "ai/omp.json",
+      "tool": "omp"
+    },
+    {
+      "kind": "ai-config-profile",
+      "path": "ai/opencodex.json",
+      "tool": "opencodex"
+    },
+    {
+      "kind": "ai-config-profile",
+      "path": "ai/zcode.json",
+      "tool": "zcode"
+    },
+    {
+      "kind": "mcp-inventory",
+      "path": "mcp.json",
+      "tool": "multi"
+    }
+  ],
+  "policy": {
+    "privacy_model": "allowlist-projection",
+    "refresh_policy": "routine-core-scan",
+    "removal_policy": "explicit-cleanup-only"
+  }
+}

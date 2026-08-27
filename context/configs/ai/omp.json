@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "id": "omp-config",
+  "kind": "ai-config-profile",
+  "observed": {
+    "evidence": [
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "shellPath",
+          "providers",
+          "modelRoles",
+          "defaultThinkingLevel"
+        ],
+        "source_path": "%USERPROFILE%\\.omp\\agent\\config.yml"
+      },
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "openai-codex",
+          "zhipu-coding-plan",
+          "tokenrhythm"
+        ],
+        "source_path": "%USERPROFILE%\\.omp\\agent\\models.yml"
+      }
+    ],
+    "credential_env_names": [
+      "TOKENRHYTHM_API_KEY"
+    ],
+    "projection": {
+      "config": {
+        "defaultThinkingLevel": "auto",
+        "modelRoles": {
+          "default": "tokenrhythm/glm-5.3-flash:max"
+        },
+        "providers": {
+          "webSearchOrder": [
+            "parallel",
+            "perplexity",
+            "gemini",
+            "anthropic",
+            "codex",
+            "xai",
+            "zai",
+            "exa",
+            "tinyfish",
+            "jina",
+            "kagi",
+            "tavily",
+            "firecrawl",
+            "brave",
+            "kimi",
+            "synthetic",
+            "searxng",
+            "startpage",
+            "duckduckgo",
+            "ecosia",
+            "google",
+            "mojeek",
+            "public"
+          ]
+        },
+        "shellPath": "D:\\Git\\Git\\bin\\bash.exe"
+      },
+      "models": {
+        "providers": {
+          "openai-codex": {
+            "modelOverrides": {
+              "gpt-5.6-luna": {
+                "contextWindow": 372000
+              },
+              "gpt-5.6-sol": {
+                "contextWindow": 372000
+              },
+              "gpt-5.6-terra": {
+                "contextWindow": 372000
+              }
+            }
+          },
+          "tokenrhythm": {
+            "api": "openai-completions",
+            "authHeader": true,
+            "baseUrl": "https://tokenrhythm.studio/v1",
+            "credentialEnvName": "TOKENRHYTHM_API_KEY",
+            "models": [
+              {
+                "id": "glm-5.3-flash",
+                "name": "GLM-5.3-Flash (TokenRhythm)",
+                "compat": {
+                  "supportsReasoningEffort": true
+                },
+                "contextWindow": 1050000,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 131072,
+                "reasoning": true,
+                "supportsTools": true,
+                "thinking": {
+                  "mode": "effort",
+                  "defaultLevel": "max",
+                  "efforts": [
+                    "low",
+                    "high",
+                    "max"
+                  ],
+                  "requiresEffort": true
+                },
+                "tokenizer": "glm5"
+              }
+            ]
+          },
+          "zhipu-coding-plan": {
+            "modelOverrides": {
+              "glm-5.3-flash": {
+                "compat": {
+                  "supportsReasoningEffort": true
+                },
+                "contextWindow": 1000000,
+                "reasoning": true,
+                "thinking": {
+                  "mode": "effort",
+                  "defaultLevel": "max",
+                  "efforts": [
+                    "low",
+                    "high",
+                    "max"
+                  ],
+                  "requiresEffort": true
+                },
+                "tokenizer": "glm5"
+              }
+            }
+          }
+        }
+      }
+    },
+    "redactions": [],
+    "value_basis": "configured-local",
+    "wire_verification": "not-wire-verified"
+  },
+  "curated": {},
+  "source": {
+    "config_root": "%USERPROFILE%\\.omp\\agent",
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\config.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "config"
+      },
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\models.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "model-catalog"
+      },
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\settings.json",
+        "exists": false,
+        "format": "json",
+        "role": "settings"
+      },
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\.env",
+        "exists": true,
+        "format": "env",
+        "role": "sensitive-env-file"
+      },
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\agent.db",
+        "exists": true,
+        "format": "sqlite",
+        "role": "auth-state-store"
+      },
+      {
+        "path": "%USERPROFILE%\\.omp\\agent\\history.db",
+        "exists": true,
+        "format": "sqlite",
+        "role": "session-history-store"
+      }
+    ]
+  },
+  "tool": "omp"
+}

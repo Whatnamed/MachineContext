@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "id": "mcp-inventory",
+  "kind": "mcp-inventory",
+  "observed": {
+    "redactions": [
+      {
+        "path": "mcp.claude-code.figma.args",
+        "reason": "unsafe-argument"
+      }
+    ],
+    "servers": [
+      {
+        "name": "figma",
+        "scope": "user",
+        "tool": "claude-code",
+        "transport": "http",
+        "url": "https://mcp.figma.com/mcp"
+      },
+      {
+        "name": "chrome-devtools",
+        "scope": "user",
+        "args": [
+          "/c",
+          "npx",
+          "-y",
+          "chrome-devtools-mcp@latest"
+        ],
+        "command": "cmd",
+        "tool": "claude-code",
+        "transport": "stdio"
+      },
+      {
+        "name": "pencil",
+        "scope": "user",
+        "args": [
+          "--app",
+          "cursor",
+          "--agent",
+          "claudeCodeCLI"
+        ],
+        "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
+        "tool": "claude-code",
+        "transport": "stdio"
+      },
+      {
+        "name": "pencil",
+        "scope": "user",
+        "args": [
+          "--app",
+          "cursor",
+          "--agent",
+          "geminiCLI"
+        ],
+        "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
+        "tool": "gemini-cli",
+        "transport": "stdio"
+      },
+      {
+        "name": "pencil",
+        "scope": "user",
+        "args": [
+          "--app",
+          "cursor",
+          "--agent",
+          "codexCLI"
+        ],
+        "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
+        "tool": "codex-cli",
+        "transport": "stdio"
+      }
+    ],
+    "unresolved": [
+      "omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext",
+      "dsh: no file-based MCP configuration discovered",
+      "zcode: no file-based MCP configuration discovered",
+      "pi: tool not located on this machine; MCP configuration unknown",
+      "agy: no file-based MCP configuration discovered"
+    ],
+    "value_basis": "configured-local"
+  },
+  "curated": {},
+  "source": {
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.claude.json",
+        "exists": true,
+        "format": "json",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.gemini\\settings.json",
+        "exists": true,
+        "format": "json",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.codex\\config.toml",
+        "exists": true,
+        "format": "toml",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.cursor\\mcp.json",
+        "exists": true,
+        "format": "json",
+        "role": "mcp-config"
+      }
+    ]
+  }
+}

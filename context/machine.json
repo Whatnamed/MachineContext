@@ -141,13 +141,13 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 27917287424,
+      "free_bytes": 27111981056,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 50734301184,
+      "free_bytes": 47513075712,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 35,
+    "entry_count": 36,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -443,7 +443,8 @@
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\OMP"
     ],
     "user_path": [
       "E:\\Dev\\uv",
@@ -462,7 +463,8 @@
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\OMP"
     ]
   },
   "environment": {
@@ -502,7 +504,8 @@
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\OMP"
     ],
     "shell_profiles": [
       {

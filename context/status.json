@@ -3,20 +3,16 @@
   "state": "partial",
   "provider_state": "verified",
   "published_verification": {
-    "mode": "Full",
-    "verified_at": "2026-08-27T06:57:25.2827066Z",
+    "mode": "Quick",
+    "verified_at": "2026-08-27T17:26:04.2159220Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
         "health": "success"
       },
       {
-        "provider": "bounded-filesystem-discovery",
-        "health": "partial"
-      },
-      {
-        "provider": "everything-index",
-        "health": "unavailable"
+        "provider": "config-profiles",
+        "health": "success"
       },
       {
         "provider": "git-for-windows",
@@ -35,18 +31,6 @@
         "health": "success"
       },
       {
-        "provider": "project-activity-local",
-        "health": "success"
-      },
-      {
-        "provider": "project-fingerprints",
-        "health": "success"
-      },
-      {
-        "provider": "registry-uninstall",
-        "health": "success"
-      },
-      {
         "provider": "runtimes-package-managers-toolchain",
         "health": "success"
       },
@@ -60,10 +44,6 @@
       },
       {
         "provider": "visual-studio-msvc-sdk",
-        "health": "success"
-      },
-      {
-        "provider": "winget-export",
         "health": "success"
       }
     ]

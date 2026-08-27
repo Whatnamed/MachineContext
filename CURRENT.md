@@ -6,27 +6,22 @@
 
 - State: partial
 - Provider state: verified
-- Mode: Full
-- Verified at: 2026-08-27T06:57:25.2827066Z
+- Mode: Quick
+- Verified at: 2026-08-27T17:26:04.2159220Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
 - Providers:
   - `ai-tooling`: success
-  - `bounded-filesystem-discovery`: partial
-  - `everything-index`: unavailable
+  - `config-profiles`: success
   - `git-for-windows`: success
   - `host-authoritative-tools`: success
   - `network-local-services`: success
   - `nvidia-smi`: success
-  - `project-activity-local`: success
-  - `project-fingerprints`: success
-  - `registry-uninstall`: success
   - `runtimes-package-managers-toolchain`: success
   - `shells-path-resolution`: success
   - `system-hardware-storage`: success
   - `visual-studio-msvc-sdk`: success
-  - `winget-export`: success
 
 ## Machine
 
@@ -42,8 +37,8 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (26.0/195.9 GiB free/total)
-  - `D:\` NTFS (47.2/279.3 GiB free/total)
+  - `C:\` NTFS (25.2/195.9 GiB free/total)
+  - `D:\` NTFS (44.2/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
 ## Development environment
@@ -86,15 +81,25 @@
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.24012.11.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.820.7780.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.820.7780.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.820.9563.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.820.9563.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
+- **Oh My Pi** `omp` — 18.0.6 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **TRAE Work CN** `trae` — 0.1.39 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
+
+## AI configuration profiles
+
+- `dsh` — %USERPROFILE%\.dsh — `context/configs/ai/dsh.json`
+- `omp` — %USERPROFILE%\.omp\agent — `context/configs/ai/omp.json`
+- `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
+- `zcode` — D:\ZCode\appdata\.zcode\v2 — `context/configs/ai/zcode.json`
+- MCP servers: claude-code (3), codex-cli (1), gemini-cli (1)
+  - Full inventory: `context/configs/mcp.json`
 
 ## Additional software inventory
 
@@ -135,4 +140,5 @@ These domains come from a user-confirmed broad inventory and are refreshed by ex
 - Drive tendencies (non-strict):
   - `D:`: productivity / heavy installed tools, CAD/3D, relatively important local data
   - `E:`: flexible storage, user development projects, global tools and SDKs
+- AI CLI install roots (non-strict): primary/production AI coding CLIs and harnesses prefer dedicated install roots instead of npm-global
 - System-managed roots: %LOCALAPPDATA%\Programs, %PROGRAMFILES%\WindowsApps

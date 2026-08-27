@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "id": "dsh-config",
+  "kind": "ai-config-profile",
+  "observed": {
+    "evidence": [
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "agent-default-model",
+          "llm-pi-ai",
+          "agent-presets",
+          "llm-deepseek"
+        ],
+        "source_path": "%USERPROFILE%\\.dsh\\settings.yaml"
+      }
+    ],
+    "credential_env_names": [
+      "AIJWS_API_KEY",
+      "DEEPSEEK_API_KEY",
+      "OPENAI_API_KEY",
+      "OPENCODEX_API_KEY",
+      "TOKENRHYTHM_API_KEY"
+    ],
+    "projection": {
+      "agent_presets": [
+        {
+          "name": "Anchored Standard (experimental)",
+          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\anchored-standard"
+        },
+        {
+          "name": "Apex Standard (Pro/Flash unified, experimental)",
+          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\apex-standard"
+        },
+        {
+          "name": "梁神模式",
+          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\liangshen"
+        },
+        {
+          "name": "Pristine",
+          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\pristine"
+        }
+      ],
+      "agent-default-model": {
+        "provider": "tokenrhythm",
+        "model": "glm-5.3-flash"
+      },
+      "agent-presets": {
+        "default": "apex-standard"
+      },
+      "llm-deepseek": {
+        "baseURL": "https://wkapi.work/v1",
+        "models": [
+          {
+            "id": "deepseek-v4-flash-0731",
+            "name": "DeepSeek-V4-Flash",
+            "contextWindow": 1000000
+          },
+          {
+            "id": "deepseek-v4-pro-0813",
+            "name": "DeepSeek-V4-Pro",
+            "contextWindow": 1000000
+          }
+        ]
+      },
+      "llm-pi-ai": {
+        "providers": {
+          "aijws": {
+            "api": "openai-responses",
+            "baseURL": "https://api.aijws.com/v1",
+            "credentialEnvName": "AIJWS_API_KEY",
+            "defaultInput": [
+              "text",
+              "image"
+            ],
+            "defaultMaxTokens": 128000,
+            "displayName": "我的贾维斯",
+            "models": [
+              {
+                "id": "gpt-5.6-terra",
+                "name": "GPT-5.6-Terra",
+                "contextWindow": 272000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              }
+            ]
+          },
+          "deepseek": {
+            "api": "openai-completions",
+            "baseURL": "https://wkapi.work/v1",
+            "credentialEnvName": "DEEPSEEK_API_KEY",
+            "models": [
+              {
+                "id": "deepseek-v4-flash-free",
+                "name": "DeepSeek V4 Flash",
+                "contextWindow": 1000000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 384000
+              }
+            ]
+          },
+          "openai": {
+            "api": "openai-responses",
+            "baseURL": "https://api.aijws.com/v1",
+            "credentialEnvName": "OPENAI_API_KEY",
+            "defaultInput": [
+              "text",
+              "image"
+            ],
+            "models": [
+              {
+                "id": "gpt-5.6-sol",
+                "name": "GPT-5.6 Sol",
+                "contextWindow": 272000,
+                "maxTokens": 128000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              },
+              {
+                "id": "gpt-5.6-terra",
+                "name": "GPT-5.6 Terra",
+                "contextWindow": 272000,
+                "maxTokens": 128000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              }
+            ]
+          },
+          "opencodex": {
+            "api": "openai-responses",
+            "baseURL": "http://localhost:10100/v1",
+            "credentialEnvName": "OPENCODEX_API_KEY",
+            "defaultInput": [
+              "text",
+              "image"
+            ],
+            "defaultMaxTokens": 128000,
+            "displayName": "OpenCodex",
+            "models": [
+              {
+                "id": "gpt-5.6-sol",
+                "name": "GPT-5.6 Sol",
+                "contextWindow": 272000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              },
+              {
+                "id": "gpt-5.6-terra",
+                "name": "GPT-5.6 Terra",
+                "contextWindow": 272000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              },
+              {
+                "id": "gpt-5.6-luna",
+                "name": "GPT-5.6 Luna",
+                "contextWindow": 272000,
+                "reasoningEfforts": {
+                  "high": "high",
+                  "low": "low",
+                  "max": "max",
+                  "medium": "medium",
+                  "xhigh": "xhigh"
+                }
+              }
+            ]
+          },
+          "tokenrhythm": {
+            "api": "openai-completions",
+            "baseURL": "https://tokenrhythm.studio/v1",
+            "credentialEnvName": "TOKENRHYTHM_API_KEY",
+            "displayName": "基元律动",
+            "models": [
+              {
+                "id": "deepseek-v4-flash",
+                "name": "DeepSeek V4 Flash",
+                "contextWindow": 1000000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 384000
+              },
+              {
+                "id": "deepseek-v4-pro",
+                "name": "DeepSeek V4 Pro",
+                "contextWindow": 1000000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 384000
+              },
+              {
+                "id": "minimax-m2.7",
+                "name": "MiniMax M2.7",
+                "contextWindow": 200000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 192000
+              },
+              {
+                "id": "kimi-k2.6",
+                "name": "Kimi K2.6",
+                "contextWindow": 256000,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 128000
+              },
+              {
+                "id": "kimi-k2.7-code",
+                "name": "Kimi K2.7 Code",
+                "contextWindow": 256000,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 16000
+              },
+              {
+                "id": "qwen3.8-max",
+                "name": "Qwen3.8 Max",
+                "contextWindow": 1000000,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 131072
+              },
+              {
+                "id": "deepseek-v4-flash-0731",
+                "name": "DeepSeek V4 Flash 0731",
+                "contextWindow": 1000000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 384000
+              },
+              {
+                "id": "deepseek-v4-pro-0813",
+                "name": "DeepSeek V4 Pro 0813",
+                "contextWindow": 1000000,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 384000
+              },
+              {
+                "id": "glm-5.3",
+                "name": "GLM-5.3",
+                "contextWindow": 1048576,
+                "input": [
+                  "text"
+                ],
+                "maxTokens": 131072
+              },
+              {
+                "id": "qwen3.8-27b",
+                "name": "Qwen3.8 27B",
+                "contextWindow": 1000000,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 131072
+              },
+              {
+                "id": "glm-5.3-flash",
+                "name": "GLM-5.3 Flash",
+                "contextWindow": 1048576,
+                "input": [
+                  "text",
+                  "image"
+                ],
+                "maxTokens": 131072
+              }
+            ]
+          }
+        }
+      }
+    },
+    "redactions": [],
+    "value_basis": "configured-local",
+    "wire_verification": "not-wire-verified"
+  },
+  "curated": {},
+  "source": {
+    "config_root": "%USERPROFILE%\\.dsh",
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.dsh\\settings.yaml",
+        "exists": true,
+        "format": "yaml",
+        "role": "config"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\.credentials.yaml",
+        "exists": true,
+        "format": "yaml",
+        "role": "credential-file"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\.agent-presets",
+        "exists": true,
+        "format": "other",
+        "role": "agent-preset-directory"
+      }
+    ]
+  },
+  "tool": "dsh"
+}

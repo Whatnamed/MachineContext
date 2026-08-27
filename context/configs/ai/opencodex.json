@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "id": "opencodex-config",
+  "kind": "ai-config-profile",
+  "observed": {
+    "evidence": [
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "port",
+          "defaultProvider",
+          "contextCapValue",
+          "providerContextCaps",
+          "clientIntegrations",
+          "websockets",
+          "codexAutoStart",
+          "subagentModels",
+          "disabledModels",
+          "claudeCode",
+          "webSearchSidecar",
+          "visionSidecar",
+          "providers"
+        ],
+        "source_path": "%USERPROFILE%\\.opencodex\\config.json"
+      }
+    ],
+    "projection": {
+      "claudeCode": {
+        "authMode": "subscription",
+        "desktop_defaults": {
+          "opus": "aijws/gpt-5.6-sol"
+        },
+        "enabled": false
+      },
+      "clientIntegrations": {
+        "claude-desktop": false,
+        "codex": false,
+        "grok": false
+      },
+      "codexAutoStart": true,
+      "contextCapValue": 250000,
+      "defaultProvider": "openai",
+      "disabledModels": "aijws/gpt-5.6-luna",
+      "port": 10100,
+      "providerContextCaps": {
+        "aijws": 250000,
+        "anpin": 250000,
+        "dasu": 250000,
+        "openai": 250000
+      },
+      "providers": {
+        "aijws": {
+          "adapter": "openai-responses",
+          "baseUrl": "https://api.aijws.com/v1",
+          "contextWindow": 272000,
+          "credential_configured": true,
+          "liveModels": false,
+          "localCompactionAdapter": "openai-chat",
+          "modelContextWindows": {
+            "gpt-5.5": 272000,
+            "gpt-5.6-luna": 272000,
+            "gpt-5.6-sol": 272000,
+            "gpt-5.6-terra": 272000
+          },
+          "modelReasoningEfforts": {
+            "gpt-5.6-luna": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          "models": [
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "gpt-5.6-luna",
+            "gpt-5.5"
+          ]
+        },
+        "anpin": {
+          "adapter": "openai-chat",
+          "baseUrl": "https://anpin.ai/v1",
+          "credential_configured": true,
+          "liveModels": false,
+          "models": [
+            "gpt-5.5",
+            "gpt-5.4"
+          ]
+        },
+        "dasu": {
+          "adapter": "openai-responses",
+          "baseUrl": "https://dasuapi.com/v1",
+          "contextWindow": 272000,
+          "credential_configured": true,
+          "liveModels": false,
+          "modelContextWindows": {
+            "gpt-5.5": 272000,
+            "gpt-5.6-luna": 272000,
+            "gpt-5.6-sol": 272000,
+            "gpt-5.6-terra": 272000
+          },
+          "modelReasoningEfforts": {
+            "gpt-5.6-luna": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          "models": [
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "gpt-5.6-luna",
+            "gpt-5.5"
+          ]
+        },
+        "deepseek": {
+          "adapter": "openai-responses",
+          "allowPrivateNetwork": false,
+          "authMode": "key",
+          "baseUrl": "https://api.deepseek.com",
+          "credential_configured": true,
+          "defaultModel": "deepseek-v4-pro",
+          "modelContextWindows": {
+            "deepseek-v4-flash": 1000000,
+            "deepseek-v4-pro": 1000000
+          },
+          "modelReasoningEffortMap": {
+            "deepseek-v4-flash": {
+              "high": "high",
+              "low": "high",
+              "max": "max",
+              "medium": "high",
+              "xhigh": "max"
+            },
+            "deepseek-v4-pro": {
+              "high": "high",
+              "low": "high",
+              "max": "max",
+              "medium": "high",
+              "xhigh": "max"
+            }
+          },
+          "modelReasoningEfforts": {
+            "deepseek-v4-flash": [
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "deepseek-v4-pro": [
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          "models": [
+            "deepseek-chat",
+            "deepseek-reasoner",
+            "deepseek-v4-pro",
+            "deepseek-v4-flash"
+          ],
+          "noVisionModels": [
+            "deepseek-chat",
+            "deepseek-reasoner",
+            "deepseek-v4-pro",
+            "deepseek-v4-flash"
+          ],
+          "preserveReasoningContentModels": [
+            "deepseek-v4-pro",
+            "deepseek-v4-flash"
+          ],
+          "responsesPath": "/responses",
+          "statelessResponses": true
+        },
+        "openai": {
+          "adapter": "openai-responses",
+          "authMode": "forward",
+          "baseUrl": "https://chatgpt.com/backend-api/codex",
+          "codexAccountMode": "pool"
+        }
+      },
+      "subagentModels": [
+        "gpt-5.6-luna",
+        "gpt-5.6-terra",
+        "gpt-5.6-sol"
+      ],
+      "visionSidecar": {
+        "model": "gpt-5.6-luna"
+      },
+      "webSearchSidecar": {
+        "backend": "openai",
+        "model": "gpt-5.6-luna",
+        "reasoning": "medium"
+      },
+      "websockets": false
+    },
+    "redactions": [
+      {
+        "path": "opencodex.providers.dasu.apiKey",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.dasu.apiKeyPool",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.anpin.apiKey",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.anpin.apiKeyPool",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.aijws.apiKey",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.aijws.apiKeyPool",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.deepseek.apiKey",
+        "reason": "credential-value"
+      },
+      {
+        "path": "opencodex.providers.deepseek.apiKeyPool",
+        "reason": "credential-value"
+      }
+    ],
+    "value_basis": "configured-local",
+    "wire_verification": "not-wire-verified"
+  },
+  "curated": {},
+  "source": {
+    "config_root": "%USERPROFILE%\\.opencodex",
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.opencodex\\config.json",
+        "exists": true,
+        "format": "json",
+        "role": "config"
+      },
+      {
+        "path": "%USERPROFILE%\\.opencodex\\auth.json",
+        "exists": true,
+        "format": "json",
+        "role": "credential-file"
+      },
+      {
+        "path": "%USERPROFILE%\\.opencodex\\codex-accounts.json",
+        "exists": true,
+        "format": "json",
+        "role": "credential-file"
+      },
+      {
+        "path": "%USERPROFILE%\\.opencodex\\admin-api-token",
+        "exists": true,
+        "format": "other",
+        "role": "credential-file"
+      },
+      {
+        "path": "%USERPROFILE%\\.opencodex\\usage.jsonl",
+        "exists": true,
+        "format": "other",
+        "role": "usage-log"
+      },
+      {
+        "path": "%USERPROFILE%\\.opencodex\\routing-history.sqlite",
+        "exists": true,
+        "format": "sqlite",
+        "role": "routing-history-store"
+      }
+    ]
+  },
+  "tool": "opencodex"
+}

@@ -895,13 +895,6 @@
             "command_type": "PersistentApplication",
             "path_index": 34,
             "source": "persistent-path"
-          },
-          {
-            "scope": "windows-host",
-            "executable": "D:\\Tools\\SupabaseCLI\\2.109.1\\node_modules\\.bin\\supabase.cmd",
-            "command_type": "KnownInstallPath",
-            "path_index": null,
-            "source": "known-install-path"
           }
         ],
         "install": {
