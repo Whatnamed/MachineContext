@@ -2,7 +2,7 @@
   "schema_version": 1,
   "meta": {
     "state": "observed",
-    "recorded_at": "2026-08-26T14:12:00Z",
+    "recorded_at": "2026-08-26T14:12:00.0000000Z",
     "refresh_policy": "manual-broad-scan",
     "source": "user-confirmed-broad-inventory"
   },

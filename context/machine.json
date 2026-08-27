@@ -147,7 +147,7 @@
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 52076478464,
+      "free_bytes": 50734301184,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 34,
+    "entry_count": 35,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -404,8 +404,8 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Git\\Git\\cmd",
-      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Go\\bin"
     ],
     "persistent_effective_path": [
@@ -425,8 +425,8 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Git\\Git\\cmd",
-      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Go\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -442,7 +442,8 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH"
+      "D:\\DSH",
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
     ],
     "user_path": [
       "E:\\Dev\\uv",
@@ -460,7 +461,8 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH"
+      "D:\\DSH",
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
     ]
   },
   "environment": {
@@ -482,8 +484,8 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Git\\Git\\cmd",
-      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Go\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -499,7 +501,8 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH"
+      "D:\\DSH",
+      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin"
     ],
     "shell_profiles": [
       {

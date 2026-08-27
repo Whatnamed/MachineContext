@@ -11,6 +11,21 @@
           "fields": [
             "executable",
             "install.root"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "cargo",
+      "relation": "provided_by",
+      "to": "rustup"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "runtimes-package-managers-toolchain",
+          "fields": [
+            "executable",
+            "install.root"
           ],
           "paths": [
             "E:\\dev\\flutter\\bin\\dart.bat",
@@ -22,6 +37,20 @@
       "from": "dart",
       "relation": "provided_by",
       "to": "flutter"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "command",
+          "fields": [
+            "executable"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "mcporter",
+      "relation": "uses_runtime",
+      "to": "node"
     },
     {
       "evidence": [
@@ -41,6 +70,35 @@
       "from": "npm",
       "relation": "provided_by",
       "to": "node"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "command",
+          "fields": [
+            "executable"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "opencodex",
+      "relation": "uses_runtime",
+      "to": "node"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "runtimes-package-managers-toolchain",
+          "fields": [
+            "executable",
+            "install.root"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "pip",
+      "relation": "provided_by",
+      "to": "python"
     },
     {
       "evidence": [
@@ -140,52 +198,6 @@
     {
       "evidence": [
         {
-          "provider": "git-for-windows",
-          "fields": [
-            "git_root",
-            "git_executable",
-            "executable"
-          ]
-        }
-      ],
-      "origin": "detected",
-      "from": "shell-git-bash",
-      "relation": "provided_by",
-      "to": "git"
-    },
-    {
-      "evidence": [
-        {
-          "provider": "runtimes-package-managers-toolchain",
-          "fields": [
-            "executable",
-            "install.root"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "pip",
-      "relation": "provided_by",
-      "to": "python"
-    },
-    {
-      "evidence": [
-        {
-          "provider": "runtimes-package-managers-toolchain",
-          "fields": [
-            "executable",
-            "install.root"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "cargo",
-      "relation": "provided_by",
-      "to": "rustup"
-    },
-    {
-      "evidence": [
-        {
           "provider": "runtimes-package-managers-toolchain",
           "fields": [
             "executable",
@@ -201,30 +213,18 @@
     {
       "evidence": [
         {
-          "provider": "command",
+          "provider": "git-for-windows",
           "fields": [
+            "git_root",
+            "git_executable",
             "executable"
           ]
         }
       ],
-      "origin": "inferred",
-      "from": "mcporter",
-      "relation": "uses_runtime",
-      "to": "node"
-    },
-    {
-      "evidence": [
-        {
-          "provider": "command",
-          "fields": [
-            "executable"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "opencodex",
-      "relation": "uses_runtime",
-      "to": "node"
+      "origin": "detected",
+      "from": "shell-git-bash",
+      "relation": "provided_by",
+      "to": "git"
     }
   ]
 }

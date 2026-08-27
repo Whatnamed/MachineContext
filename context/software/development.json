@@ -12,12 +12,46 @@
         "tera-term",
         "unity-hub"
       ],
-      "recorded_at": "2026-08-26T14:12:00Z",
+      "recorded_at": "2026-08-26T14:12:00.0000000Z",
       "refresh_policy": "manual-broad-scan",
       "source": "user-confirmed-broad-inventory"
     }
   },
   "software": [
+    {
+      "schema_version": 1,
+      "id": "agently-cli",
+      "kind": "cli",
+      "name": "Agently CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.5",
+        "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "agently-cli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Agently application framework CLI."
+      }
+    },
     {
       "schema_version": 1,
       "id": "bun",
@@ -26,7 +60,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.3.3",
+        "version": "1.4.0",
         "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
         "command_resolution": [
           {
@@ -61,7 +95,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.96.0",
+        "version": "1.98.0",
         "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
         "command_resolution": [
           {
@@ -128,6 +162,40 @@
         ]
       },
       "curated": {}
+    },
+    {
+      "schema_version": 1,
+      "id": "codex-threadripper",
+      "kind": "cli",
+      "name": "Codex Threadripper",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.3.4",
+        "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "codex-threadripper",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Codex parallel session and thread execution accelerator tool."
+      }
     },
     {
       "schema_version": 1,
@@ -294,7 +362,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.93.0",
+        "version": "2.98.0",
         "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
         "command_resolution": [
           {
@@ -405,7 +473,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.24.11",
+        "version": "1.26.7",
         "executable": "D:\\Go\\bin\\go.exe",
         "command_resolution": [
           {
@@ -431,6 +499,74 @@
         ]
       },
       "curated": {}
+    },
+    {
+      "schema_version": 1,
+      "id": "lark-cli",
+      "kind": "cli",
+      "name": "Lark CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.64",
+        "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "lark-cli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Feishu / Lark open platform developer CLI."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "mcporter",
+      "kind": "cli",
+      "name": "MCPorter",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.9.0",
+        "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "mcporter",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
+      }
     },
     {
       "schema_version": 1,
@@ -503,6 +639,40 @@
         ]
       },
       "curated": {}
+    },
+    {
+      "schema_version": 1,
+      "id": "opencli",
+      "kind": "cli",
+      "name": "OpenCLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.8.4",
+        "executable": "E:\\Dev\\npm-global\\opencli.cmd",
+        "command_resolution": [
+          {
+            "executable": "E:\\Dev\\npm-global\\opencli.cmd",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "opencli",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "OpenAI protocol CLI runner."
+      }
     },
     {
       "schema_version": 1,
@@ -643,7 +813,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.96.0",
+        "version": "1.98.0",
         "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
         "command_resolution": [
           {
@@ -716,9 +886,16 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "2.109.1",
-        "executable": "D:\\Tools\\SupabaseCLI\\2.109.1\\node_modules\\.bin\\supabase.cmd",
+        "version": "2.116.0",
+        "executable": "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin\\supabase.cmd",
         "command_resolution": [
+          {
+            "scope": "windows-host",
+            "executable": "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin\\supabase.cmd",
+            "command_type": "PersistentApplication",
+            "path_index": 34,
+            "source": "persistent-path"
+          },
           {
             "scope": "windows-host",
             "executable": "D:\\Tools\\SupabaseCLI\\2.109.1\\node_modules\\.bin\\supabase.cmd",
@@ -728,7 +905,7 @@
           }
         ],
         "install": {
-          "root": "D:\\Tools\\SupabaseCLI\\2.109.1"
+          "root": "D:\\Tools\\SupabaseCLI\\2.116.0"
         },
         "evidence": [
           {
@@ -745,6 +922,60 @@
         ]
       },
       "curated": {}
+    },
+    {
+      "schema_version": 1,
+      "id": "tera-term",
+      "kind": "terminal-app",
+      "name": "Tera Term 5",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "5.5.0",
+        "executable": "E:\\teraterm\\teraterm5\\ttermpro.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "tera-term",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Terminal emulator and serial communication tool."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "unity-hub",
+      "kind": "game-engine-hub",
+      "name": "Unity Hub",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "3.3.3-c3",
+        "executable": "D:\\Unity\\Unity Hub\\Unity Hub.exe",
+        "evidence": [
+          {
+            "provider": "filesystem",
+            "provider_key": "unity-hub",
+            "fields": [
+              "present",
+              "version",
+              "executable"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "purpose": "Unity editor and project manager."
+      }
     },
     {
       "schema_version": 1,
@@ -922,230 +1153,6 @@
         ]
       },
       "curated": {}
-    },
-    {
-      "schema_version": 1,
-      "id": "agently-cli",
-      "kind": "cli",
-      "name": "Agently CLI",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "1.0.5",
-        "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
-        "command_resolution": [
-          {
-            "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "agently-cli",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Agently application framework CLI."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "codex-threadripper",
-      "kind": "cli",
-      "name": "Codex Threadripper",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "0.3.4",
-        "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
-        "command_resolution": [
-          {
-            "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "codex-threadripper",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Codex parallel session and thread execution accelerator tool."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "lark-cli",
-      "kind": "cli",
-      "name": "Lark CLI",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "1.0.64",
-        "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
-        "command_resolution": [
-          {
-            "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "lark-cli",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Feishu / Lark open platform developer CLI."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "mcporter",
-      "kind": "cli",
-      "name": "MCPorter",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "0.9.0",
-        "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
-        "command_resolution": [
-          {
-            "executable": "E:\\Dev\\npm-global\\mcporter.cmd",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "mcporter",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "opencli",
-      "kind": "cli",
-      "name": "OpenCLI",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "1.8.4",
-        "executable": "E:\\Dev\\npm-global\\opencli.cmd",
-        "command_resolution": [
-          {
-            "executable": "E:\\Dev\\npm-global\\opencli.cmd",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "opencli",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "OpenAI protocol CLI runner."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "tera-term",
-      "kind": "terminal-app",
-      "name": "Tera Term 5",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "5.5.0",
-        "executable": "E:\\teraterm\\teraterm5\\ttermpro.exe",
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "tera-term",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Terminal emulator and serial communication tool."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "unity-hub",
-      "kind": "game-engine-hub",
-      "name": "Unity Hub",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "3.3.3-c3",
-        "executable": "D:\\Unity\\Unity Hub\\Unity Hub.exe",
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "unity-hub",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Unity editor and project manager."
-      }
     }
   ]
 }

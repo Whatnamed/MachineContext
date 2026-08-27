@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Full
-- Verified at: 2026-08-26T12:52:05.7370164Z
+- Verified at: 2026-08-27T06:57:25.2827066Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -43,7 +43,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
   - `C:\` NTFS (26.0/195.9 GiB free/total)
-  - `D:\` NTFS (48.5/279.3 GiB free/total)
+  - `D:\` NTFS (47.2/279.3 GiB free/total)
   - `E:\` NTFS (29.8/953.9 GiB free/total)
 
 ## Development environment
@@ -55,22 +55,22 @@
 - **Lark CLI** `lark-cli` — 1.0.64 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
 - **OpenCLI** `opencli` — 1.8.4 — `E:\Dev\npm-global\opencli.cmd`
-- **Supabase CLI** `supabase` — 2.109.1 — `D:\Tools\SupabaseCLI\2.109.1\node_modules\.bin\supabase.cmd`
-- **GitHub CLI** `gh` — 2.93.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
-- **Rust compiler** `rustc` — 1.96.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
+- **Supabase CLI** `supabase` — 2.116.0 — `D:\Tools\SupabaseCLI\2.116.0\node_modules\.bin\supabase.cmd`
+- **GitHub CLI** `gh` — 2.98.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
+- **Rust compiler** `rustc` — 1.98.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Unity Hub** `unity-hub` — 3.3.3-c3 — `D:\Unity\Unity Hub\Unity Hub.exe`
 - **Visual Studio** `visual-studio` — 17.13.35919.96 — `D:\Visual Studio\product`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
-- **Cargo** `cargo` — 1.96.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
+- **Cargo** `cargo` — 1.98.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
 - **pip** `pip` — 25.0.1 — `D:\Python\3.12.10\Scripts\pip.exe`
 - **uv** `uv` — 0.12.5 — `E:\Dev\uv\uv.exe`
 - **uvx** `uvx` — 0.12.5 — `E:\Dev\uv\uvx.exe`
 - **winget** `winget` — 1.29.290 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
-- **Bun** `bun` — 1.3.3 — `%USERPROFILE%\.bun\bin\bun.exe`
+- **Bun** `bun` — 1.4.0 — `%USERPROFILE%\.bun\bin\bun.exe`
 - **Dart** `dart` — 3.11.5 — `E:\dev\flutter\bin\dart.bat`
-- **Go** `go` — 1.24.11 — `D:\Go\bin\go.exe`
+- **Go** `go` — 1.26.7 — `D:\Go\bin\go.exe`
 - **Node.js** `node` — 22.23.2 — `D:\Node.js\Node.js\node.exe`
 - **Python** `python` — 3.12.10 — `D:\Python\3.12.10\python.exe`
 - **Python Launcher** `python-launcher` — 3.12.10 — `%SYSTEMROOT%\py.exe`
@@ -80,7 +80,7 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.1.21 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.1.22 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.8.1 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
@@ -88,10 +88,10 @@
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
 - **Codex Desktop** `codex-desktop` — 26.820.7780.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.820.7780.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
-- **DSH** `dsh` — 0.1.0-rc.6 — `D:\DSH\dsh.cmd`
+- **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
-- **OpenCodex** `opencodex` — 2.15.1 — `E:\Dev\npm-global\opencodex.cmd`
+- **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **TRAE Work CN** `trae` — 0.1.39 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
