@@ -1375,6 +1375,13 @@ Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-n
     $leakyModels = @($providers.'leaky-provider'.models)
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $leakyModels[0] -Name 'contextWindow')) -Message 'scalar-leaf fields must reject unexpected nested mappings'
     Assert-McEqual -Actual @($profile.observed.redactions | Where-Object { $_.path -eq 'omp.models.providers.leaky-provider.models[0].contextWindow' -and $_.reason -eq 'unsupported-value' }).Count -Expected 1 -Message 'rejected scalar-leaf mapping must be recorded as a redaction'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $leakyModels[0] -Name 'compat')) -Message 'nested-object schemas must reject scalar values'
+    Assert-McEqual -Actual @($profile.observed.redactions | Where-Object { $_.path -eq 'omp.models.providers.leaky-provider.models[0].compat' -and $_.reason -eq 'unsupported-value' }).Count -Expected 1 -Message 'rejected scalar compat must be recorded as a redaction'
+    Assert-McEqual -Actual $leakyModels.Count -Expected 1 -Message 'scalar items inside mapping sequences must be rejected'
+    Assert-McEqual -Actual @($profile.observed.redactions | Where-Object { $_.path -eq 'omp.models.providers.leaky-provider.models[1]' -and $_.reason -eq 'unsupported-value' }).Count -Expected 1 -Message 'rejected scalar sequence item must be recorded as a redaction'
+    $ompProfileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($ompProfileText -notmatch 'opaque-secret-value') -Message 'OMP projection must not contain scalar values rejected by nested-object schemas'
+    Assert-McTrue -Condition ($ompProfileText -notmatch 'opaque-model-shape-value') -Message 'OMP projection must not contain scalar items rejected by mapping sequences'
     $first = ConvertTo-McJsonText -InputObject $profile
     $second = ConvertTo-McJsonText -InputObject $profile
     Assert-McEqual -Actual $first -Expected $second -Message 'OMP profile serialization must be deterministic'

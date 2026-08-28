@@ -58,3 +58,5 @@ providers:
         name: Leaky Model
         contextWindow:
           limit: 8000
+        compat: opaque-secret-value
+      - opaque-model-shape-value

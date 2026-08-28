@@ -371,7 +371,7 @@ Raw discovery 输出永远留在 `.local`，不直接进入 Git。
 
 AI harness 的 provider/model/MCP 配置会被用户频繁手工修改，并直接决定 Agent 行为。MachineContext 保存的不是 raw config 备份，而是 **source-specific per-field allowlist projection**：本地真实配置 → 每个工具一个明确 allowlist 的解析器，provider/model 级未知字段**默认丢弃**（字段名以 `unprojected_keys` 记录，值永不发布）→ 结构化、可审计、可编辑的安全投影。共享 sanitizer 只作为 defense-in-depth，不承担 allowlist 职责。
 
-Allowlist 条目按预期形状声明：标量/标量序列字段使用 `scalar-leaf`（值意外变成嵌套 object 时整个字段拒绝并记 redaction，不再进入通用 walker）；动态键映射（如 effort→effort map、model→window map）使用 `scalars` 或 `__items__` 指向同一套严格标量叶子规格；只有预期本身就是嵌套对象的字段才使用嵌套 allowlist。因此未知字段和"形状升级为 object 的已知字段"都不会退回 denylist 兜底。
+Allowlist 条目按预期形状声明：标量/标量序列字段使用 `scalar-leaf`（值意外变成嵌套 object 时整个字段拒绝并记 redaction，不再进入通用 walker）；动态键映射（如 effort→effort map、model→window map）使用 `scalars` 或 `__items__` 指向同一套严格标量叶子规格；只有预期本身就是嵌套对象的字段才使用嵌套 allowlist。嵌套 object schema 是 mapping-only：字段值退化成标量时整个字段拒绝并记 redaction，序列中的非 mapping item 也被拒绝——未知字段、"标量字段升级为 object"和"object 字段退化为标量/混合形状列表"都不会退回 denylist 兜底。
 
 Canonical module：`context/configs/`（index + 每工具一个 profile 文件 + `mcp.json`）。
 

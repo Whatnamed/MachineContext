@@ -509,6 +509,13 @@ function ConvertTo-McAllowlistedProjection {
     #                             'scalar-leaf'/'scalars' leaf specs)
     # The shared safe walker still runs on every surviving leaf value, so the
     # denylist and unsafe-text checks remain as defense in depth.
+    #
+    # Shape rule (mapping-only schemas): an IDictionary allowlist describes a
+    # nested object, so a bare scalar never satisfies it and is rejected with
+    # an unsupported-value redaction; a sequence is accepted item-by-item and
+    # every item must itself be a mapping. A field declared as an object can
+    # therefore never degrade into a generically-walked scalar or a mixed-shape
+    # list.
     if ($Depth -gt 12) {
         Add-McProjectionRedaction -Redactions $Redactions -Path $Path -Reason 'depth-limit'
         return $null
@@ -519,14 +526,22 @@ function ConvertTo-McAllowlistedProjection {
             $items = [System.Collections.Generic.List[object]]::new()
             $index = 0
             foreach ($item in $Value) {
-                $projected = ConvertTo-McAllowlistedProjection -Value $item -Allowlist $Allowlist -Path ("{0}[{1}]" -f $Path, $index) -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+                $itemPath = "{0}[{1}]" -f $Path, $index
+                if ($null -eq $item) { $index++; continue }
+                if (-not (Test-McMapping -InputObject $item)) {
+                    Add-McProjectionRedaction -Redactions $Redactions -Path $itemPath -Reason 'unsupported-value'
+                    $index++
+                    continue
+                }
+                $projected = ConvertTo-McAllowlistedProjection -Value $item -Allowlist $Allowlist -Path $itemPath -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
                 if ($null -ne $projected) { [void]$items.Add($projected) }
                 $index++
             }
             Write-Output -NoEnumerate -InputObject ([object[]]$items.ToArray())
             return
         }
-        return (ConvertTo-McSafeProjectionValue -Value $Value -Path $Path -Redactions $Redactions)
+        Add-McProjectionRedaction -Redactions $Redactions -Path $Path -Reason 'unsupported-value'
+        return $null
     }
 
     if ($Allowlist.Contains('__items__')) {

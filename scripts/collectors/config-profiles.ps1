@@ -62,7 +62,9 @@ function Get-McOmpConfigProfile {
             shellPath            = 'scalar-leaf'
             defaultThinkingLevel = 'scalar-leaf'
             modelRoles           = 'scalars'
-            providers            = [ordered]@{ __items__ = [ordered]@{ webSearchOrder = 'scalar-leaf' } }
+            # webSearchOrder is a scalar sequence today; a future nested
+            # provider object would be rejected until explicitly allowlisted.
+            providers            = 'scalars'
         }
         $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $configAllowlist -Path 'omp.config' -Redactions $Redactions
         if (@(Get-McPropertyEntries -InputObject $configProjection).Count -gt 0) {
@@ -174,7 +176,9 @@ function Get-McDshConfigProfile {
             continue
         }
         if ($sectionName -eq 'agent-presets') {
-            $sectionProjection = ConvertTo-McAllowlistedProjection -Value $section.Value -Allowlist ([ordered]@{ __items__ = [ordered]@{} }) -Path $sectionPath -Redactions $Redactions
+            # Preset roles map names to scalar values; the strict scalar
+            # collection keeps nested objects out without an empty allowlist.
+            $sectionProjection = ConvertTo-McScalarCollectionValue -Value $section.Value -Path $sectionPath -Redactions $Redactions
             if (@(Get-McPropertyEntries -InputObject $sectionProjection).Count -gt 0) {
                 $projection[$sectionName] = $sectionProjection
                 [void]$projectedSections.Add($sectionName)
