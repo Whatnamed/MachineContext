@@ -14,15 +14,25 @@
   "proxy": {
     "observed": {
       "configured": true,
-      "enabled": false,
+      "enabled": true,
       "local_endpoints": [
         "127.0.0.1:7988"
       ]
     },
     "curated": {}
   },
-  "local_services": [],
-  "ports": [],
+  "local_services": [
+    {
+      "address_scope": "loopback",
+      "port": 7988
+    }
+  ],
+  "ports": [
+    {
+      "address_scope": "loopback",
+      "port": 7988
+    }
+  ],
   "wsl": {
     "present": true,
     "verification": "verified-present",
