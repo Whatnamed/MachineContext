@@ -495,12 +495,18 @@ function ConvertTo-McAllowlistedProjection {
     # Per-field allowlist walker: a mapping survives only through keys declared
     # in $Allowlist; unknown keys are dropped by default. Allowlist entries:
     #   $null                  -> leaf, value passes the shared safe walker
-    #   'scalars'              -> leaf, scalar/scalar-sequence values only
+    #                             (use only when nested objects are expected)
+    #   'scalar-leaf'          -> leaf, scalar/scalar-sequence values only; a
+    #                             nested mapping is rejected outright
+    #   'scalars'              -> dynamic-key mapping whose values are strict
+    #                             scalar leaves
     #   'safe-url'             -> leaf, value sanitized as a URL
     #   'credential-env'       -> env-var NAME only, renamed credentialEnvName
     #   'credential-configured'-> value dropped, credential_configured: true
     #   nested IDictionary     -> recurse; a nested '{ __items__ = X }' allowlist
     #                             means user-defined keys, each value via X
+    #                             (X may be a nested IDictionary or the strict
+    #                             'scalar-leaf'/'scalars' leaf specs)
     # The shared safe walker still runs on every surviving leaf value, so the
     # denylist and unsafe-text checks remain as defense in depth.
     if ($Depth -gt 12) {
@@ -524,11 +530,19 @@ function ConvertTo-McAllowlistedProjection {
     }
 
     if ($Allowlist.Contains('__items__')) {
-        $itemAllowlist = $Allowlist['__items__']
+        $itemSpec = $Allowlist['__items__']
         $projectedItems = [ordered]@{}
         foreach ($entry in (Get-McPropertyEntries -InputObject $Value)) {
             $entryPath = "{0}.{1}" -f $Path, $entry.Name
-            $projected = ConvertTo-McAllowlistedProjection -Value $entry.Value -Allowlist $itemAllowlist -Path $entryPath -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+            if ($itemSpec -is [string] -and [string]$itemSpec -eq 'scalar-leaf') {
+                $projected = ConvertTo-McScalarLeafValue -Value $entry.Value -Path $entryPath -Redactions $Redactions
+            }
+            elseif ($itemSpec -is [string] -and [string]$itemSpec -eq 'scalars') {
+                $projected = ConvertTo-McScalarCollectionValue -Value $entry.Value -Path $entryPath -Redactions $Redactions
+            }
+            else {
+                $projected = ConvertTo-McAllowlistedProjection -Value $entry.Value -Allowlist $itemSpec -Path $entryPath -Redactions $Redactions -UnprojectedKeys $UnprojectedKeys -RecordUnprojectedKeys:$RecordUnprojectedKeys -Depth ($Depth + 1)
+            }
             if ($null -ne $projected) { $projectedItems[[string]$entry.Name] = $projected }
         }
         return $projectedItems
@@ -563,6 +577,10 @@ function ConvertTo-McAllowlistedProjection {
             }
             'scalars' {
                 $projected = ConvertTo-McScalarCollectionValue -Value $entry.Value -Path $entryPath -Redactions $Redactions
+                if ($null -ne $projected) { $projectedMapping[$key] = $projected }
+            }
+            'scalar-leaf' {
+                $projected = ConvertTo-McScalarLeafValue -Value $entry.Value -Path $entryPath -Redactions $Redactions
                 if ($null -ne $projected) { $projectedMapping[$key] = $projected }
             }
             default {

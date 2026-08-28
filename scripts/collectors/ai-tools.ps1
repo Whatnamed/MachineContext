@@ -11,8 +11,10 @@ function Get-McAiDefinitions {
             name    = 'Oh My Pi'
             command = 'omp'
             args    = @('--version')
+            # Long-term semantics confirmed by the user; install.root is not
+            # listed here because it is derived from the resolved executable
+            # at scan time (see Get-McAiToolObservations).
             install = [ordered]@{
-                root        = 'D:\OMP'
                 method      = 'standalone-binary'
                 scope       = 'user'
                 environment = 'windows-native'
@@ -137,14 +139,28 @@ function Get-McAiToolObservations {
         }
         $install = Get-McCollectionProperty -InputObject $definition -Name 'install'
         if ($null -ne $install) {
-            $observed['install'] = (Copy-McJsonObject -InputObject $install)
+            $installObservation = [ordered]@{}
+            foreach ($entry in (Get-McPropertyEntries -InputObject $install)) {
+                $installObservation[[string]$entry.Name] = $entry.Value
+            }
+            $installRoot = Split-Path -Parent ([string]$primary.path)
+            if (-not [string]::IsNullOrWhiteSpace($installRoot)) {
+                $installObservation['root'] = (ConvertTo-McNormalizedPath -Path $installRoot)
+            }
+            $observed['install'] = [pscustomobject]$installObservation
             $observed['evidence'] = @(
                 $observed['evidence']
                 [pscustomobject][ordered]@{
-                    provider = 'user-confirmed'
+                    provider     = 'command'
+                    provider_key = [string]$definition.command
+                    fields       = @('install.root')
+                    confidence   = 'high'
+                }
+                [pscustomobject][ordered]@{
+                    provider     = 'user-confirmed'
                     provider_key = [string]$definition.id
-                    fields = @('install')
-                    confidence = 'high'
+                    fields       = @('install.method', 'install.scope', 'install.environment')
+                    confidence   = 'high'
                 }
             )
         }

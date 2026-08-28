@@ -45,6 +45,7 @@ providers:
           defaultLevel: max
         compat:
           supportsReasoningEffort: true
+          futureFlag: true
 
   leaky-provider:
     baseUrl: https://leaky.example.com/v1
@@ -55,4 +56,5 @@ providers:
     models:
       - id: leaky-model
         name: Leaky Model
-        contextWindow: 8000
+        contextWindow:
+          limit: 8000

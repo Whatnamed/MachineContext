@@ -1365,11 +1365,16 @@ Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-n
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.'leaky-provider' -Name 'credentialEnvName')) -Message 'non-env-name apiKey must not become a credential reference'
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.'leaky-provider' -Name 'headers')) -Message 'unknown provider fields must be dropped by the per-field allowlist'
     Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'omp.models.providers.leaky-provider.headers') -Message 'dropped unknown provider fields must be recorded by path'
+    Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'omp.models.providers.tokenrhythm.models[0].compat.futureFlag') -Message 'unknown compat fields must be dropped by the nested allowlist'
     $redactedKeys = @($profile.observed.redactions | Where-Object { $_.reason -eq 'credential-value' })
     Assert-McTrue -Condition ($redactedKeys.Count -ge 1) -Message 'OMP projection must record the redacted credential field'
     $tokenrhythmModels = @($providers.tokenrhythm.models)
     Assert-McEqual -Actual $tokenrhythmModels.Count -Expected 1 -Message 'single-model sequence must survive as array'
     Assert-McEqual -Actual ([string]$tokenrhythmModels[0].thinking.defaultLevel) -Expected 'max' -Message 'source-native thinking fields preserved'
+    Assert-McEqual -Actual ([bool]$tokenrhythmModels[0].compat.supportsReasoningEffort) -Expected $true -Message 'allowlisted compat leaf preserved'
+    $leakyModels = @($providers.'leaky-provider'.models)
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $leakyModels[0] -Name 'contextWindow')) -Message 'scalar-leaf fields must reject unexpected nested mappings'
+    Assert-McEqual -Actual @($profile.observed.redactions | Where-Object { $_.path -eq 'omp.models.providers.leaky-provider.models[0].contextWindow' -and $_.reason -eq 'unsupported-value' }).Count -Expected 1 -Message 'rejected scalar-leaf mapping must be recorded as a redaction'
     $first = ConvertTo-McJsonText -InputObject $profile
     $second = ConvertTo-McJsonText -InputObject $profile
     Assert-McEqual -Actual $first -Expected $second -Message 'OMP profile serialization must be deterministic'
@@ -1383,6 +1388,10 @@ Invoke-McTest -Name 'DSH fixture projection sanitizes URLs and credential env re
     Assert-McEqual -Actual ([string]$testrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'DSH apiKeyEnv projected as env name'
     Assert-McEqual -Actual ([string]$testrhythm.baseURL) -Expected 'https://tokenrhythm.example.com/v1' -Message 'DSH baseURL kept when clean'
     Assert-McEqual -Actual (@($testrhythm.models).Count) -Expected 2 -Message 'DSH model sequence projected'
+    $firstDshModel = @($testrhythm.models)[0]
+    Assert-McEqual -Actual ([string]$firstDshModel.reasoningEfforts.max) -Expected 'max' -Message 'DSH reasoning effort mapping projected as strict scalars'
+    Assert-McEqual -Actual ([string]$firstDshModel.input[0]) -Expected 'text' -Message 'DSH model input sequence projected'
+    Assert-McEqual -Actual ([string](@($testrhythm.models)[1].input)) -Expected 'text' -Message 'DSH scalar model leaf projected'
     $badholder = $profile.observed.projection.'llm-pi-ai'.providers.badholder
     Assert-McEqual -Actual ([string]$badholder.baseURL) -Expected 'https://leaky.example.com/v1' -Message 'credential-bearing URL must be sanitized'
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $badholder -Name 'credentialEnvName')) -Message 'raw credential value must not become env name'
@@ -1433,12 +1442,16 @@ Invoke-McTest -Name 'OpenCodex fixture projection preserves routing semantics wi
     Assert-McEqual -Actual ([string]$projection.claudeCode.desktopProfile.defaults.sonnet) -Expected 'test-a' -Message 'claudeCode desktop defaults projected'
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testai -Name 'headers')) -Message 'unknown OpenCodex provider fields must be dropped by the per-field allowlist'
     Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'opencodex.providers.testai.headers') -Message 'OpenCodex dropped unknown provider fields must be recorded by path'
+    Assert-McEqual -Actual ([string]$testai.modelReasoningEffortMap.'test-a'.low) -Expected 'medium' -Message 'OpenCodex effort map scalars projected'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testai.modelReasoningEffortMap.'test-a' -Name 'sneaky')) -Message 'nested mappings under strict effort maps must be rejected'
+    Assert-McEqual -Actual @($profile.observed.redactions | Where-Object { $_.path -eq 'opencodex.providers.testai.modelReasoningEffortMap.test-a.sneaky' -and $_.reason -eq 'unsupported-value' }).Count -Expected 1 -Message 'rejected nested effort-map mapping must be recorded as a redaction'
     Assert-McEqual -Actual @($projection.disabledModels).Count -Expected 1 -Message 'single-entry model lists must stay arrays'
     Assert-McEqual -Actual ([string]$projection.disabledModels[0]) -Expected 'testai/test-old' -Message 'disabledModels entry preserved'
     $profileText = ConvertTo-McJsonText -InputObject $profile
     Assert-McTrue -Condition ($profileText -notmatch 'sk-test-do-not-publish') -Message 'OpenCodex projection must not contain the fake key value'
     Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'OpenCodex projection must not contain the fake credential value'
     Assert-McTrue -Condition ($profileText -notmatch 'pool-token-one') -Message 'OpenCodex projection must not contain pool tokens'
+    Assert-McTrue -Condition ($profileText -notmatch 'opaque-mapping-value') -Message 'OpenCodex projection must not contain nested mapping values rejected by strict specs'
 }
 
 Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing arguments' -Body {

@@ -20,6 +20,8 @@ llm-pi-ai:
           name: Test GLM
           contextWindow: 1050000
           maxTokens: 131072
+          input:
+            - text
           reasoningEfforts:
             low: low
             max: max

@@ -37,30 +37,32 @@ function Get-McOmpConfigProfile {
     $evidence = [System.Collections.Generic.List[object]]::new()
 
     $modelAllowlist = [ordered]@{
-        id            = $null
-        name          = $null
-        reasoning     = $null
-        input         = $null
-        tokenizer     = $null
-        supportsTools = $null
-        contextWindow = $null
-        maxTokens     = $null
+        id            = 'scalar-leaf'
+        name          = 'scalar-leaf'
+        reasoning     = 'scalar-leaf'
+        input         = 'scalar-leaf'
+        tokenizer     = 'scalar-leaf'
+        supportsTools = 'scalar-leaf'
+        contextWindow = 'scalar-leaf'
+        maxTokens     = 'scalar-leaf'
         thinking      = [ordered]@{
-            mode          = $null
-            efforts       = $null
-            defaultLevel  = $null
-            requiresEffort = $null
+            mode           = 'scalar-leaf'
+            efforts        = 'scalar-leaf'
+            defaultLevel   = 'scalar-leaf'
+            requiresEffort = 'scalar-leaf'
         }
-        compat        = $null
+        compat        = [ordered]@{
+            supportsReasoningEffort = 'scalar-leaf'
+        }
     }
 
     if ($hasConfig) {
         $config = Read-McConfigYaml -Path $configYml
         $configAllowlist = [ordered]@{
-            shellPath            = $null
-            defaultThinkingLevel = $null
-            modelRoles           = [ordered]@{ __items__ = [ordered]@{} }
-            providers            = [ordered]@{ __items__ = [ordered]@{ webSearchOrder = $null } }
+            shellPath            = 'scalar-leaf'
+            defaultThinkingLevel = 'scalar-leaf'
+            modelRoles           = 'scalars'
+            providers            = [ordered]@{ __items__ = [ordered]@{ webSearchOrder = 'scalar-leaf' } }
         }
         $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $configAllowlist -Path 'omp.config' -Redactions $Redactions
         if (@(Get-McPropertyEntries -InputObject $configProjection).Count -gt 0) {
@@ -77,8 +79,8 @@ function Get-McOmpConfigProfile {
         $models = Read-McConfigYaml -Path $modelsYml
         $providers = Get-McCollectionProperty -InputObject $models -Name 'providers'
         $providerAllowlist = [ordered]@{
-            api            = $null
-            authHeader     = $null
+            api            = 'scalar-leaf'
+            authHeader     = 'scalar-leaf'
             baseUrl        = 'safe-url'
             apiKey         = 'credential-env'
             apiKeyEnv      = 'credential-env'
@@ -137,26 +139,26 @@ function Get-McDshConfigProfile {
     $projectedSections = [System.Collections.Generic.List[string]]::new()
 
     $defaultModelAllowlist = [ordered]@{
-        provider = $null
-        model    = $null
+        provider = 'scalar-leaf'
+        model    = 'scalar-leaf'
     }
     $modelAllowlist = [ordered]@{
-        id               = $null
-        name             = $null
-        contextWindow    = $null
-        maxTokens        = $null
-        input            = $null
-        reasoning        = $null
-        reasoningEfforts = [ordered]@{ __items__ = [ordered]@{} }
+        id               = 'scalar-leaf'
+        name             = 'scalar-leaf'
+        contextWindow    = 'scalar-leaf'
+        maxTokens        = 'scalar-leaf'
+        input            = 'scalar-leaf'
+        reasoning        = 'scalar-leaf'
+        reasoningEfforts = 'scalars'
     }
     $providerAllowlist = [ordered]@{
-        displayName      = $null
+        displayName      = 'scalar-leaf'
         apiKeyEnv        = 'credential-env'
         apiKey           = 'credential-env'
-        api              = $null
+        api              = 'scalar-leaf'
         baseURL          = 'safe-url'
-        defaultInput     = $null
-        defaultMaxTokens = $null
+        defaultInput     = 'scalar-leaf'
+        defaultMaxTokens = 'scalar-leaf'
         models           = $modelAllowlist
     }
 
@@ -419,15 +421,15 @@ function Get-McOpencodexConfigProfile {
     $evidence = [System.Collections.Generic.List[object]]::new()
 
     $topAllowlist = [ordered]@{
-        port                 = $null
-        defaultProvider      = $null
-        contextCapValue      = $null
-        providerContextCaps  = 'scalars'
-        clientIntegrations   = 'scalars'
-        websockets           = $null
-        codexAutoStart       = $null
-        subagentModels       = $null
-        disabledModels       = $null
+        port                = 'scalar-leaf'
+        defaultProvider     = 'scalar-leaf'
+        contextCapValue     = 'scalar-leaf'
+        providerContextCaps = 'scalars'
+        clientIntegrations  = 'scalars'
+        websockets          = 'scalar-leaf'
+        codexAutoStart      = 'scalar-leaf'
+        subagentModels      = 'scalar-leaf'
+        disabledModels      = 'scalar-leaf'
     }
     $topProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $topAllowlist -Path 'opencodex' -Redactions $Redactions
     foreach ($entry in (Get-McPropertyEntries -InputObject $topProjection)) {
@@ -437,10 +439,10 @@ function Get-McOpencodexConfigProfile {
     $claudeCode = Get-McCollectionProperty -InputObject $config -Name 'claudeCode'
     if ($null -ne $claudeCode) {
         $claudeAllowlist = [ordered]@{
-            enabled  = $null
-            authMode = $null
+            enabled  = 'scalar-leaf'
+            authMode = 'scalar-leaf'
             desktopProfile = [ordered]@{
-                defaults = [ordered]@{ __items__ = [ordered]@{} }
+                defaults = 'scalars'
             }
         }
         $claudeProjection = ConvertTo-McAllowlistedProjection -Value $claudeCode -Allowlist $claudeAllowlist -Path 'opencodex.claudeCode' -Redactions $Redactions
@@ -450,9 +452,9 @@ function Get-McOpencodexConfigProfile {
     }
 
     $sidecarAllowlist = [ordered]@{
-        backend   = $null
-        model     = $null
-        reasoning = $null
+        backend   = 'scalar-leaf'
+        model     = 'scalar-leaf'
+        reasoning = 'scalar-leaf'
     }
     foreach ($sidecarName in @('webSearchSidecar', 'visionSidecar')) {
         $sidecar = Get-McCollectionProperty -InputObject $config -Name $sidecarName
@@ -463,23 +465,23 @@ function Get-McOpencodexConfigProfile {
 
     $providers = Get-McCollectionProperty -InputObject $config -Name 'providers'
     $providerAllowlist = [ordered]@{
-        adapter                       = $null
-        allowPrivateNetwork           = $null
-        authMode                      = $null
+        adapter                       = 'scalar-leaf'
+        allowPrivateNetwork           = 'scalar-leaf'
+        authMode                      = 'scalar-leaf'
         baseUrl                       = 'safe-url'
-        codexAccountMode              = $null
-        contextWindow                 = $null
-        defaultModel                  = $null
-        liveModels                    = $null
-        localCompactionAdapter        = $null
+        codexAccountMode              = 'scalar-leaf'
+        contextWindow                 = 'scalar-leaf'
+        defaultModel                  = 'scalar-leaf'
+        liveModels                    = 'scalar-leaf'
+        localCompactionAdapter        = 'scalar-leaf'
         modelContextWindows           = 'scalars'
         modelReasoningEfforts         = 'scalars'
-        modelReasoningEffortMap       = [ordered]@{ __items__ = [ordered]@{ __items__ = [ordered]@{} } }
-        models                        = $null
-        noVisionModels                = $null
-        preserveReasoningContentModels = $null
-        responsesPath                 = $null
-        statelessResponses            = $null
+        modelReasoningEffortMap       = [ordered]@{ __items__ = 'scalars' }
+        models                        = 'scalar-leaf'
+        noVisionModels                = 'scalar-leaf'
+        preserveReasoningContentModels = 'scalar-leaf'
+        responsesPath                 = 'scalar-leaf'
+        statelessResponses            = 'scalar-leaf'
         apiKey                        = 'credential-configured'
         apiKeyPool                    = 'credential-configured'
         apiKeys                       = 'credential-configured'

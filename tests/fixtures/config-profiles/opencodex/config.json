@@ -35,6 +35,14 @@
       "modelReasoningEfforts": {
         "test-a": ["low", "medium", "high"]
       },
+      "modelReasoningEffortMap": {
+        "test-a": {
+          "low": "medium",
+          "sneaky": {
+            "hidden": "opaque-mapping-value"
+          }
+        }
+      },
       "apiKeyPool": ["pool-token-one", "pool-token-two"]
     },
     "mirror": {
