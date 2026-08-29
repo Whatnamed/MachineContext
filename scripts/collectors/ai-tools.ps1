@@ -25,15 +25,6 @@ function Get-McAiDefinitions {
         [pscustomobject]@{ id = 'gemini-cli'; name = 'Gemini CLI'; command = 'gemini'; args = @('--version') },
         [pscustomobject]@{ id = 'cursor-cli'; name = 'Cursor CLI'; command = 'cursor'; args = @('--version') },
         [pscustomobject]@{ id = 'opencodex'; name = 'OpenCodex'; command = 'opencodex'; args = @('--version') },
-        [pscustomobject]@{
-            id      = 'qoder'
-            name    = 'Qoder CN CLI'
-            command = 'qoderclicn'
-            args    = @('--version')
-            # Not on PATH; resolved from its known install location when the
-            # command name does not resolve.
-            fallback_executable = '%USERPROFILE%\.qodersec\bin\qoderclicn.exe'
-        },
         [pscustomobject]@{ id = 'grok'; name = 'Grok Build CLI'; command = 'grok'; args = @('--version') },
         [pscustomobject]@{ id = 'windsurf-cli'; name = 'Windsurf CLI'; command = 'windsurf'; args = @('--version') }
     )
@@ -61,7 +52,8 @@ function Get-McSafeAiPathChecks {
                 [pscustomobject]@{ id = 'omp-agent-db'; path = Join-Path $userProfile '.omp\agent\agent.db'; kind = 'auth-store' },
                 [pscustomobject]@{ id = 'omp-history-db'; path = Join-Path $userProfile '.omp\agent\history.db'; kind = 'history-store' },
                 [pscustomobject]@{ id = 'qoder-cn-config'; path = Join-Path $userProfile '.qoder-cn'; kind = 'config-directory' },
-                [pscustomobject]@{ id = 'qodersec-config'; path = Join-Path $userProfile '.qodersec'; kind = 'config-directory' }
+                [pscustomobject]@{ id = 'qodersec-config'; path = Join-Path $userProfile '.qodersec'; kind = 'config-directory' },
+                [pscustomobject]@{ id = 'qoder-cli-binary'; path = Join-Path $userProfile '.qodersec\bin\qoderclicn.exe'; kind = 'tool-binary' }
             )) {
             [void]$checks.Add($check)
         }
@@ -93,15 +85,6 @@ function Get-McAiToolObservations {
 
     foreach ($definition in (Get-McAiDefinitions)) {
         $commands = @(Get-McExecutableCandidates -Executable $definition.command)
-        if ($commands.Count -eq 0) {
-            $fallback = [string](Get-McCollectionProperty -InputObject $definition -Name 'fallback_executable')
-            if (-not [string]::IsNullOrWhiteSpace($fallback)) {
-                $fallbackPath = [Environment]::ExpandEnvironmentVariables($fallback)
-                if (Test-Path -LiteralPath $fallbackPath -PathType Leaf) {
-                    $commands = @([pscustomobject][ordered]@{ path = $fallbackPath; command_type = 'known-location' })
-                }
-            }
-        }
         if ($commands.Count -eq 0) {
             [void]$verificationEvents.Add([pscustomobject][ordered]@{
                     module = 'ai'
