@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-29T14:25:31.7225885Z
+- Verified at: 2026-08-29T14:36:29.2180320Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,7 +38,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
   - `C:\` NTFS (21.2/195.9 GiB free/total)
-  - `D:\` NTFS (35.8/279.3 GiB free/total)
+  - `D:\` NTFS (35.5/279.3 GiB free/total)
   - `E:\` NTFS (22.8/953.9 GiB free/total)
 
 ## Development environment
@@ -88,7 +88,7 @@
 - **Oh My Pi** `omp` — 18.0.6 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
-- **Qoder CN CLI** `qoder` — 1.1.13 — `%USERPROFILE%\.qodersec\bin\qoderclicn.exe`
+- **Qoder CN** `qoder` — 0.1.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.39 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
