@@ -514,6 +514,47 @@ function Get-McOpencodexConfigProfile {
         -WireVerification 'not-wire-verified' -Evidence $evidence)
 }
 
+function Get-McCodexConfigProfile {
+    [CmdletBinding()]
+    param(
+        [string]$ConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml')
+    )
+
+    # The Codex CLI and the Codex desktop app share this file (CODEX_HOME);
+    # only top-level scalar settings are projected. [mcp_servers.*] tables are
+    # owned by the MCP inventory and auth.json is recorded as existence only.
+    if (-not [string]::IsNullOrWhiteSpace($ConfigPath) -and -not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) { return $null }
+
+    $redactions = [System.Collections.Generic.List[object]]::new()
+    $unprojected = [System.Collections.Generic.List[string]]::new()
+    $configRoot = Split-Path -Parent $ConfigPath
+    $files = @(
+        New-McConfigSourceFileRecord -Path $ConfigPath -Format toml -Role config
+        New-McConfigSourceFileRecord -Path (Join-Path $configRoot 'auth.json') -Format json -Role credential-file
+    )
+
+    $topLevel = Get-McTomlTopLevelScalars -Text ([System.IO.File]::ReadAllText($ConfigPath))
+    $allowlist = [ordered]@{
+        model                          = 'scalar-leaf'
+        sandbox_mode                   = 'scalar-leaf'
+        model_reasoning_effort         = 'scalar-leaf'
+        model_context_window           = 'scalar-leaf'
+        model_auto_compact_token_limit = 'scalar-leaf'
+    }
+    $projection = ConvertTo-McAllowlistedProjection -Value $topLevel -Allowlist $allowlist -Path 'codex-cli' -Redactions $Redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+    if ($unprojected.Count -gt 0) { $projection['unprojected_keys'] = @($unprojected | Sort-Object -Unique) }
+
+    $evidence = @([pscustomobject][ordered]@{
+        provider    = 'config-profiles'
+        source_path = (ConvertTo-McNormalizedPath -Path $ConfigPath)
+        fields      = @(@(Get-McPropertyEntries -InputObject $projection) | ForEach-Object { [string]$_.Name })
+    })
+
+    return (New-McConfigProfileRecord -Id 'codex-cli-config' -Tool 'codex-cli' -ConfigRoot (ConvertTo-McNormalizedPath -Path $configRoot) `
+        -Files $files -Projection $projection -Redactions $Redactions `
+        -WireVerification 'not-wire-verified' -Evidence $evidence)
+}
+
 function Get-McMcpInventoryRecord {
     [CmdletBinding()]
     param(
@@ -657,12 +698,14 @@ function Get-McConfigProfileObservations {
     $dshPresent = (-not [string]::IsNullOrWhiteSpace($DshConfigRoot)) -and (Test-Path -LiteralPath (Join-Path $DshConfigRoot 'settings.yaml') -PathType Leaf)
     $zcodePresent = (-not [string]::IsNullOrWhiteSpace($ZcodeAppDataRoot)) -and (Test-Path -LiteralPath (Join-Path $ZcodeAppDataRoot 'config.json') -PathType Leaf)
     $opencodexPresent = (-not [string]::IsNullOrWhiteSpace($OpencodexConfigRoot)) -and (Test-Path -LiteralPath (Join-Path $OpencodexConfigRoot 'config.json') -PathType Leaf)
+    $codexPresent = (-not [string]::IsNullOrWhiteSpace($CodexConfigPath)) -and (Test-Path -LiteralPath $CodexConfigPath -PathType Leaf)
 
     foreach ($projector in @(
             [pscustomobject]@{ name = 'omp'; present = $ompPresent; action = { Get-McOmpConfigProfile -AgentRoot $OmpAgentRoot } },
             [pscustomobject]@{ name = 'dsh'; present = $dshPresent; action = { Get-McDshConfigProfile -ConfigRoot $DshConfigRoot } },
             [pscustomobject]@{ name = 'zcode'; present = $zcodePresent; action = { Get-McZcodeConfigProfile -AppDataRoot $ZcodeAppDataRoot -UserProfileRoot $ZcodeUserProfileRoot } },
-            [pscustomobject]@{ name = 'opencodex'; present = $opencodexPresent; action = { Get-McOpencodexConfigProfile -ConfigRoot $OpencodexConfigRoot } }
+            [pscustomobject]@{ name = 'opencodex'; present = $opencodexPresent; action = { Get-McOpencodexConfigProfile -ConfigRoot $OpencodexConfigRoot } },
+            [pscustomobject]@{ name = 'codex-cli'; present = $codexPresent; action = { Get-McCodexConfigProfile -ConfigPath $CodexConfigPath } }
         )) {
         if (-not $projector.present) {
             # Confirmed absence is an observation, not a failure: reconciliation

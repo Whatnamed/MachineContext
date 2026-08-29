@@ -1,0 +1,15 @@
+model = "gpt-5.6-terra"
+model_context_window = 372000
+model_auto_compact_token_limit = 330000
+model_reasoning_effort = "xhigh"
+sandbox_mode = "workspace-write"
+personality = "friendly"
+disable_response_storage = false
+
+[mcp_servers.pencil]
+command = "pencil-exe"
+args = ["--app", "cursor"]
+
+[mcp_servers.fixture_secret]
+command = "secret-exe"
+api_key = "sk-test-do-not-publish"

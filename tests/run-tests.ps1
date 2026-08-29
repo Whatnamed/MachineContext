@@ -1461,6 +1461,43 @@ Invoke-McTest -Name 'OpenCodex fixture projection preserves routing semantics wi
     Assert-McTrue -Condition ($profileText -notmatch 'opaque-mapping-value') -Message 'OpenCodex projection must not contain nested mapping values rejected by strict specs'
 }
 
+Invoke-McTest -Name 'TOML top-level scalar reader stays above table headers' -Body {
+    $toml = @'
+model = "gpt-5.6-terra"
+model_context_window = 372000
+auto_compact = true
+quoted = 'single-quoted'
+
+[mcp_servers.pencil]
+command = "pencil-exe"
+'@
+    $parsed = Get-McTomlTopLevelScalars -Text $toml
+    Assert-McEqual -Actual ([string]$parsed.model) -Expected 'gpt-5.6-terra' -Message 'TOML top-level double-quoted string'
+    Assert-McEqual -Actual ([string]$parsed.quoted) -Expected 'single-quoted' -Message 'TOML top-level single-quoted string'
+    Assert-McEqual -Actual ([long]$parsed.model_context_window) -Expected 372000 -Message 'TOML top-level integer'
+    Assert-McEqual -Actual ([bool]$parsed.auto_compact) -Expected $true -Message 'TOML top-level boolean'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $parsed -Name 'command')) -Message 'table keys must not be parsed by the top-level reader'
+}
+
+Invoke-McTest -Name 'Codex CLI profile projects shared config context settings only' -Body {
+    $profile = Get-McCodexConfigProfile -ConfigPath (Join-Path $configFixtureRoot 'codex-cli\config.toml')
+    Assert-McEqual -Actual $profile.id -Expected 'codex-cli-config' -Message 'Codex profile id'
+    $projection = $profile.observed.projection
+    Assert-McEqual -Actual ([string]$projection.model) -Expected 'gpt-5.6-terra' -Message 'Codex model projected'
+    Assert-McEqual -Actual ([long]$projection.model_context_window) -Expected 372000 -Message 'Codex context window projected'
+    Assert-McEqual -Actual ([long]$projection.model_auto_compact_token_limit) -Expected 330000 -Message 'Codex auto compact limit projected'
+    Assert-McEqual -Actual ([string]$projection.model_reasoning_effort) -Expected 'xhigh' -Message 'Codex reasoning effort projected'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'codex-cli.personality') -Message 'unknown top-level keys must be recorded by name'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'codex-cli.disable_response_storage') -Message 'non-allowlisted top-level keys must be recorded by name'
+    $profileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($profileText -notmatch 'sk-test-do-not-publish') -Message 'Codex profile must not contain table credential material'
+    Assert-McTrue -Condition ($profileText -notmatch 'pencil-exe') -Message 'Codex profile must not contain mcp table content'
+    Assert-McTrue -Condition ($profileText -notmatch 'secret-exe') -Message 'Codex profile must not contain unknown table commands'
+    $findings = [System.Collections.Generic.List[object]]::new()
+    Validate-McConfigProfileRecord -Record $profile -Findings $findings -Path 'test'
+    Assert-McEqual -Actual @($findings).Count -Expected 0 -Message 'good Codex profile must validate cleanly'
+}
+
 Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing arguments' -Body {
     $mcp = Get-McMcpInventoryRecord `
         -ClaudeConfigPath (Join-Path $configFixtureRoot 'mcp\claude.json') `

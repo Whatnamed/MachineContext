@@ -15,7 +15,8 @@ MachineContext uses Git for detailed history. This file records only notable pro
 - `context/status.json` for compact published verification/provider-health state.
 - Script, collector, library, test-fixture, and schema scaffolding for V1.
 - Development log convention.
-- `context/configs/` AI configuration profile module with source-specific allowlisted projections (OMP, DSH, ZCode, OpenCodex), a cross-tool MCP inventory, credential redaction to environment-variable names, validator privacy gates, and fixture tests.
+- `context/configs/` AI configuration profile module with source-specific allowlisted projections (OMP, DSH, ZCode, OpenCodex, Codex CLI shared config), a cross-tool MCP inventory, credential redaction to environment-variable names, validator privacy gates, and fixture tests.
+- Qoder CN in the AI tooling inventory (CLI verified from its known install location when not on PATH) and a Codex CLI configuration profile for the top-level scalar settings shared with the Codex desktop app.
 
 ### Changed
 

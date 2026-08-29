@@ -373,6 +373,8 @@ AI harness 的 provider/model/MCP 配置会被用户频繁手工修改，并直�
 
 Allowlist 条目按预期形状声明：标量/标量序列字段使用 `scalar-leaf`（值意外变成嵌套 object 时整个字段拒绝并记 redaction，不再进入通用 walker）；动态键映射（如 effort→effort map、model→window map）使用 `scalars` 或 `__items__` 指向同一套严格标量叶子规格；只有预期本身就是嵌套对象的字段才使用嵌套 allowlist。嵌套 object schema 是 mapping-only：字段值退化成标量时整个字段拒绝并记 redaction，序列中的非 mapping item 也被拒绝——未知字段、"标量字段升级为 object"和"object 字段退化为标量/混合形状列表"都不会退回 denylist 兜底。
 
+codex-cli 的 profile 只投影 `%USERPROFILE%\.codex\config.toml` 的顶层标量键（model、sandbox_mode、model_reasoning_effort、model_context_window、model_auto_compact_token_limit）。该文件由 Codex CLI 与 Codex desktop 共用（`CODEX_HOME` 指向同一目录），桌面端设置界面的修改会落在这里；`[mcp_servers.*]` 表只进 MCP inventory，`auth.json` 只登记存在性。AI 工具定义支持 `fallback_executable`：当命令名无法从 PATH 解析时，从定义中的已知安装位置探测（如 qoder 的 `qoderclicn.exe`），command_resolution 以 `known-location` 标注来源。
+
 Canonical module：`context/configs/`（index + 每工具一个 profile 文件 + `mcp.json`）。
 
 ### 值得投影的字段（按工具真实 schema 保存，不改造成抽象统一模型）

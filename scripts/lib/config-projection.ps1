@@ -262,6 +262,41 @@ function Get-McTomlTableEntries {
     return @($entries)
 }
 
+function Get-McTomlTopLevelScalars {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Text
+    )
+
+    # Bounded reader for top-level TOML scalar keys. Parsing stops at the first
+    # table header, so [table] content is never returned here; arrays and
+    # inline tables are intentionally not parsed.
+    $mapping = [ordered]@{}
+    foreach ($raw in ($Text -split "`r?`n")) {
+        $line = $raw.Trim()
+        if ([string]::IsNullOrEmpty($line) -or $line.StartsWith('#')) { continue }
+        if ($line.StartsWith('[')) { break }
+        if ($line -match '^([A-Za-z0-9_.-]+)\s*=\s*(.+?)\s*$') {
+            $key = $Matches[1]
+            $valueText = $Matches[2]
+            if ($valueText -match '^"((?:[^"\\]|\\.)*)"$') {
+                $mapping[$key] = ($Matches[1] -replace '\\\\', '\' -replace '\\"', '"')
+            }
+            elseif ($valueText -match "^'([^']*)'$") {
+                $mapping[$key] = $Matches[1]
+            }
+            elseif ($valueText -match '^(true|false)$') {
+                $mapping[$key] = ($valueText -eq 'true')
+            }
+            elseif ($valueText -match '^-?\d+$') {
+                $mapping[$key] = [long]$valueText
+            }
+        }
+    }
+    return $mapping
+}
+
 function Test-McSensitiveConfigKeyName {
     [CmdletBinding()]
     param(
