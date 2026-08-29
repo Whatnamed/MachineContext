@@ -6,6 +6,12 @@
   "modules": [
     {
       "kind": "ai-config-profile",
+      "path": "ai/codex-cli.json",
+      "source_state": "current",
+      "tool": "codex-cli"
+    },
+    {
+      "kind": "ai-config-profile",
       "path": "ai/dsh.json",
       "source_state": "current",
       "tool": "dsh"

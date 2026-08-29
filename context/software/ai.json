@@ -277,7 +277,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.825.3734.0",
+        "version": "26.825.5331.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -291,8 +291,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.825.3734.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.825.3734.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.825.5331.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.825.5331.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -541,6 +541,38 @@
       "curated": {
         "purpose": "Open-source Codex protocol CLI and multi-agent harness."
       }
+    },
+    {
+      "schema_version": 1,
+      "id": "qoder",
+      "kind": "ai-tool",
+      "name": "Qoder CN CLI",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.1.13",
+        "executable": "%USERPROFILE%\\.qodersec\\bin\\qoderclicn.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.qodersec\\bin\\qoderclicn.exe",
+            "command_type": "known-location"
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "qoderclicn",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {}
     },
     {
       "schema_version": 1,

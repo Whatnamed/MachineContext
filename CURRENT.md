@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-28T07:26:25.1868882Z
+- Verified at: 2026-08-29T14:25:31.7225885Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (25.8/195.9 GiB free/total)
-  - `D:\` NTFS (42.5/279.3 GiB free/total)
-  - `E:\` NTFS (29.8/953.9 GiB free/total)
+  - `C:\` NTFS (21.2/195.9 GiB free/total)
+  - `D:\` NTFS (35.8/279.3 GiB free/total)
+  - `E:\` NTFS (22.8/953.9 GiB free/total)
 
 ## Development environment
 
@@ -81,24 +81,26 @@
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.24012.11.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.825.3734.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.3734.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.825.5331.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.5331.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
 - **Oh My Pi** `omp` — 18.0.6 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
+- **Qoder CN CLI** `qoder` — 1.1.13 — `%USERPROFILE%\.qodersec\bin\qoderclicn.exe`
 - **TRAE Work CN** `trae` — 0.1.39 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
 
 ## AI configuration profiles
 
+- `codex-cli` — %USERPROFILE%\.codex — `context/configs/ai/codex-cli.json`
 - `dsh` — %USERPROFILE%\.dsh — `context/configs/ai/dsh.json`
 - `omp` — %USERPROFILE%\.omp\agent — `context/configs/ai/omp.json`
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
 - `zcode` — D:\ZCode\appdata\.zcode\v2 — `context/configs/ai/zcode.json`
-- MCP servers: claude-code (3), codex-cli (1), gemini-cli (1)
+- MCP servers: claude-code (3), codex-cli (3), gemini-cli (1)
   - Full inventory: `context/configs/mcp.json`
 
 ## Additional software inventory

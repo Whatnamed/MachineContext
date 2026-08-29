@@ -423,7 +423,7 @@
           "name": "BigModel- Coding Plan",
           "baseURL": "https://zcode.z.ai/api/v1/zcode-plan/anthropic",
           "credential_configured": true,
-          "enabled": false,
+          "enabled": true,
           "models": {
             "GLM-5.3": {
               "limit": {
@@ -756,7 +756,7 @@
           "zai": "oauth"
         },
         "modelProviderFamilySelectedKeys": {
-          "bigmodel": "coding-plan:builtin:bigmodel-coding-plan",
+          "bigmodel": "coding-plan:builtin:bigmodel-start-plan",
           "zai": "coding-plan:builtin:zai-coding-plan"
         }
       }

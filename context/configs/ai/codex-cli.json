@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "codex-cli-config",
+  "kind": "ai-config-profile",
+  "observed": {
+    "evidence": [
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "model",
+          "sandbox_mode",
+          "model_reasoning_effort",
+          "model_context_window",
+          "model_auto_compact_token_limit",
+          "unprojected_keys"
+        ],
+        "source_path": "%USERPROFILE%\\.codex\\config.toml"
+      }
+    ],
+    "projection": {
+      "model": "gpt-5.6-luna",
+      "model_auto_compact_token_limit": 330000,
+      "model_context_window": 372000,
+      "model_reasoning_effort": "max",
+      "sandbox_mode": "danger-full-access",
+      "unprojected_keys": [
+        "codex-cli.disable_response_storage",
+        "codex-cli.personality"
+      ]
+    },
+    "redactions": [],
+    "source_state": "current",
+    "value_basis": "configured-local",
+    "wire_verification": "not-wire-verified"
+  },
+  "curated": {},
+  "source": {
+    "config_root": "%USERPROFILE%\\.codex",
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.codex\\config.toml",
+        "exists": true,
+        "format": "toml",
+        "role": "config"
+      },
+      {
+        "path": "%USERPROFILE%\\.codex\\auth.json",
+        "exists": true,
+        "format": "json",
+        "role": "credential-file"
+      }
+    ]
+  },
+  "tool": "codex-cli"
+}
