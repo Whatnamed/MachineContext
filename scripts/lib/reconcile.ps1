@@ -62,7 +62,26 @@ function Remove-McObjectProperty {
         return
     }
     $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -ne $property) { $InputObject.PSObject.Properties.Remove($Name) }
+    if ($null -eq $property) { $InputObject.PSObject.Properties.Remove($Name) }
+}
+
+# Existing canonical files feed curated-intent preservation; a parse failure
+# here must abort the run (matching the validation failure policy) instead of
+# being swallowed, because the fresh observed record would silently overwrite
+# curated meaning.
+function Read-McCanonicalJsonOrThrow {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    try {
+        return Read-McJson -Path $Path
+    }
+    catch {
+        throw ("Canonical file '{0}' could not be parsed ({1}); refusing to overwrite it silently because curated intent could be lost." -f $Path, $_.Exception.Message)
+    }
 }
 
 function Set-McObservedVerification {
@@ -372,7 +391,7 @@ function Get-McProjectRecordFileName {
         [string]$Id
     )
 
-    if ($Id -match '^[a-z0-9._-]+$') {
+    if ($Id -cmatch '^[a-z0-9._-]+$') {
         return "$Id.json"
     }
     return ('project-{0}.json' -f (Get-McSha256Hex -Text $Id).Substring(0, 20))
@@ -497,29 +516,28 @@ function Merge-McProjects {
     $records = [System.Collections.Generic.Dictionary[string,object]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
     foreach ($file in @(Get-ChildItem -LiteralPath $projectRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Where-Object { $_.Name -notin @('_template.json', 'index.json') })) {
-        try {
-            $record = Read-McJson -Path $file.FullName
-            if (-not [string]::IsNullOrWhiteSpace([string]$record.id)) {
-                $localPath = [string](Get-McObjectPropertyOrNull -InputObject $record.observed -Name 'local_path')
-                if (-not [string]::IsNullOrWhiteSpace($localPath)) {
-                    $policy = Get-McProjectRootPolicyForPath -Path $localPath -Policies $rootPolicies
-                    $demotable = [string]$policy.kind -in @('sdk-root', 'tool-root', 'cache-root', 'vendor-root')
-                    if ($demotable -and -not (Test-McProjectCuratedIntent -Record $record)) {
-                        $recordFile = 'context/projects/{0}' -f $file.Name
-                        if (-not $RemovedFiles.Contains($recordFile)) { [void]$RemovedFiles.Add($recordFile) }
-                        [void]$DemotedProjects.Add([pscustomobject][ordered]@{
-                                id             = [string]$record.id
-                                path           = $localPath
-                                classification = [string]$policy.kind
-                                reason         = 'historical-canonical-record-under-non-project-root'
-                            })
-                        continue
-                    }
+        $record = Read-McCanonicalJsonOrThrow -Path $file.FullName
+        if (-not (Test-McMapping -InputObject $record)) { continue }
+        $id = [string](Get-McObjectPropertyOrNull -InputObject $record -Name 'id')
+        if (-not [string]::IsNullOrWhiteSpace($id)) {
+            $observed = Get-McObjectPropertyOrNull -InputObject $record -Name 'observed'
+            $localPath = [string](Get-McObjectPropertyOrNull -InputObject $observed -Name 'local_path')
+            if (-not [string]::IsNullOrWhiteSpace($localPath)) {
+                $policy = Get-McProjectRootPolicyForPath -Path $localPath -Policies $rootPolicies
+                $demotable = [string]$policy.kind -in @('sdk-root', 'tool-root', 'cache-root', 'vendor-root')
+                if ($demotable -and -not (Test-McProjectCuratedIntent -Record $record)) {
+                    $recordFile = 'context/projects/{0}' -f $file.Name
+                    if (-not $RemovedFiles.Contains($recordFile)) { [void]$RemovedFiles.Add($recordFile) }
+                    [void]$DemotedProjects.Add([pscustomobject][ordered]@{
+                            id             = $id
+                            path           = $localPath
+                            classification = [string]$policy.kind
+                            reason         = 'historical-canonical-record-under-non-project-root'
+                        })
+                    continue
                 }
-                $records[[string]$record.id] = $record
             }
-        }
-        catch {
+            $records[$id] = $record
         }
     }
 
@@ -805,18 +823,14 @@ function Merge-McConfigProfiles {
     $freshTools = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($profile in @($Profiles | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.tool) })) {
         $tool = [string]$profile.tool
-        if ($tool -notmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
+        if ($tool -cnotmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
         $path = Join-Path $aiRoot ("{0}.json" -f $tool)
         $record = Copy-McJsonObject -InputObject $profile
         if (Test-Path -LiteralPath $path -PathType Leaf) {
-            try {
-                $existing = Read-McJson -Path $path
-                $existingCurated = Get-McObjectPropertyOrNull -InputObject $existing -Name 'curated'
-                if ($null -ne $existingCurated) {
-                    Set-McObjectProperty -InputObject $record -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
-                }
-            }
-            catch {
+            $existing = Read-McCanonicalJsonOrThrow -Path $path
+            $existingCurated = Get-McObjectPropertyOrNull -InputObject $existing -Name 'curated'
+            if ($null -ne $existingCurated) {
+                Set-McObjectProperty -InputObject $record -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
             }
         }
         Write-McJson -Path $path -InputObject $record
@@ -829,33 +843,25 @@ function Merge-McConfigProfiles {
     foreach ($state in @($ProfileStates | Where-Object { $null -ne $_ -and [string]$_.state -eq 'source-missing' })) {
         $tool = [string]$state.tool
         if ([string]::IsNullOrWhiteSpace($tool) -or $freshTools.Contains($tool)) { continue }
-        if ($tool -notmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
+        if ($tool -cnotmatch '^[a-z0-9][a-z0-9._-]*$') { continue }
         $path = Join-Path $aiRoot ("{0}.json" -f $tool)
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { continue }
-        try {
-            $existing = Read-McJson -Path $path
-            $observed = Get-McObjectPropertyOrNull -InputObject $existing -Name 'observed'
-            if (-not (Test-McMapping -InputObject $observed)) { continue }
-            Set-McObjectProperty -InputObject $observed -Name 'source_state' -Value 'stale'
-            Set-McObjectProperty -InputObject $observed -Name 'source_state_reason' -Value 'config source confirmed absent during scan'
-            Write-McJson -Path $path -InputObject $existing
-        }
-        catch {
-        }
+        $existing = Read-McCanonicalJsonOrThrow -Path $path
+        $observed = Get-McObjectPropertyOrNull -InputObject $existing -Name 'observed'
+        if (-not (Test-McMapping -InputObject $observed)) { continue }
+        Set-McObjectProperty -InputObject $observed -Name 'source_state' -Value 'stale'
+        Set-McObjectProperty -InputObject $observed -Name 'source_state_reason' -Value 'config source confirmed absent during scan'
+        Write-McJson -Path $path -InputObject $existing
     }
 
     if ($null -ne $McpInventory) {
         $mcpPath = Join-Path $configRoot 'mcp.json'
         $mcpRecord = Copy-McJsonObject -InputObject $McpInventory
         if (Test-Path -LiteralPath $mcpPath -PathType Leaf) {
-            try {
-                $existingMcp = Read-McJson -Path $mcpPath
-                $existingCurated = Get-McObjectPropertyOrNull -InputObject $existingMcp -Name 'curated'
-                if ($null -ne $existingCurated) {
-                    Set-McObjectProperty -InputObject $mcpRecord -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
-                }
-            }
-            catch {
+            $existingMcp = Read-McCanonicalJsonOrThrow -Path $mcpPath
+            $existingCurated = Get-McObjectPropertyOrNull -InputObject $existingMcp -Name 'curated'
+            if ($null -ne $existingCurated) {
+                Set-McObjectProperty -InputObject $mcpRecord -Name 'curated' -Value (Copy-McJsonObject -InputObject $existingCurated)
             }
         }
         Write-McJson -Path $mcpPath -InputObject $mcpRecord
@@ -863,19 +869,15 @@ function Merge-McConfigProfiles {
 
     $modules = [System.Collections.Generic.List[object]]::new()
     foreach ($file in @(Get-ChildItem -LiteralPath $aiRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Sort-Object Name)) {
-        try {
-            $record = Read-McJson -Path $file.FullName
-            $module = [ordered]@{
-                path = "ai/{0}" -f $file.Name
-                tool = [string]$record.tool
-                kind = [string]$record.kind
-            }
-            $moduleSourceState = [string](Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $record -Name 'observed') -Name 'source_state')
-            if (-not [string]::IsNullOrWhiteSpace($moduleSourceState)) { $module['source_state'] = $moduleSourceState }
-            [void]$modules.Add([pscustomobject]$module)
+        $record = Read-McCanonicalJsonOrThrow -Path $file.FullName
+        $module = [ordered]@{
+            path = "ai/{0}" -f $file.Name
+            tool = [string](Get-McObjectPropertyOrNull -InputObject $record -Name 'tool')
+            kind = [string](Get-McObjectPropertyOrNull -InputObject $record -Name 'kind')
         }
-        catch {
-        }
+        $moduleSourceState = [string](Get-McObjectPropertyOrNull -InputObject (Get-McObjectPropertyOrNull -InputObject $record -Name 'observed') -Name 'source_state')
+        if (-not [string]::IsNullOrWhiteSpace($moduleSourceState)) { $module['source_state'] = $moduleSourceState }
+        [void]$modules.Add([pscustomobject]$module)
     }
     if (Test-Path -LiteralPath (Join-Path $configRoot 'mcp.json') -PathType Leaf) {
         [void]$modules.Add([pscustomobject][ordered]@{

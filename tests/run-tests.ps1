@@ -439,6 +439,8 @@ Invoke-McTest -Name 'path and URL normalization' -Body {
     $repository = ConvertTo-McSafeRepositoryIdentity -Remote 'https://user:password@github.com/Whatnamed/MachineContext.git?token=secret'
     Assert-McEqual -Actual $repository -Expected 'github.com/Whatnamed/MachineContext' -Message 'remote identity must remove credentials/query and .git'
     Assert-McTrue -Condition (Test-McSafeId -Id 'runtime-node.js') -Message 'stable IDs should accept safe generated IDs'
+    Assert-McTrue -Condition (-not (Test-McSafeId -Id 'Runtime-Node.JS')) -Message 'stable IDs must reject uppercase characters case-sensitively'
+    Assert-McEqual -Actual (Get-McProjectRecordFileName -Id 'MyProject') -Expected ('project-{0}.json' -f (Get-McSha256Hex -Text 'MyProject').Substring(0, 20)) -Message 'uppercase project ids must hash into a collision-free lowercase filename'
 }
 
 Invoke-McTest -Name 'semantic version and banner normalization' -Body {
@@ -1676,6 +1678,31 @@ Invoke-McTest -Name 'config reconciliation marks last-known profiles stale when 
     $index = Read-McJson -Path (Join-Path $tempRoot 'configs\index.json')
     $ompModule = @($index.modules | Where-Object { $_.path -eq 'ai/omp.json' })[0]
     Assert-McEqual -Actual ([string]$ompModule.source_state) -Expected 'stale' -Message 'config index must surface the stale state'
+    Remove-Item -LiteralPath $tempRoot -Recurse -Force
+}
+
+Invoke-McTest -Name 'canonical read failures abort reconciliation instead of losing curated intent' -Body {
+    $tempRoot = Join-Path $RepoRoot '.local\test-config-corrupt'
+    $aiRoot = Join-Path $tempRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $aiRoot -Force)
+    Set-Content -Path (Join-Path $aiRoot 'omp.json') -Value '{ "tool": "omp", "curated": { "notes": [ "keep me" ] }'
+
+    $profile = [pscustomobject][ordered]@{
+        tool     = 'omp'
+        kind     = 'ai-config-profile'
+        observed = [pscustomobject][ordered]@{ value_basis = 'configured-local' }
+    }
+    $threw = $false
+    try {
+        Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @($profile) -McpInventory $null
+    }
+    catch {
+        $threw = $true
+    }
+    Assert-McTrue -Condition $threw -Message 'a corrupt canonical profile must abort reconciliation instead of being silently replaced'
+
+    $raw = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
+    Assert-McTrue -Condition (-not ($raw -match 'schema_version')) -Message 'a corrupt canonical profile must not be overwritten by reconciliation'
     Remove-Item -LiteralPath $tempRoot -Recurse -Force
 }
 

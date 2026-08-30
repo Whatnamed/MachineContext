@@ -231,7 +231,7 @@ function Test-McSafeId {
         [string]$Id
     )
 
-    return (-not [string]::IsNullOrWhiteSpace($Id) -and $Id -match '^[a-z0-9][a-z0-9._:-]*$')
+    return (-not [string]::IsNullOrWhiteSpace($Id) -and $Id -cmatch '^[a-z0-9][a-z0-9._:-]*$')
 }
 
 function ConvertTo-McSemanticVersion {
