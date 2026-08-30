@@ -19,9 +19,9 @@
         "type": "manifest_present"
       },
       {
-        "classification": "project-root",
+        "classification": "canonical-project",
         "root": "D:\\Morpho",
-        "source": "bootstrap/project-root",
+        "source": "canonical-project-index",
         "type": "root_policy"
       }
     ],

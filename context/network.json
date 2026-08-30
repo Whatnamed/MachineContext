@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "bootstrap"
+    "state": "observed"
   },
   "constraints": [],
   "primary_network": {

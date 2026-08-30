@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "bootstrap"
+    "state": "observed"
   },
   "relationships": [
     {
@@ -225,6 +225,25 @@
       "from": "shell-git-bash",
       "relation": "provided_by",
       "to": "git"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "runtimes-package-managers-toolchain",
+          "fields": [
+            "executable",
+            "install.root"
+          ],
+          "paths": [
+            "E:\\Dev\\uv\\uvx.exe",
+            "E:\\Dev\\uv"
+          ]
+        }
+      ],
+      "origin": "inferred",
+      "from": "uvx",
+      "relation": "provided_by",
+      "to": "uv"
     }
   ]
 }

@@ -41,7 +41,7 @@
       },
       {
         "path": "%USERPROFILE%\\.qoder-cn\\mcp-router.json",
-        "exists": true,
+        "exists": false,
         "format": "json",
         "role": "sensitive-config"
       }

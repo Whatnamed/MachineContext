@@ -232,8 +232,8 @@
         "config_paths": [
           {
             "kind": "config-file",
-            "path": "%USERPROFILE%\\.codex\\config.json",
-            "exists": false
+            "path": "%USERPROFILE%\\.codex\\config.toml",
+            "exists": true
           }
         ],
         "data_paths": [
