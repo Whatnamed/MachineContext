@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "meta": {
-    "state": "bootstrap"
+    "state": "observed"
   },
   "command_resolution": [
     {
@@ -141,7 +141,7 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 24159191040,
+      "free_bytes": 23353884672,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
