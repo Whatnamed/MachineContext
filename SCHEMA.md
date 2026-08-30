@@ -222,7 +222,7 @@ Module layout:
 context/configs/
   index.json      generated module registry + policy
   ai/<tool>.json  one profile per harness (omp, dsh, zcode, opencodex,
-                  codex-cli, ...)
+                  codex-cli, qoder, ...)
   mcp.json        cross-tool MCP inventory
 ```
 
