@@ -85,6 +85,16 @@ Invoke-McTest -Name 'deterministic JSON ordering and UTF-8' -Body {
     Remove-Item -LiteralPath $path -Force
 }
 
+Invoke-McTest -Name 'property removal works on both mapping kinds' -Body {
+    $record = [pscustomobject][ordered]@{ a = 1 }
+    Remove-McObjectProperty -InputObject $record -Name 'a'
+    Assert-McTrue -Condition ($null -eq $record.PSObject.Properties['a']) -Message 'property removal must work on native pscustomobject records'
+
+    $mapping = [ordered]@{ a = 1 }
+    Remove-McObjectProperty -InputObject $mapping -Name 'a'
+    Assert-McTrue -Condition (-not $mapping.Contains('a')) -Message 'property removal must work on ordered dictionary records'
+}
+
 Invoke-McTest -Name 'deterministic reconciliation ordering for JSON dictionaries' -Body {
     $module = [pscustomobject][ordered]@{
         schema_version = 1

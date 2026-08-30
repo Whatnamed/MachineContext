@@ -89,7 +89,7 @@ function Remove-McObjectProperty {
         return
     }
     $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -eq $property) { $InputObject.PSObject.Properties.Remove($Name) }
+    if ($null -ne $property) { $InputObject.PSObject.Properties.Remove($Name) }
 }
 
 function Test-McSequence {
