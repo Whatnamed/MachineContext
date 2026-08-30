@@ -52,4 +52,4 @@ Read:
 
 Do not build a GUI, database, MCP server, cross-platform abstraction, or always-running daemon before this workflow is reliable on the real machine.
 
-`curate.ps1` requires a `g2-curation-confirmation` manifest. Its default plan mode never writes canonical data; applying it requires `-Apply`, validates a staged context, preserves `observed`, and still leaves commit/push to the explicit review workflow.
+`curate.ps1` requires a `g2-curation-confirmation` manifest (see `docs/examples/curate-confirmation.example.json` for the shape). Its default plan mode never writes canonical data; applying it requires `-Apply`, validates a staged context, preserves `observed`, and still leaves commit/push to the explicit review workflow.

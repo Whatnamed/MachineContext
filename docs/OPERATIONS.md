@@ -35,7 +35,7 @@
 | `pwsh tests/run-tests.ps1` | 全量测试(41+ 断言块) | 任何脚本/采集逻辑改动后必跑 |
 | `pwsh scripts/verify.ps1 -Mode Quick` | 按 provider 重新验证,只写 `.local` | 不改 canonical |
 | `pwsh scripts/audit.ps1` / `review.ps1` | 只读审查 closure/语义建议契约 | 排查审计状态用 |
-| `pwsh scripts/curate.ps1` | 生成 curated 确认 manifest(默认 dry-run,`-Apply` 才生效) | 批量语义更新用,见 §6 |
+| `pwsh scripts/curate.ps1 -RepoRoot … -ConfirmationPath <manifest.json>` | 消费 curated 确认 manifest：默认 dry-run 生成 plan，`-Apply` 才写库 | manifest 形状见 `docs/examples/curate-confirmation.example.json`；批量语义更新用，见 §6 |
 
 ### 2.3 Gate 顺序(每次发布前必须全部通过)
 
@@ -169,7 +169,7 @@
 - 触发:用途、角色、状态、使用关系、"实际在用哪个"等脚本无法检测的语义变化;以及**补充实体的添加/刷新**(新装的桌面 app、升级后的版本刷新——canonical 里没有 routine provider 覆盖它们,见 §8)。
 - 流程(二选一):
   1. **对话确认 + 一次性修正脚本**(当前实际用法):在 `.local/` 写临时脚本,用仓库 lib(`Read-McJson`/`Set-McObjectProperty`/`Write-McJson`)精确修改目标字段或添加实体,运行后删除或在说明中标注一次性;适用单点修正与实体添加(qoder/workbuddy/claude-desktop 刷新都是先例,脚本留在 `.local/` 可复用);
-  2. **`curate.ps1` confirmation manifest**(批量/可审计):默认 dry-run 生成 plan,显式 `-Apply` 才生效;manifest 里出现 `observed` 字段、未知 ID、非法证据会直接拒绝。
+  2. **`curate.ps1` confirmation manifest**(批量/可审计):手写确认 manifest(形状见 `docs/examples/curate-confirmation.example.json`;`evidence_refs` 必须能在 `.local/g2-semantic-review.json` 里找到),默认 dry-run 生成 plan,显式 `-Apply` 才生效;manifest 里出现 `observed` 字段、未知 ID、非法证据会直接拒绝。
 - **易漏项**:
   - `evidence` 数组**只增不减**(按 JSON 全等去重):改 evidence 形状后旧的会在 canonical 里残留,必须做一次性清理,否则二次 sync 不幂等;
   - 删除实体/记录属于显式清理(removal policy),reconciliation 不会自动删除;
