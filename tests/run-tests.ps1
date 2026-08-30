@@ -444,11 +444,11 @@ Invoke-McTest -Name 'path and URL normalization' -Body {
 }
 
 Invoke-McTest -Name 'semantic version and banner normalization' -Body {
-    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'pip 25.0.1 from C:\Users\hasee\.agent-reach-venv\Lib\site-packages\pip (python 3.12)') -Expected '25.0.1' -Message 'pip banners must become semantic versions without paths'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'pip 25.0.1 from C:\Users\fixture\.agent-reach-venv\Lib\site-packages\pip (python 3.12)') -Expected '25.0.1' -Message 'pip banners must become semantic versions without paths'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'git version 2.53.0.windows.3') -Expected '2.53.0' -Message 'Git banners must discard provider suffixes'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'Flutter 3.41.9 • channel stable • https://github.com/flutter/flutter.git') -Expected '3.41.9' -Message 'Flutter banners must become semantic versions'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'go version go1.24.11 windows/amd64') -Expected '1.24.11' -Message 'Go banners must strip the go prefix'
-    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'not a version banner with C:\Users\hasee\secret') -Expected $null -Message 'unparseable banners must not enter canonical version fields'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'not a version banner with C:\Users\fixture\secret') -Expected $null -Message 'unparseable banners must not enter canonical version fields'
 
     $rawEntity = [pscustomobject][ordered]@{
         id = 'pip'
@@ -456,7 +456,7 @@ Invoke-McTest -Name 'semantic version and banner normalization' -Body {
         name = 'pip'
         observed = [pscustomobject][ordered]@{
             present = $true
-            version = 'pip 25.0.1 from C:\Users\hasee\.agent-reach-venv\Lib\site-packages\pip (python 3.12)'
+            version = 'pip 25.0.1 from C:\Users\fixture\.agent-reach-venv\Lib\site-packages\pip (python 3.12)'
         }
     }
     $normalizedEntity = ConvertTo-McNormalizedEntityVersion -Entity $rawEntity
@@ -541,6 +541,8 @@ Invoke-McTest -Name 'strong relationship derivation' -Body {
             [pscustomobject][ordered]@{ id = 'npm'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Node\npm.cmd' } },
             [pscustomobject][ordered]@{ id = 'flutter'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Flutter\bin\flutter.bat'; install = [pscustomobject][ordered]@{ root = 'E:\Flutter\bin' } } },
             [pscustomobject][ordered]@{ id = 'dart'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Flutter\bin\dart.bat' } },
+            [pscustomobject][ordered]@{ id = 'uv'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Dev\uv\uv.exe'; install = [pscustomobject][ordered]@{ root = 'E:\Dev\uv' } } },
+            [pscustomobject][ordered]@{ id = 'uvx'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'E:\Dev\uv\uvx.exe' } },
             [pscustomobject][ordered]@{ id = 'git'; observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; executable = 'D:\Git\Git\cmd\git.exe'; install = [pscustomobject][ordered]@{ root = 'D:\Git\Git' } } }
         )
         ai = @()
@@ -580,6 +582,7 @@ Invoke-McTest -Name 'strong relationship derivation' -Body {
     $relationships = @(Get-McStrongRelationships -Observations $observations)
     Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'npm' -and $_.relation -eq 'provided_by' -and $_.to -eq 'node' }).Count -eq 1) -Message 'Node-local npm should have a strong provided_by relationship'
     Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'dart' -and $_.relation -eq 'provided_by' -and $_.to -eq 'flutter' }).Count -eq 1) -Message 'Flutter-bundled Dart should have a strong provided_by relationship'
+    Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'uvx' -and $_.relation -eq 'provided_by' -and $_.to -eq 'uv' }).Count -eq 1) -Message 'uv-bundled uvx should have a strong provided_by relationship'
     Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'shell-git-bash' -and $_.relation -eq 'provided_by' -and $_.to -eq 'git' -and $_.origin -eq 'detected' }).Count -eq 1) -Message 'Git Bash should be related to the verified Git installation'
     Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'project-fixture' -and $_.relation -eq 'uses_runtime' -and $_.to -eq 'node' }).Count -eq 1) -Message 'promotable projects may reference observed runtimes'
     Assert-McTrue -Condition (@($relationships | Where-Object { $_.from -eq 'project-fixture' -and $_.relation -eq 'uses_package_manager' -and $_.to -eq 'npm' }).Count -eq 1) -Message 'promotable projects may reference observed package managers'

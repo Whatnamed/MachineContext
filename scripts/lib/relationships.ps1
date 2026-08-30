@@ -150,6 +150,22 @@ function Get-McStrongRelationships {
         }
     }
 
+    # uvx ships in the same installer root as uv; the same bundling evidence
+    # that ties Dart to Flutter ties uvx to uv.
+    if ($software.ContainsKey('uv') -and $software.ContainsKey('uvx') -and (Test-McRelationshipPresent -Entity $software['uv']) -and (Test-McRelationshipPresent -Entity $software['uvx'])) {
+        $uvObserved = Get-McRelationshipProperty -InputObject $software['uv'] -Name 'observed'
+        $uvxObserved = Get-McRelationshipProperty -InputObject $software['uvx'] -Name 'observed'
+        $uvRoot = Get-McRelationshipProperty -InputObject (Get-McRelationshipProperty -InputObject $uvObserved -Name 'install') -Name 'root'
+        $uvxExecutable = [string](Get-McRelationshipProperty -InputObject $uvxObserved -Name 'executable')
+        if (Test-McRelationshipPathWithin -Path $uvxExecutable -Root ([string]$uvRoot)) {
+            [void]$relationships.Add((New-McStrongRelationship -From 'uvx' -Relation 'provided_by' -To 'uv' -Origin 'inferred' -Evidence ([pscustomobject][ordered]@{
+                            provider = 'runtimes-package-managers-toolchain'
+                            fields = @('executable', 'install.root')
+                            paths = @($uvxExecutable, [string]$uvRoot)
+                        })))
+        }
+    }
+
     # Only project candidates that passed the promotion gate may create
     # canonical references. Manifest fingerprints provide direct evidence for
     # these dependency relationships; manifest-only/tool-root candidates stay
