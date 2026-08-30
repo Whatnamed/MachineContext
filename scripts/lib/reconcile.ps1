@@ -122,6 +122,9 @@ function Get-McProviderFailureEvents {
     foreach ($failure in @($Failures)) {
         if ($null -eq $failure) { continue }
         $provider = [string]$failure.provider
+        # Providers without an entity map contribute no entity-level events;
+        # their failure stays visible in the provider diagnostics instead.
+        if (-not $targets.Contains($provider)) { continue }
         foreach ($target in @($targets[$provider])) {
             foreach ($id in @($target.ids)) {
                 [void]$events.Add([pscustomobject][ordered]@{

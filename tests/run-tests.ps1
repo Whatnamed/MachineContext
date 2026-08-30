@@ -930,6 +930,13 @@ Invoke-McTest -Name 'curated ownership and safe absence semantics' -Body {
     $updated = Merge-McSoftwareModule -Module $module -Observations @($observation)
     Assert-McEqual -Actual $updated.software[0].observed.version -Expected 'new' -Message 'observed fields should update from a verified observation'
     Assert-McEqual -Actual $updated.software[0].curated.role -Expected 'primary' -Message 'collector must not overwrite curated role'
+
+    $failureEvents = @(Get-McProviderFailureEvents -Failures @(
+            [pscustomobject][ordered]@{ provider = 'runtimes-package-managers-toolchain'; health = 'failed'; message = 'fixture' },
+            [pscustomobject][ordered]@{ provider = 'nvidia-smi'; health = 'timed_out'; message = 'fixture' }
+        ))
+    Assert-McTrue -Condition (@($failureEvents | Where-Object { $_.id -eq 'node' -and $_.provider -eq 'runtimes-package-managers-toolchain' }).Count -ge 1) -Message 'mapped provider failures must mark their entities unverified'
+    Assert-McTrue -Condition (@($failureEvents | Where-Object { $_.provider -eq 'nvidia-smi' }).Count -eq 0) -Message 'providers without an entity map must contribute no entity-level failure events'
 }
 
 Invoke-McTest -Name 'provider diagnostics and local state' -Body {
