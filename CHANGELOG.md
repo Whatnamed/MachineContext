@@ -17,6 +17,7 @@ MachineContext uses Git for detailed history. This file records only notable pro
 - Development log convention.
 - `context/configs/` AI configuration profile module with source-specific allowlisted projections (OMP, DSH, ZCode, OpenCodex, Codex CLI shared config), a cross-tool MCP inventory, credential redaction to environment-variable names, validator privacy gates, and fixture tests.
 - Qoder CN desktop agent in the AI tooling inventory (registry- and user-confirmed, with the bundled unused CLI recorded only as path observations and curated notes) and a Codex CLI configuration profile for the top-level scalar settings shared with the Codex desktop app.
+- `docs/OPERATIONS.md` operations runbook (sync/gate/commit/push loop with environment requirements, an information map from collection source to canonical target, per-tool AI-config collection playbooks, and known-staleness procedures), plus documentation slimming: DEVELOPMENT.md phase history archived to devlog and a task-routing table in the docs index.
 
 ### Changed
 

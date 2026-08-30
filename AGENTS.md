@@ -12,11 +12,12 @@ When working in this repository:
 
 1. read `CURRENT.md` for the fast machine-context view;
 2. read `machine-context.json` for canonical module locations;
-3. read `docs/DEVELOPMENT.md` before implementing repository changes;
-4. read `docs/COLLECTION_SPEC.md` for what may/should be collected;
-5. read `docs/DISCOVERY_DESIGN.md` before changing discovery/reconciliation;
-6. read `docs/IMPLEMENTATION_GUIDE.md` before implementing collectors/sync;
-7. read `PRIVACY.md` before expanding any data scope.
+3. read `docs/OPERATIONS.md` before running any collection, sync, or publish operation;
+4. read `docs/DEVELOPMENT.md` before implementing repository changes;
+5. read `docs/COLLECTION_SPEC.md` for what may/should be collected;
+6. read `docs/DISCOVERY_DESIGN.md` before changing discovery/reconciliation;
+7. read `docs/IMPLEMENTATION_GUIDE.md` before implementing collectors/sync;
+8. read `PRIVACY.md` before expanding any data scope.
 
 Do not rely on a chat prompt as the only source for persistent project requirements. Important requirements belong in the repository documentation.
 

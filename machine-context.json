@@ -16,6 +16,7 @@
   },
   "documentation": {
     "index": "docs/README.md",
+    "operations": "docs/OPERATIONS.md",
     "product": "docs/PRODUCT.md",
     "architecture": "docs/ARCHITECTURE.md",
     "development": "docs/DEVELOPMENT.md",
