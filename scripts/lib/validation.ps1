@@ -540,6 +540,32 @@ function Test-McLiteralUserProfilePath {
     return $Text.IndexOf($profile.TrimEnd('\'), [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+# Raw JSON text escapes backslashes ('C:\\Users\\...'), so a literal-profile
+# check on raw text would never match a serialized Windows path; walk the
+# decoded string values instead.
+function Test-McDocumentContainsLiteralUserProfilePath {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject
+    )
+
+    if ($null -eq $InputObject) { return $false }
+    if ($InputObject -is [string]) { return (Test-McLiteralUserProfilePath -Text $InputObject) }
+    if ($InputObject -is [System.Collections.IDictionary] -or $InputObject -is [pscustomobject]) {
+        foreach ($entry in (Get-McPropertyEntries -InputObject $InputObject)) {
+            if (Test-McDocumentContainsLiteralUserProfilePath -InputObject $entry.Value) { return $true }
+        }
+        return $false
+    }
+    if ($InputObject -is [System.Collections.IEnumerable]) {
+        foreach ($item in $InputObject) {
+            if (Test-McDocumentContainsLiteralUserProfilePath -InputObject $item) { return $true }
+        }
+    }
+    return $false
+}
+
 function Get-McKnownEntityIds {
     [CmdletBinding()]
     param(
@@ -619,7 +645,7 @@ function Invoke-McValidation {
             }
 
             Add-McForbiddenMetadataFindings -InputObject $document -Findings $findings -Path '$'
-            if (Test-McLiteralUserProfilePath -Text $raw) {
+            if (Test-McDocumentContainsLiteralUserProfilePath -InputObject $document) {
                 Add-McValidationFinding -Findings $findings -Severity error -Code 'literal_user_path' -Message 'Canonical data must use normalized user paths such as %USERPROFILE%.' -Path $file
             }
 

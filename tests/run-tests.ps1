@@ -425,10 +425,41 @@ Invoke-McTest -Name 'canonical contract fixture validation' -Body {
         Write-McJson -Path (Join-Path $fixtureRoot 'context/projects/fixture-project.json') -InputObject $badProject
         $invalid = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
         Assert-McTrue -Condition (@($invalid.errors | Where-Object code -eq 'dotnet_collection_metadata').Count -gt 0) -Message 'validator must reject .NET collection metadata'
+
+        $leakyRecord = Copy-McJsonObject -InputObject $softwareRecord
+        Set-McObjectProperty -InputObject $leakyRecord.observed -Name 'endpoint' -Value 'https://user:secret@example.com/v1'
+        Write-McJson -Path (Join-Path $fixtureRoot 'context/software/development.json') -InputObject ([pscustomobject][ordered]@{ schema_version = 1; software = @($leakyRecord) })
+        $leaky = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($leaky.errors | Where-Object code -like 'privacy_*').Count -gt 0) -Message 'privacy sweep must reject secret-shaped values in canonical data'
+
+        $literalRecord = Copy-McJsonObject -InputObject $projectRecord
+        $literalPath = Join-Path ([Environment]::GetEnvironmentVariable('USERPROFILE')) 'src\fixture'
+        Set-McObjectProperty -InputObject $literalRecord.observed -Name 'local_path' -Value $literalPath
+        Write-McJson -Path (Join-Path $fixtureRoot 'context/software/development.json') -InputObject ([pscustomobject][ordered]@{ schema_version = 1; software = @($softwareRecord) })
+        Write-McJson -Path (Join-Path $fixtureRoot 'context/projects/fixture-project.json') -InputObject $literalRecord
+        $literal = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($literal.errors | Where-Object code -eq 'literal_user_path').Count -gt 0) -Message 'validator must reject literal user-profile paths in canonical data'
+
+        $brokenIndex = [pscustomobject][ordered]@{ schema_version = 1; projects = @([pscustomobject][ordered]@{ id = 'fixture-project'; name = 'Fixture Project'; path = '%USERPROFILE%\\src\\fixture'; context_file = 'context/projects/missing-project.json' }) }
+        Write-McJson -Path (Join-Path $fixtureRoot 'context/projects/fixture-project.json') -InputObject $projectRecord
+        Write-McJson -Path (Join-Path $fixtureRoot 'context/projects/index.json') -InputObject $brokenIndex
+        $broken = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($broken.errors | Where-Object code -eq 'broken_project_reference').Count -gt 0) -Message 'validator must report broken project index references'
     }
     finally {
         if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }
     }
+}
+
+Invoke-McTest -Name 'CURRENT rendering is byte-deterministic' -Body {
+    $out1 = Join-Path $RepoRoot '.local\render-check-1.md'
+    $out2 = Join-Path $RepoRoot '.local\render-check-2.md'
+    Invoke-McRender -RepoRoot $RepoRoot -ContextRoot (Join-Path $RepoRoot 'context') -OutputPath $out1 | Out-Null
+    Invoke-McRender -RepoRoot $RepoRoot -ContextRoot (Join-Path $RepoRoot 'context') -OutputPath $out2 | Out-Null
+    $first = [System.IO.File]::ReadAllBytes($out1)
+    $second = [System.IO.File]::ReadAllBytes($out2)
+    Assert-McTrue -Condition ([System.Linq.Enumerable]::SequenceEqual($first, $second)) -Message 'repeated renders over unchanged canonical data must be byte-identical'
+    Remove-Item -LiteralPath $out1, $out2 -Force -ErrorAction SilentlyContinue
 }
 
 Invoke-McTest -Name 'path and URL normalization' -Body {
