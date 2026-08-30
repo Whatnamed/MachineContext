@@ -608,6 +608,34 @@ Invoke-McTest -Name 'dedicated verifiers and verification states' -Body {
     Assert-McEqual -Actual $unavailableNvidia.health -Expected 'unavailable' -Message 'missing optional nvidia-smi must fail soft'
     Assert-McEqual -Actual $unavailableNvidia.value.check.status -Expected 'unavailable' -Message 'missing nvidia-smi check must remain diagnostic'
 
+    $timedOutNvidia = & {
+        param($Path)
+        function Get-McHostToolCandidates {
+            param(
+                [string]$Command,
+                [string[]]$KnownPaths
+            )
+            return @([pscustomobject][ordered]@{ path = 'C:\Program Files\NVIDIA Corporation\NVSMI\nvidia-smi.exe' })
+        }
+        function Invoke-McProbe {
+            param(
+                [string]$Executable,
+                [object[]]$Arguments,
+                [string]$Provider,
+                [string]$ProbeName,
+                [int]$TimeoutMs,
+                [int]$OutputCapBytes,
+                [string]$ResolutionScope
+            )
+            return [pscustomobject][ordered]@{ status = 'timed_out'; stdout = '' }
+        }
+        . $Path
+        Get-McNvidiaSmiObservation
+    } $hardwareVerifierPath
+    Assert-McEqual -Actual $timedOutNvidia.health -Expected 'timed_out' -Message 'nvidia-smi probe timeout must fail soft with an explicit health'
+    Assert-McEqual -Actual $timedOutNvidia.value.check.status -Expected 'timed_out' -Message 'nvidia-smi probe timeout must surface the probe status in check'
+    Assert-McTrue -Condition (@($timedOutNvidia.value.candidates).Count -eq 1) -Message 'nvidia-smi probe timeout must retain the executable candidate for later promotion'
+
     $vswhere = @(ConvertFrom-McVsWhereJson -Text '[{"installationPath":"D:\\Visual Studio\\product","installationVersion":"17.1","displayName":"Fixture VS","isComplete":true}]')
     Assert-McEqual -Actual $vswhere[0].installation_path -Expected 'D:\Visual Studio\product' -Message 'vswhere installation path must be normalized'
     Assert-McEqual -Actual $vswhere[0].is_complete -Expected $true -Message 'vswhere completion flag must survive parsing'

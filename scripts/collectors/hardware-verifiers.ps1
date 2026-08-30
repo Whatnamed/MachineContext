@@ -19,6 +19,7 @@ function Get-McNvidiaSmiObservation {
     $primary = $candidates[0]
     $probe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @('--query-gpu=name,driver_version,memory.total', '--format=csv,noheader,nounits') -Provider 'nvidia-smi' -ProbeName 'gpu-memory-driver' -TimeoutMs 10000 -OutputCapBytes 32768 -ResolutionScope 'windows-host'
     if ($probe.status -ne 'success') {
+        $failureHealth = if ($probe.status -eq 'timed_out') { 'timed_out' } else { 'partial' }
         $warning = "nvidia-smi verifier status: $($probe.status)"
         return New-McProviderPayload -Value ([pscustomobject][ordered]@{
                 gpu_verifications = @()
