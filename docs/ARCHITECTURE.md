@@ -121,15 +121,13 @@ A typical software entity conceptually has:
     "evidence": []
   },
   "curated": {
-    "status": "active",
     "role": "primary",
-    "purpose": null,
     "constraints": []
   }
 }
 ```
 
-The exact schema may evolve additively, but the ownership boundary is durable:
+The example omits fields with no value (D038): `status: active` is redundant for a present, verified runtime and `purpose: null` would be a manufactured value. The exact schema may evolve additively, but the ownership boundary is durable:
 
 - collector/reconciler may update `observed`;
 - routine sync must preserve `curated`;

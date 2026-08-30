@@ -315,7 +315,7 @@ Status: accepted.
 ## D038 — V1 Simplification, Supplemental Inventory Provenance, and Optional Lifecycle
 
 Decision:
-1. Curated `status` is optional for software and projects. Canonical presence already indicates that software/projects exist; do not maintain redundant `active` or `unknown` fields without distinct user-curated intent (e.g. `legacy`, `compatibility-only`).
+1. Curated `status` is optional for software and projects. Canonical presence already indicates that software/projects exist; do not maintain redundant `active` or `unknown` fields without distinct user-curated intent (e.g. `legacy`, `testing`).
 2. Selective `creative` and `productivity` software inventories are integrated into V1 ahead of schedule as supplemental modules (`user-confirmed-broad-inventory` with `manual-broad-scan` refresh policy) rather than requiring a delayed Phase 3.
 3. Generic encyclopedia-style purposes for common software are omitted; project and specific AI/CLI purposes are preserved.
 4. Conventions express directory roles, system-managed roots, and non-strict drive tendencies rather than rigid directory taxonomies.

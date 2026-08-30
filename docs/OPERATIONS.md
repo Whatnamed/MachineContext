@@ -80,7 +80,7 @@
 | 开发 runtime / 工具链 / 包管理器 | PATH 解析 + `--version` 探测 + 专用 verifier | `context/software/development.json` | routine,全自动 |
 | AI / Agent 工具实体 | PATH 探测 + HKCU/HKLM 卸载表 + Appx 清单 | `context/software/ai.json` | routine + 补充(§8) |
 | **AI 配置投影** | **各工具配置文件(§4 逐工具)** | `context/configs/ai/<tool>.json` | routine Quick(读小文件) |
-| **MCP 服务器** | 四个 MCP 配置源(§4.7) | `context/configs/mcp.json` | routine Quick |
+| **MCP 服务器** | 五个 MCP 配置源(§4.7) | `context/configs/mcp.json` | routine Quick |
 | 长期项目 | workspace roots 指纹 + manifest | `context/projects/*.json` | Discover / Full |
 | 普通软件 | HKCU/HKLM 卸载表(候选) | `context/software/{creative,productivity,…}.json` | 补充扫描,晋级需确认 |
 | 语义 / 用途 / 状态 / 使用关系 | **用户确认**(对话或 manifest) | 对应记录的 `curated` 字段 | 显式操作(§6) |

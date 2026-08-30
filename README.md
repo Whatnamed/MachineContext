@@ -68,6 +68,9 @@ MachineContext/
     render.ps1
     validate.ps1
     sync.ps1
+    audit.ps1
+    review.ps1
+    curate.ps1
     collectors/
     lib/
   tests/

@@ -54,13 +54,13 @@ V1 的 canonical structured context 使用 **JSON + Markdown**，不使用 YAML 
     "evidence": []
   },
   "curated": {
-    "status": "active",
     "role": "primary",
-    "purpose": null,
     "constraints": []
   }
 }
 ```
+
+示例省略无值字段（D038）：`status: active` 对已验证存在的 runtime 是冗余的，`purpose: null` 属于制造空值。
 
 `observed`：脚本可覆盖/更新。
 

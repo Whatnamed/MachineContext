@@ -33,4 +33,4 @@ MachineContext uses Git for detailed history. This file records only notable pro
 
 ### Current phase
 
-- V1 collector implementation + Initial Full Audit.
+- V1 feature-frozen for normal use; routine maintenance runs the collect -> reconcile -> validate -> render -> publish sync pipeline (see docs/DEVELOPMENT.md), and candidate future work lives in docs/ROADMAP.md.

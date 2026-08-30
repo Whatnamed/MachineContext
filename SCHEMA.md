@@ -155,7 +155,7 @@ evidence
 
 Typical curated fields (all optional):
 ```text
-software status: legacy | testing | broken | compatibility-only (omitted for standard active tools)
+software status: active | inactive | legacy | testing | broken | unknown (the curation contract's accepted values; omit the field for ordinary tools instead of defaulting to active)
 role: primary | secondary | project-only | optional
 purpose: short 1-line description (retained for AI/specialized CLIs; omitted for standard tools)
 constraints

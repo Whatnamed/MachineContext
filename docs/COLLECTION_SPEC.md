@@ -35,7 +35,7 @@ curated            user/agent-owned semantics
 
 ### 常见 curated fields（按需填写，均为可选）
 
-- 软件/AI 的 `status`：仅在用户明确指定特殊状态（如 legacy / compatibility-only / primary）时记录；普通已安装工具无需默认写入 `active` 或 `unknown`；
+- 软件/AI 的 `status`：仅在用户明确指定特殊状态（如 legacy / testing / broken / inactive）时记录；普通已安装工具无需默认写入 `active` 或 `unknown`；
 - project lifecycle 的 `status`：非强制字段，项目存在本身即表达其长期项目地位，仅在明确为 legacy / archived / throwaway 时记录；
 - `role`：primary / secondary / project-only / optional（仅在有明确比较意义时使用）；
 - `purpose`：项目或非显而易见的 AI/CLI 工具记录简短定位；普通知名软件无需重复百科解释；
