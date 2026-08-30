@@ -555,13 +555,53 @@ function Get-McCodexConfigProfile {
         -WireVerification 'not-wire-verified' -Evidence $evidence)
 }
 
+function Get-McQoderConfigProfile {
+    [CmdletBinding()]
+    param(
+        [string]$SettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json')
+    )
+
+    # The Qoder CN desktop agent home is %USERPROFILE%\.qoder-cn. settings.json
+    # holds the safe user-facing state (enabled plugins, MCP server
+    # declarations); mcp-router.json contains a runtime API key and is recorded
+    # as existence only, never parsed. MCP server entries are projected in the
+    # cross-tool MCP inventory, not here.
+    if (-not [string]::IsNullOrWhiteSpace($SettingsPath) -and -not (Test-Path -LiteralPath $SettingsPath -PathType Leaf)) { return $null }
+
+    $redactions = [System.Collections.Generic.List[object]]::new()
+    $unprojected = [System.Collections.Generic.List[string]]::new()
+    $configRoot = Split-Path -Parent $SettingsPath
+    $files = @(
+        New-McConfigSourceFileRecord -Path $SettingsPath -Format json -Role config
+        New-McConfigSourceFileRecord -Path (Join-Path $configRoot 'mcp-router.json') -Format json -Role sensitive-config
+    )
+
+    $settings = Read-McJson -Path $SettingsPath
+    $allowlist = [ordered]@{
+        enabledPlugins = 'scalars'
+    }
+    $projection = ConvertTo-McAllowlistedProjection -Value $settings -Allowlist $allowlist -Path 'qoder' -Redactions $Redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+    if ($unprojected.Count -gt 0) { $projection['unprojected_keys'] = @($unprojected | Sort-Object -Unique) }
+
+    $evidence = @([pscustomobject][ordered]@{
+        provider    = 'config-profiles'
+        source_path = (ConvertTo-McNormalizedPath -Path $SettingsPath)
+        fields      = @(@(Get-McPropertyEntries -InputObject $projection) | ForEach-Object { [string]$_.Name })
+    })
+
+    return (New-McConfigProfileRecord -Id 'qoder-config' -Tool 'qoder' -ConfigRoot (ConvertTo-McNormalizedPath -Path $configRoot) `
+        -Files $files -Projection $projection -Redactions $Redactions `
+        -WireVerification 'not-wire-verified' -Evidence $evidence)
+}
+
 function Get-McMcpInventoryRecord {
     [CmdletBinding()]
     param(
         [string]$ClaudeConfigPath = (Join-Path $env:USERPROFILE '.claude.json'),
         [string]$GeminiSettingsPath = (Join-Path $env:USERPROFILE '.gemini\settings.json'),
         [string]$CodexConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml'),
-        [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json')
+        [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json'),
+        [string]$QoderSettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json')
     )
 
     $redactions = [System.Collections.Generic.List[object]]::new()
@@ -646,6 +686,21 @@ function Get-McMcpInventoryRecord {
             Add-McProjectionRedaction -Redactions $Redactions -Path 'mcp.cursor' -Reason 'unparseable-source'
         }
     }
+    if (Test-Path -LiteralPath $QoderSettingsPath -PathType Leaf) {
+        # Qoder declares MCP servers in its settings.json; the extra
+        # qoder_url field and the runtime mcp-router.json (which holds an API
+        # key) are never read.
+        [void]$files.Add((New-McConfigSourceFileRecord -Path $QoderSettingsPath -Format json -Role mcp-config))
+        try {
+            $qoderSettings = Read-McJson -Path $QoderSettingsPath
+            foreach ($entry in (Get-McPropertyEntries -InputObject (Get-McCollectionProperty -InputObject $qoderSettings -Name 'mcpServers'))) {
+                Add-McMcpServer -Tool 'qoder' -Scope 'user' -Name ([string]$entry.Name) -Definition $entry.Value
+            }
+        }
+        catch {
+            Add-McProjectionRedaction -Redactions $Redactions -Path 'mcp.qoder' -Reason 'unparseable-source'
+        }
+    }
 
     $unresolved = @(
         'omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext'
@@ -682,6 +737,7 @@ function Get-McConfigProfileObservations {
         [string]$ZcodeAppDataRoot = 'D:\ZCode\appdata\.zcode\v2',
         [string]$ZcodeUserProfileRoot = (Join-Path $env:USERPROFILE '.zcode\v2'),
         [string]$OpencodexConfigRoot = (Join-Path $env:USERPROFILE '.opencodex'),
+        [string]$QoderSettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json'),
         [string]$ClaudeConfigPath = (Join-Path $env:USERPROFILE '.claude.json'),
         [string]$GeminiSettingsPath = (Join-Path $env:USERPROFILE '.gemini\settings.json'),
         [string]$CodexConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml'),
@@ -699,13 +755,15 @@ function Get-McConfigProfileObservations {
     $zcodePresent = (-not [string]::IsNullOrWhiteSpace($ZcodeAppDataRoot)) -and (Test-Path -LiteralPath (Join-Path $ZcodeAppDataRoot 'config.json') -PathType Leaf)
     $opencodexPresent = (-not [string]::IsNullOrWhiteSpace($OpencodexConfigRoot)) -and (Test-Path -LiteralPath (Join-Path $OpencodexConfigRoot 'config.json') -PathType Leaf)
     $codexPresent = (-not [string]::IsNullOrWhiteSpace($CodexConfigPath)) -and (Test-Path -LiteralPath $CodexConfigPath -PathType Leaf)
+    $qoderPresent = (-not [string]::IsNullOrWhiteSpace($QoderSettingsPath)) -and (Test-Path -LiteralPath $QoderSettingsPath -PathType Leaf)
 
     foreach ($projector in @(
             [pscustomobject]@{ name = 'omp'; present = $ompPresent; action = { Get-McOmpConfigProfile -AgentRoot $OmpAgentRoot } },
             [pscustomobject]@{ name = 'dsh'; present = $dshPresent; action = { Get-McDshConfigProfile -ConfigRoot $DshConfigRoot } },
             [pscustomobject]@{ name = 'zcode'; present = $zcodePresent; action = { Get-McZcodeConfigProfile -AppDataRoot $ZcodeAppDataRoot -UserProfileRoot $ZcodeUserProfileRoot } },
             [pscustomobject]@{ name = 'opencodex'; present = $opencodexPresent; action = { Get-McOpencodexConfigProfile -ConfigRoot $OpencodexConfigRoot } },
-            [pscustomobject]@{ name = 'codex-cli'; present = $codexPresent; action = { Get-McCodexConfigProfile -ConfigPath $CodexConfigPath } }
+            [pscustomobject]@{ name = 'codex-cli'; present = $codexPresent; action = { Get-McCodexConfigProfile -ConfigPath $CodexConfigPath } },
+            [pscustomobject]@{ name = 'qoder'; present = $qoderPresent; action = { Get-McQoderConfigProfile -SettingsPath $QoderSettingsPath } }
         )) {
         if (-not $projector.present) {
             # Confirmed absence is an observation, not a failure: reconciliation
@@ -730,7 +788,7 @@ function Get-McConfigProfileObservations {
         }
     }
 
-    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath
+    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath -QoderSettingsPath $QoderSettingsPath
 
     $health = if ($warnings.Count -gt 0) { 'partial' } else { 'success' }
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{

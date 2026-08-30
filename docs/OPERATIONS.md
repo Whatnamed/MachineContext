@@ -42,9 +42,12 @@
 1. `tests/run-tests.ps1` 全部 PASS(改动采集逻辑/测试时;纯文档变更可跳过);
 2. `sync.ps1` 运行,overall health success、validation ok;
 3. `git diff` 逐行检查 canonical 变化:只有预期漂移,无意外字段;
-4. `validate.ps1` 0 findings;
-5. **二次 sync 幂等**:再跑一次 sync,除 `context/status.json` 的 `verified_at` 心跳外无新 diff(这证明发布是收敛的,evidence 没有反复累积);
-6. privacy sweep:对 `git diff context/` 做一次 secret 形状检查(`sk-`、`opaque`、`authorization`、`bearer`、token 形状),确认干净。
+4. **对照用户口述的变更逐条确认已落到 diff**——尤其注意两条不会自动发生的记录:
+   - **新装的软件不会自动晋级实体**:registry 候选只进观察流。用户提到装了新工具而 diff 里没有它时,查注册表卸载项确认版本/位置,按 §6(一次性实体添加)或 §7(带采集能力)入库;
+   - **新工具的配置不会被采集**:只有 §4 列出的工具才有 profile;新工具需要按 §7 增加采集能力;
+5. `validate.ps1` 0 findings;
+6. **二次 sync 幂等**:再跑一次 sync,除 `context/status.json` 的 `verified_at` 心跳外无新 diff(这证明发布是收敛的,evidence 没有反复累积);
+7. privacy sweep:对 `git diff context/` 做一次 secret 形状检查(`sk-`、`opaque`、`authorization`、`bearer`、token 形状),确认干净。
 
 ### 2.4 提交与推送约定
 
@@ -138,14 +141,18 @@
 ### 4.6 Qoder CN(桌面端 agent)
 
 - **现状**:用户**实际使用的是桌面端 agent**;安装器附带的 `qoderclicn` CLI 与 `qodersec` 组件存在但**不使用**(2026-08 用户确认,已写入 curated)。
-- **采集源**:HKCU 卸载项 `f160a86b-5726-553b-9fff-d78743c4373f`(DisplayName/DisplayVersion/DisplayIcon)、`D:\Qoder-CN\Qoder CN`、`%USERPROFILE%\.qoder-cn`(agent home)、`%USERPROFILE%\.qodersec`(捆绑组件,`config.yaml` 内容不读)。
-- **收集字段**:桌面实体(`present/version/executable/install_location`,evidence=registry-uninstall + user-confirmed);捆绑组件只做**路径观察**(`qoder-cli-binary`、两个配置目录),**不作为独立实体**。
-- **记录位置**:实体 → `context/software/ai.json`(id=`qoder`,curated 记录使用语义);路径观察进 provider 观察流。
-- **变更后易漏项**:若用户开始实际使用 CLI,或 Qoder 升级,更新实体 + curated;实体归属规则见 `COLLECTION_SPEC.md`(实体代表实际使用的组件)。
+- **采集源**:
+  - profile:`%USERPROFILE%\.qoder-cn\settings.json`(安全用户状态);
+  - **`%USERPROFILE%\.qoder-cn\mcp-router.json` 含运行时 API key,只记 path+exists,内容永不读取**;
+  - 实体:HKCU 卸载项 `f160a86b-5726-553b-9fff-d78743c4373f` + `D:\Qoder-CN\Qoder CN`;
+  - 捆绑组件:`%USERPROFILE%\.qodersec`(只做路径观察)。
+- **收集字段**:profile 投影 `enabledPlugins`(插件名→bool);未知顶层键按名记入 `unprojected_keys`(如 `mcpServers`——它归 MCP inventory);实体为 `present/version/executable/install_location` + registry-uninstall/user-confirmed evidence。
+- **记录位置**:profile → `context/configs/ai/qoder.json`;MCP → `context/configs/mcp.json`(tool=qoder,读 settings.json 的 `mcpServers`,多余字段如 `qoder_url` 不读);实体 → `context/software/ai.json`。
+- **变更后易漏项**:改插件开关 → profile diff;加/改 MCP server → mcp.json diff;升级 Qoder → 注册表 DisplayVersion 变化需按 §8 手工刷新实体;若开始实际使用 CLI,按 §7 给它建实体。
 
 ### 4.7 MCP 跨工具清单
 
-- **采集源**(四个):`%USERPROFILE%\.claude.json`、`%USERPROFILE%\.gemini\settings.json`、`%USERPROFILE%\.codex\config.toml`(`[mcp_servers.*]` 表)、`%USERPROFILE%\.cursor\mcp.json`。
+- **采集源**(五个):`%USERPROFILE%\.claude.json`、`%USERPROFILE%\.gemini\settings.json`、`%USERPROFILE%\.codex\config.toml`(`[mcp_servers.*]` 表)、`%USERPROFILE%\.cursor\mcp.json`、`%USERPROFILE%\.qoder-cn\settings.json`(`mcpServers` 键;运行时 `mcp-router.json` 含 API key,永不读取)。
 - **收集字段**:`tool/scope/name/transport`、`command`(归一化)、`url`(safe-url)、`args`(**按序列检查**:credential 类 flag(`--token`、`--api-key`、`-H`/`--header` 等)连同它消费的下一个 argv 一起丢弃;`flag=value` 形式单独丢弃)、`env` 只存变量名。
 - **记录位置**:`context/configs/mcp.json`;无文件级 MCP 的工具在 `unresolved` 中说明。
 - **变更后易漏项**:新工具若也有 MCP 配置文件,需要给 collector 增加对应源(参考 §7 checklist);diff 里 `redactions` 出现 `unsafe-argument`/`credential-argument` 属预期防护。
@@ -159,9 +166,9 @@
 
 ## 6. 语义与 curated 更新(用户确认类信息)
 
-- 触发:用途、角色、状态、使用关系、"实际在用哪个"等脚本无法检测的语义变化。
+- 触发:用途、角色、状态、使用关系、"实际在用哪个"等脚本无法检测的语义变化;以及**补充实体的添加/刷新**(新装的桌面 app、升级后的版本刷新——canonical 里没有 routine provider 覆盖它们,见 §8)。
 - 流程(二选一):
-  1. **对话确认 + 一次性修正脚本**(当前实际用法):在 `.local/` 写临时脚本,用仓库 lib(`Read-McJson`/`Set-McObjectProperty`/`Write-McJson`)精确修改目标字段,运行后删除或在说明中标注一次性;适用单点修正。
+  1. **对话确认 + 一次性修正脚本**(当前实际用法):在 `.local/` 写临时脚本,用仓库 lib(`Read-McJson`/`Set-McObjectProperty`/`Write-McJson`)精确修改目标字段或添加实体,运行后删除或在说明中标注一次性;适用单点修正与实体添加(qoder/workbuddy/claude-desktop 刷新都是先例,脚本留在 `.local/` 可复用);
   2. **`curate.ps1` confirmation manifest**(批量/可审计):默认 dry-run 生成 plan,显式 `-Apply` 才生效;manifest 里出现 `observed` 字段、未知 ID、非法证据会直接拒绝。
 - **易漏项**:
   - `evidence` 数组**只增不减**(按 JSON 全等去重):改 evidence 形状后旧的会在 canonical 里残留,必须做一次性清理,否则二次 sync 不幂等;
@@ -170,17 +177,18 @@
 
 ## 7. 新增采集项 / 新工具 checklist
 
+0. **定位新工具的配置位置**(用户说"装了/改了 X"但 §4 没有它时):依次检查 `%USERPROFILE%` 下的点目录(`ls -dt ~/$HOME.[a-z]*` 按修改时间排)、`%APPDATA%`/`%LOCALAPPDATA%`、安装目录、注册表卸载项(HKCU/HKLM/WOW6432Node Uninstall);参考 qoder(`.qoder-cn`)与 workbuddy(`.workbuddy`)案例;
 1. 读 `docs/COLLECTION_SPEC.md` 确认该信息的长期价值与隐私边界(`PRIVACY.md`);
-2. 加采集能力:新 collector 或 ai-tools/配置投影定义——**只读、fail-soft、有超时**;能探测到的最小安全字段集;
+2. 加采集能力:新 collector 或 ai-tools/配置投影定义——**只读、fail-soft、有超时**;能探测到的最小安全字段集;**先看文件里有什么再定 allowlist**,发现 credential 形状内容时该文件整体降级为"只记存在";
 3. fixture + 测试:真实源文件形状的 fixture、泄漏反例(假 secret 值不得出现在投影)、序列化确定性;
 4. 更新 `COLLECTION_SPEC.md`(新类别先改 spec 再采集)与 `SCHEMA.md`(若新增字段/记录形状);
 5. 跑 §2.3 全部 gate;
-6. devlog 记录本次变更(参考既有案例:`docs/devlog/2026-08-28-ai-config-inventory.md`(全新 configs 模块)、`2026-08-29-qoder-and-codex-cli-profile.md`(新工具+新 profile)、`2026-08-29-qoder-desktop-clarification.md`(实体归属纠正));
+6. devlog 记录本次变更(参考既有案例:`docs/devlog/2026-08-28-ai-config-inventory.md`(全新 configs 模块)、`2026-08-29-qoder-and-codex-cli-profile.md`(新工具+新 profile)、`2026-08-29-qoder-desktop-clarification.md`(实体归属纠正)、`2026-08-29-cold-start-sync-gaps.md`(新 agent 入库+配置 profile 补漏));
 7. 分块提交并推送(§2.4)。
 
 ## 8. 已知限制与全局易漏项
 
-- **MSIX 自动升级的补充实体会过期**:商店应用(claude-desktop 等)自动升级后版本化包目录改变,而其证据源(appx-manifest)不在 routine scan 内。刷新方法(一次性脚本模式,§6):
+- **补充桌面实体会静默过期**:qoder、trae、workbuddy、antigravity 等桌面 app 的实体由 registry/文件系统证据一次性记录,**routine scan 不刷新它们**。用户报告升级后,按注册表 `DisplayVersion` 用一次性脚本刷新 `observed.version`(trae 0.1.39→0.1.58 即为此修复);MSIX 商店应用(claude-desktop)同理且路径也会变:
 
   ```powershell
   $package = Get-AppxPackage -Name 'Claude'
@@ -189,7 +197,9 @@
   # 以 Get-AppxPackage 的 InstallLocation/AppxManifest 为准。
   ```
 
+  **数据核对时的教训(2026-08-29)**:只验证"路径存在性"查不出这类过期——trae 的 exe 路径一直有效,版本却落后了一个。核对补充桌面实体必须**把注册表 `DisplayVersion` 与 canonical `observed.version` 全量比对一遍**(qoder/trae/workbuddy/antigravity 等),不能只查路径。
+
 - **CURRENT.md 是生成物**:手改会被下次渲染覆盖;要改内容改 canonical 或渲染器。
 - **`unprojected_keys` / `redactions` 是信息不是错误**:出现新条目时先判断是"源里多了东西"还是"allowlist 缺口",在 devlog 里说明处理决定。
 - **stale 语义**:只有**确认源文件不存在**才把 profile 标 `source_state: stale`;解析失败保留旧记录不动。反过来,一个实体"本次扫描没出现"不等于被卸载。
-- **不采集清单**见 `PRIVACY.md`(never-collect);遇到任何拿不准的敏感内容,默认不收,先问用户。
+- **不采集清单**见 `PRIVACY.md`(never-collect);遇到任何拿不准的敏感内容,默认不收,先问用户。qoder 的 `mcp-router.json`(运行时 API key)就是"只记存在"的现成例子。

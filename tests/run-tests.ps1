@@ -1498,14 +1498,38 @@ Invoke-McTest -Name 'Codex CLI profile projects shared config context settings o
     Assert-McEqual -Actual @($findings).Count -Expected 0 -Message 'good Codex profile must validate cleanly'
 }
 
+Invoke-McTest -Name 'Qoder fixture profile keeps plugins and defers MCP servers' -Body {
+    $profile = Get-McQoderConfigProfile -SettingsPath (Join-Path $configFixtureRoot 'qoder\settings.json')
+    Assert-McEqual -Actual $profile.id -Expected 'qoder-config' -Message 'Qoder profile id'
+    $projection = $profile.observed.projection
+    Assert-McEqual -Actual ([bool]$projection.enabledPlugins.'alpha-plugin@qoder-marketplace') -Expected $true -Message 'Qoder enabled plugin projected'
+    Assert-McEqual -Actual ([bool]$projection.enabledPlugins.'beta-plugin@qoderapp-bundler') -Expected $false -Message 'Qoder disabled plugin projected'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'qoder.mcpServers') -Message 'MCP declarations must be recorded by name and projected in the MCP inventory'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'qoder.unknownTopLevel') -Message 'unknown top-level keys must be recorded by name'
+    $routerFile = @($profile.source.files | Where-Object { $_.role -eq 'sensitive-config' })[0]
+    Assert-McTrue -Condition ($null -ne $routerFile) -Message 'mcp-router.json must be recorded as a sensitive config file'
+    $profileText = ConvertTo-McJsonText -InputObject $profile
+    Assert-McTrue -Condition ($profileText -notmatch 'fixture-unknown-value') -Message 'unknown top-level values must not reach the projection'
+    $findings = [System.Collections.Generic.List[object]]::new()
+    Validate-McConfigProfileRecord -Record $profile -Findings $findings -Path 'test'
+    Assert-McEqual -Actual @($findings).Count -Expected 0 -Message 'good Qoder profile must validate cleanly'
+}
+
 Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing arguments' -Body {
     $mcp = Get-McMcpInventoryRecord `
         -ClaudeConfigPath (Join-Path $configFixtureRoot 'mcp\claude.json') `
         -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
         -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
-        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json') `
+        -QoderSettingsPath (Join-Path $configFixtureRoot 'qoder\settings.json')
     $servers = @($mcp.observed.servers)
-    Assert-McEqual -Actual $servers.Count -Expected 5 -Message 'MCP servers collected from all four sources'
+    Assert-McEqual -Actual $servers.Count -Expected 6 -Message 'MCP servers collected from all five sources'
+    $qoderServer = $servers | Where-Object { $_.tool -eq 'qoder' }
+    Assert-McEqual -Actual ([string]$qoderServer.name) -Expected 'fixture-github' -Message 'Qoder MCP server collected'
+    Assert-McEqual -Actual ([string]$qoderServer.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'Qoder MCP url kept (sanitized)'
+    Assert-McEqual -Actual ([string]$qoderServer.transport) -Expected 'http' -Message 'Qoder MCP transport projected'
+    $qoderText = ConvertTo-McJsonText -InputObject $mcp
+    Assert-McTrue -Condition ($qoderText -notmatch 'mcp-router.fixture.example.com') -Message 'Qoder router-only qoder_url must never reach the MCP inventory'
     $http = $servers | Where-Object name -eq 'fixture-http'
     Assert-McEqual -Actual ([string]$http.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'safe MCP URL kept'
     $safe = $servers | Where-Object name -eq 'fixture-safe-stdio'

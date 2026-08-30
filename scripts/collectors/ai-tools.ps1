@@ -53,7 +53,10 @@ function Get-McSafeAiPathChecks {
                 [pscustomobject]@{ id = 'omp-history-db'; path = Join-Path $userProfile '.omp\agent\history.db'; kind = 'history-store' },
                 [pscustomobject]@{ id = 'qoder-cn-config'; path = Join-Path $userProfile '.qoder-cn'; kind = 'config-directory' },
                 [pscustomobject]@{ id = 'qodersec-config'; path = Join-Path $userProfile '.qodersec'; kind = 'config-directory' },
-                [pscustomobject]@{ id = 'qoder-cli-binary'; path = Join-Path $userProfile '.qodersec\bin\qoderclicn.exe'; kind = 'tool-binary' }
+                [pscustomobject]@{ id = 'qoder-cli-binary'; path = Join-Path $userProfile '.qodersec\bin\qoderclicn.exe'; kind = 'tool-binary' },
+                [pscustomobject]@{ id = 'workbuddy-config'; path = Join-Path $userProfile '.workbuddy'; kind = 'config-directory' },
+                [pscustomobject]@{ id = 'doubao-data'; path = Join-Path $env:APPDATA 'Doubao'; kind = 'config-directory' },
+                [pscustomobject]@{ id = 'doubao-work-data'; path = Join-Path $env:LOCALAPPDATA 'DoubaoWork'; kind = 'config-directory' }
             )) {
             [void]$checks.Add($check)
         }
@@ -62,7 +65,10 @@ function Get-McSafeAiPathChecks {
     foreach ($check in @(
             [pscustomobject]@{ id = 'codex-bridge-project'; path = 'E:\Codex\CodexBridge'; kind = 'project-root' },
             [pscustomobject]@{ id = 'open-codex-config'; path = 'E:\OpenCodex'; kind = 'project-root' },
-            [pscustomobject]@{ id = 'qoder-ide-install'; path = 'D:\Qoder-CN\Qoder CN'; kind = 'install-directory' }
+            [pscustomobject]@{ id = 'qoder-ide-install'; path = 'D:\Qoder-CN\Qoder CN'; kind = 'install-directory' },
+            [pscustomobject]@{ id = 'workbuddy-install'; path = 'E:\WorkBuddy'; kind = 'install-directory' },
+            [pscustomobject]@{ id = 'doubao-install'; path = 'D:\Doubao'; kind = 'install-directory' },
+            [pscustomobject]@{ id = 'doubao-work-install'; path = 'D:\DoubaoWork'; kind = 'install-directory' }
         )) {
         [void]$checks.Add($check)
     }

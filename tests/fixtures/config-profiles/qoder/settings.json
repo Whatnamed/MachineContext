@@ -1,0 +1,14 @@
+{
+  "enabledPlugins": {
+    "alpha-plugin@qoder-marketplace": true,
+    "beta-plugin@qoderapp-bundler": false
+  },
+  "mcpServers": {
+    "fixture-github": {
+      "url": "https://mcp.fixture.example.com/mcp/",
+      "qoder_url": "https://mcp-router.fixture.example.com/api/v1/mcp/servers/fixture",
+      "type": "http"
+    }
+  },
+  "unknownTopLevel": "fixture-unknown-value"
+}
