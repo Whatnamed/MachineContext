@@ -79,7 +79,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.8.1",
+        "version": "2.11.0",
         "executable": "%LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe",
         "evidence": [
           {
@@ -342,6 +342,86 @@
     },
     {
       "schema_version": 1,
+      "id": "doubao",
+      "kind": "ai-tool",
+      "name": "Doubao",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.25.16",
+        "executable": "D:\\Doubao\\Doubao.exe",
+        "evidence": [
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKCU/default/Doubao",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "install_location"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "doubao",
+            "fields": [
+              "present"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "D:\\Doubao"
+      },
+      "curated": {
+        "notes": [
+          "installed by the user on 2026-08; data directories tracked as path observations"
+        ],
+        "purpose": "ByteDance Doubao desktop AI assistant."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "doubao-work",
+      "kind": "ai-tool",
+      "name": "Doubao Work",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "2.25.18",
+        "executable": "D:\\DoubaoWork\\DoubaoWork.exe",
+        "evidence": [
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKCU/default/DoubaoWork",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "install_location"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "doubao-work",
+            "fields": [
+              "present"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "D:\\DoubaoWork"
+      },
+      "curated": {
+        "notes": [
+          "installed by the user on 2026-08; data directories tracked as path observations"
+        ],
+        "purpose": "ByteDance Doubao Work desktop AI assistant."
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "dsh",
       "kind": "ai-tool",
       "name": "DSH",
@@ -591,7 +671,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.1.39",
+        "version": "0.1.58",
         "executable": "D:\\TRAE_Work_CN\\TRAE SOLO CN\\TRAE SOLO CN.exe",
         "evidence": [
           {
@@ -635,6 +715,48 @@
       },
       "curated": {
         "purpose": "AI design canvas and generative drawing assistant."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "workbuddy",
+      "kind": "ai-tool",
+      "name": "WorkBuddy",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "5.3.14",
+        "executable": "E:\\WorkBuddy\\WorkBuddy.exe",
+        "evidence": [
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKCU/default/BFD312E9-1019-4F57-9F44-F86246833B50",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "install_location"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "workbuddy",
+            "fields": [
+              "present"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "E:\\WorkBuddy"
+      },
+      "curated": {
+        "notes": [
+          "installed and configured by the user on 2026-08",
+          "config home %USERPROFILE%\\.workbuddy is tracked as a path observation; no config profile yet",
+          "previously recorded in software/productivity.json as collaboration-app 5.3.8.0; reclassified as agent tooling on 2026-08"
+        ],
+        "purpose": "WorkBuddy desktop agent application."
       }
     },
     {

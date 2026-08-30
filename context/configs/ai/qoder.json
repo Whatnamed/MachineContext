@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "qoder-config",
+  "kind": "ai-config-profile",
+  "observed": {
+    "evidence": [
+      {
+        "provider": "config-profiles",
+        "fields": [
+          "enabledPlugins",
+          "unprojected_keys"
+        ],
+        "source_path": "%USERPROFILE%\\.qoder-cn\\settings.json"
+      }
+    ],
+    "projection": {
+      "enabledPlugins": {
+        "architecture-visualization@qoder-marketplace": true,
+        "design-review@qoder-marketplace": true,
+        "postman@qoder-marketplace": true,
+        "qoder-context@qoderapp-bundler": true
+      },
+      "unprojected_keys": [
+        "qoder.mcpServers"
+      ]
+    },
+    "redactions": [],
+    "source_state": "current",
+    "value_basis": "configured-local",
+    "wire_verification": "not-wire-verified"
+  },
+  "curated": {},
+  "source": {
+    "config_root": "%USERPROFILE%\\.qoder-cn",
+    "files": [
+      {
+        "path": "%USERPROFILE%\\.qoder-cn\\settings.json",
+        "exists": true,
+        "format": "json",
+        "role": "config"
+      },
+      {
+        "path": "%USERPROFILE%\\.qoder-cn\\mcp-router.json",
+        "exists": true,
+        "format": "json",
+        "role": "sensitive-config"
+      }
+    ]
+  },
+  "tool": "qoder"
+}

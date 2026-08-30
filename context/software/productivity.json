@@ -434,31 +434,6 @@
     },
     {
       "schema_version": 1,
-      "id": "workbuddy",
-      "kind": "collaboration-app",
-      "name": "WorkBuddy",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "5.3.8.0",
-        "executable": "E:\\WorkBuddy\\WorkBuddy.exe",
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "workbuddy",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {}
-    },
-    {
-      "schema_version": 1,
       "id": "xnconvert",
       "kind": "utility-app",
       "name": "XnConvert",

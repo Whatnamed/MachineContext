@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-30T12:53:55.8768018Z
+- Verified at: 2026-08-30T13:42:31.3672274Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,7 +38,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
   - `C:\` NTFS (16.5/195.9 GiB free/total)
-  - `D:\` NTFS (32.8/279.3 GiB free/total)
+  - `D:\` NTFS (32.2/279.3 GiB free/total)
   - `E:\` NTFS (22.8/953.9 GiB free/total)
 
 ## Development environment
@@ -76,21 +76,24 @@
 ## AI and agent tooling
 
 - **Agy** `agy` — 1.1.22 — `%LOCALAPPDATA%\agy\bin\agy.exe`
-- **Antigravity Desktop** `antigravity-desktop` — 2.8.1 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
+- **Antigravity Desktop** `antigravity-desktop` — 2.11.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
 - **Codex Desktop** `codex-desktop` — 26.825.6671.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
+- **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
+- **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
 - **Oh My Pi** `omp` — 18.0.6 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.1.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
-- **TRAE Work CN** `trae` — 0.1.39 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
+- **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
+- **WorkBuddy** `workbuddy` — 5.3.14 — `E:\WorkBuddy\WorkBuddy.exe`
 - **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
 
 ## AI configuration profiles
@@ -99,8 +102,9 @@
 - `dsh` — %USERPROFILE%\.dsh — `context/configs/ai/dsh.json`
 - `omp` — %USERPROFILE%\.omp\agent — `context/configs/ai/omp.json`
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
+- `qoder` — %USERPROFILE%\.qoder-cn — `context/configs/ai/qoder.json`
 - `zcode` — D:\ZCode\appdata\.zcode\v2 — `context/configs/ai/zcode.json`
-- MCP servers: claude-code (3), codex-cli (3), gemini-cli (1)
+- MCP servers: claude-code (3), codex-cli (3), gemini-cli (1), qoder (1)
   - Full inventory: `context/configs/mcp.json`
 
 ## Additional software inventory
@@ -108,7 +112,7 @@
 - Design / creative: 11 recorded
   - Full inventory: `context/software/creative.json`
 
-- Productivity / desktop: 19 recorded
+- Productivity / desktop: 18 recorded
   - Full inventory: `context/software/productivity.json`
 
 These domains come from a user-confirmed broad inventory and are refreshed by explicit broad scans rather than the routine core provider scan.

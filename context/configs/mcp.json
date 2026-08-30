@@ -11,6 +11,10 @@
       {
         "path": "mcp.codex-cli.cua_repl.args[0]",
         "reason": "unsafe-argument"
+      },
+      {
+        "path": "mcp.qoder.GitHub.args[0]",
+        "reason": "unsafe-argument"
       }
     ],
     "servers": [
@@ -86,6 +90,13 @@
         "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
         "tool": "codex-cli",
         "transport": "stdio"
+      },
+      {
+        "name": "GitHub",
+        "scope": "user",
+        "tool": "qoder",
+        "transport": "http",
+        "url": "https://api.githubcopilot.com/mcp"
       }
     ],
     "unresolved": [
@@ -123,6 +134,12 @@
       },
       {
         "path": "%USERPROFILE%\\.cursor\\mcp.json",
+        "exists": true,
+        "format": "json",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.qoder-cn\\settings.json",
         "exists": true,
         "format": "json",
         "role": "mcp-config"

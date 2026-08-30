@@ -30,6 +30,12 @@
     },
     {
       "kind": "ai-config-profile",
+      "path": "ai/qoder.json",
+      "source_state": "current",
+      "tool": "qoder"
+    },
+    {
+      "kind": "ai-config-profile",
       "path": "ai/zcode.json",
       "source_state": "current",
       "tool": "zcode"
