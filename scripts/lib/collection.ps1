@@ -230,14 +230,7 @@ function Get-McCollectionProperty {
         [string]$Name
     )
 
-    if ($null -eq $InputObject) { return $null }
-    if ($InputObject -is [System.Collections.IDictionary]) {
-        if ($InputObject.Contains($Name)) { return $InputObject[$Name] }
-        return $null
-    }
-    $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -eq $property) { return $null }
-    return $property.Value
+    return (Get-McObjectPropertyOrNull -InputObject $InputObject -Name $Name)
 }
 
 function Set-McCollectionProperty {
@@ -253,16 +246,7 @@ function Set-McCollectionProperty {
         [object]$Value
     )
 
-    if ($InputObject -is [System.Collections.IDictionary]) {
-        $InputObject[$Name] = $Value
-        return
-    }
-    if ($null -ne $InputObject.PSObject.Properties[$Name]) {
-        $InputObject.$Name = $Value
-    }
-    else {
-        Add-Member -InputObject $InputObject -MemberType NoteProperty -Name $Name -Value $Value
-    }
+    Set-McObjectProperty -InputObject $InputObject -Name $Name -Value $Value
 }
 
 function Remove-McCollectionProperty {
@@ -275,15 +259,7 @@ function Remove-McCollectionProperty {
         [string]$Name
     )
 
-    if ($null -eq $InputObject) {
-        return
-    }
-    if ($InputObject -is [System.Collections.IDictionary]) {
-        if ($InputObject.Contains($Name)) { [void]$InputObject.Remove($Name) }
-        return
-    }
-    $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -ne $property) { $InputObject.PSObject.Properties.Remove($Name) }
+    Remove-McObjectProperty -InputObject $InputObject -Name $Name
 }
 
 function ConvertTo-McNormalizedEntityVersion {

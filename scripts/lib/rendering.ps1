@@ -13,14 +13,7 @@ function Get-McRenderProperty {
         [object]$Default = $null
     )
 
-    if ($null -eq $InputObject) { return $Default }
-    if ($InputObject -is [System.Collections.IDictionary]) {
-        if ($InputObject.Contains($Name)) { return $InputObject[$Name] }
-        return $Default
-    }
-    $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -eq $property) { return $Default }
-    return $property.Value
+    return (Get-McObjectPropertyOrNull -InputObject $InputObject -Name $Name -Default $Default)
 }
 
 function Get-McRenderLocation {

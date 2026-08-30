@@ -10,16 +10,7 @@ function Get-McRelationshipProperty {
         [string]$Name
     )
 
-    if ($null -eq $InputObject) {
-        return $null
-    }
-    if ($InputObject -is [System.Collections.IDictionary]) {
-        if ($InputObject.Contains($Name)) { return $InputObject[$Name] }
-        return $null
-    }
-    $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -eq $property) { return $null }
-    return $property.Value
+    return (Get-McObjectPropertyOrNull -InputObject $InputObject -Name $Name)
 }
 
 function Test-McRelationshipPresent {

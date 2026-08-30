@@ -1,5 +1,8 @@
 Set-StrictMode -Version Latest
 
+# Deliberately not a wrapper over Get-McObjectPropertyOrNull: this variant
+# guards on Test-McMapping and preserves single-element array values via
+# Write-Output -NoEnumerate, which audit document checks rely on.
 function Get-McAuditPropertyValue {
     [CmdletBinding()]
     param(

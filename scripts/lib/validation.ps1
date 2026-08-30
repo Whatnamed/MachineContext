@@ -42,7 +42,7 @@ function Test-McContractProperty {
     }
 
     foreach ($entry in (Get-McPropertyEntries -InputObject $InputObject)) {
-        if ([string]$entry.Name -ceq $Name) {
+        if ([string]$entry.Name -ieq $Name) {
             return $true
         }
     }
@@ -64,7 +64,7 @@ function Get-McContractProperty {
     }
 
     foreach ($entry in (Get-McPropertyEntries -InputObject $InputObject)) {
-        if ([string]$entry.Name -ceq $Name) {
+        if ([string]$entry.Name -ieq $Name) {
             Write-Output -NoEnumerate -InputObject $entry.Value
             return
         }

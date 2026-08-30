@@ -22,6 +22,76 @@ function Test-McMapping {
     return ($InputObject.GetType().FullName -eq 'System.Management.Automation.PSCustomObject')
 }
 
+# Single null-safe property lookup used across the pipeline. The per-module
+# Get-Mc*Property helpers delegate here so lookup semantics cannot drift.
+function Get-McObjectPropertyOrNull {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name,
+
+        [AllowNull()]
+        [object]$Default = $null
+    )
+
+    if ($null -eq $InputObject) { return $Default }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        if ($InputObject.Contains($Name)) { return $InputObject[$Name] }
+        return $Default
+    }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $Default }
+    return $property.Value
+}
+
+function Set-McObjectProperty {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name,
+
+        [AllowNull()]
+        [object]$Value
+    )
+
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        $InputObject[$Name] = $Value
+        return
+    }
+
+    if ($null -ne $InputObject.PSObject.Properties[$Name]) {
+        $InputObject.$Name = $Value
+    }
+    else {
+        Add-Member -InputObject $InputObject -MemberType NoteProperty -Name $Name -Value $Value
+    }
+}
+
+function Remove-McObjectProperty {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject,
+
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    if ($null -eq $InputObject) { return }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        if ($InputObject.Contains($Name)) { [void]$InputObject.Remove($Name) }
+        return
+    }
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) { $InputObject.PSObject.Properties.Remove($Name) }
+}
+
 function Test-McSequence {
     [CmdletBinding()]
     param(
