@@ -61,6 +61,20 @@
         "transport": "stdio"
       },
       {
+        "name": "node_repl",
+        "scope": "user",
+        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\415ffebf3d576e9b\\bin\\node_repl.exe",
+        "tool": "codex-cli",
+        "transport": "stdio"
+      },
+      {
+        "name": "cua_repl",
+        "scope": "user",
+        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+        "tool": "codex-cli",
+        "transport": "stdio"
+      },
+      {
         "name": "pencil",
         "scope": "user",
         "args": [
@@ -70,20 +84,6 @@
           "codexCLI"
         ],
         "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
-        "tool": "codex-cli",
-        "transport": "stdio"
-      },
-      {
-        "name": "node_repl",
-        "scope": "user",
-        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\426e88130fe66c7e\\bin\\node_repl.exe",
-        "tool": "codex-cli",
-        "transport": "stdio"
-      },
-      {
-        "name": "cua_repl",
-        "scope": "user",
-        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.825.5331.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
         "tool": "codex-cli",
         "transport": "stdio"
       }

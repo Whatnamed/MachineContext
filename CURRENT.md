@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-29T14:36:29.2180320Z
+- Verified at: 2026-08-30T12:53:55.8768018Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,8 +37,8 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (21.2/195.9 GiB free/total)
-  - `D:\` NTFS (35.5/279.3 GiB free/total)
+  - `C:\` NTFS (16.5/195.9 GiB free/total)
+  - `D:\` NTFS (32.8/279.3 GiB free/total)
   - `E:\` NTFS (22.8/953.9 GiB free/total)
 
 ## Development environment
@@ -79,9 +79,9 @@
 - **Antigravity Desktop** `antigravity-desktop` — 2.8.1 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
-- **Claude Desktop** `claude-desktop` — 1.24012.11.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.24012.11.0_x64__pzs8sxrjxfjjc\Claude.exe`
+- **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.825.5331.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.5331.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.825.6671.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
