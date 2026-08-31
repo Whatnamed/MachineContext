@@ -141,13 +141,13 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 23353884672,
+      "free_bytes": 19327352832,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 37044092928,
+      "free_bytes": 35701915648,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
