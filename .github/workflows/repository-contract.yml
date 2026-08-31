@@ -1,0 +1,47 @@
+# Repository-contract CI: verifies that the repository's own code and the
+# committed canonical context are internally consistent.
+#
+# This workflow deliberately does NOT treat the GitHub runner as the user's
+# machine: no collect, no sync, no Discover/Enrich/Full, no publish, and no
+# commit/push back to the repository. It only runs the offline test suite and
+# the read-only canonical validator.
+name: repository-contract
+
+on:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'context/**'
+      - 'machine-context.json'
+      - 'CURRENT.md'
+      - 'SCHEMA.md'
+      - 'PRIVACY.md'
+      - '.github/workflows/repository-contract.yml'
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'context/**'
+      - 'machine-context.json'
+      - 'CURRENT.md'
+      - 'SCHEMA.md'
+      - 'PRIVACY.md'
+      - '.github/workflows/repository-contract.yml'
+
+jobs:
+  contract:
+    runs-on: windows-latest
+    steps:
+      # Canonical JSON is stored LF (.gitattributes: eol=lf) and the validator
+      # compares exact serialized bytes, so checkout must not introduce CRLF.
+      - name: Disable git line-ending conversion
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - name: Run test suite
+        shell: pwsh
+        run: ./tests/run-tests.ps1
+      - name: Validate canonical context
+        shell: pwsh
+        run: ./scripts/validate.ps1
