@@ -65,7 +65,10 @@ function Get-McProviderFailureEvents {
 
     $targets = [ordered]@{
         'runtimes-package-managers-toolchain' = @([pscustomobject]@{ module = 'development'; ids = @('node', 'python', 'python-launcher', 'go', 'rustc', 'cargo', 'rustup', 'java', 'flutter', 'dart', 'ruby', 'php', 'deno', 'npm', 'pnpm', 'yarn', 'bun', 'pip', 'pipx', 'uv', 'uvx', 'conda', 'mamba', 'nvm', 'fnm', 'volta', 'pyenv', 'mise', 'git-lfs', 'cmake', 'ninja', 'adb', 'nvcc', 'gh', 'docker', 'kubectl', 'vercel', 'wrangler', 'firebase', 'aws', 'az', 'gcloud', 'terraform', 'winget', 'choco', 'scoop') })
-        'ai-tooling' = @([pscustomobject]@{ module = 'ai'; ids = @('dsh', 'agy', 'claude-code', 'gemini-cli', 'cursor-cli', 'windsurf-cli') })
+        # Keep this list in parity with Get-McAiDefinitions (ai-tools.ps1):
+        # every id that provider manages must be downgraded to unverified when
+        # the provider fails as a whole. The test suite enforces the parity.
+        'ai-tooling' = @([pscustomobject]@{ module = 'ai'; ids = @('dsh', 'omp', 'agy', 'claude-code', 'gemini-cli', 'cursor-cli', 'opencodex', 'grok', 'windsurf-cli') })
         'shells-path-resolution' = @([pscustomobject]@{ module = 'machine.shells'; ids = @('shell-pwsh', 'shell-windows-powershell', 'shell-cmd', 'shell-ssh') })
         'git-for-windows' = @([pscustomobject]@{ module = 'development'; ids = @('git') }, [pscustomobject]@{ module = 'machine.shells'; ids = @('shell-git-bash') })
         'visual-studio-msvc-sdk' = @([pscustomobject]@{ module = 'development'; ids = @('visual-studio') })

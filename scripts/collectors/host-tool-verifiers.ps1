@@ -220,6 +220,12 @@ function Invoke-McHostCommandVerifier {
         [AllowNull()]
         [string[]]$KnownPaths = @(),
 
+        # When set, known paths are historical hints only: if persistent host
+        # PATH resolution finds nothing, a known path must never be probed into
+        # the authoritative current installation. It is recorded as a
+        # low-confidence candidate hint and the entity stays unverified.
+        [switch]$KnownPathsAreHints,
+
         [AllowNull()]
         [object]$Extras
     )
@@ -232,6 +238,29 @@ function Invoke-McHostCommandVerifier {
             candidates = @()
             entity = $null
             candidate = $null
+        }
+    }
+
+    if ($KnownPathsAreHints -and @($candidates | Where-Object { [string]$_.source -ne 'known-install-path' }).Count -eq 0) {
+        $hintCandidate = $null
+        if ($null -ne $candidates[0]) {
+            $hintCandidate = [pscustomobject][ordered]@{
+                candidate_id = New-McStableId -Kind 'command-candidate' -Identity ("{0}|{1}" -f $Id, $candidates[0].path)
+                kind_hint = $Kind
+                name_hint = $Name
+                path = ConvertTo-McNormalizedPath -Path ([string]$candidates[0].path)
+                source = 'host-authoritative-tools'
+                source_key = $Id
+                confidence_hint = 'low'
+                evidence = @([pscustomobject][ordered]@{ type = 'known_install_path_present'; exists = $true })
+            }
+        }
+        return [pscustomobject][ordered]@{
+            id = $Id
+            status = 'unavailable'
+            candidates = @($candidates)
+            entity = $null
+            candidate = $hintCandidate
         }
     }
 
@@ -425,7 +454,7 @@ function Get-McHostAuthoritativeToolObservation {
     if ($null -ne $supabase.candidate) { [void]$candidates.Add($supabase.candidate) }
     Add-McHostVerificationEvent -Events $verificationEvents -Module 'development' -Result $supabase
 
-    $codex = Invoke-McHostCommandVerifier -Id 'codex-cli' -Kind 'ai-tool' -Name 'Codex CLI' -Command 'codex' -Arguments @('--version') -KnownPaths @('E:\Codex\codex-cli\codex.cmd')
+    $codex = Invoke-McHostCommandVerifier -Id 'codex-cli' -Kind 'ai-tool' -Name 'Codex CLI' -Command 'codex' -Arguments @('--version') -KnownPaths @('E:\Codex\codex-cli\codex.cmd') -KnownPathsAreHints
     [void]$statuses.Add([string]$codex.status)
     [void]$checks.Add([pscustomobject][ordered]@{ id = 'codex-cli'; status = [string]$codex.status })
     if ($null -ne $codex.entity) { [void]$ai.Add($codex.entity) }

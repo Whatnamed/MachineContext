@@ -204,33 +204,18 @@ function Get-McCanonicalFiles {
         [string]$ContextRoot = (Join-Path $RepoRoot 'context')
     )
 
-    $files = [System.Collections.Generic.List[string]]::new()
-    foreach ($relativePath in (Get-McCanonicalRelativePaths -RepoRoot $RepoRoot)) {
-        $path = Join-Path $ContextRoot ($relativePath -replace '^context[\\/]', '')
-        if (Test-Path -LiteralPath $path -PathType Leaf) {
-            [void]$files.Add($path)
-        }
+    # Every JSON file published under context/ is canonical and must pass the
+    # generic invariants (deterministic form, privacy, user-path guard, .NET
+    # metadata) even when neither the root manifest nor an index names it
+    # directly. Module-specific contracts are applied by path shape inside
+    # Invoke-McValidation; this discovery must stay a plain directory scan so
+    # future modules cannot silently escape validation.
+    if (-not (Test-Path -LiteralPath $ContextRoot -PathType Container)) {
+        return @()
     }
 
-    # Project records are additive files referenced by the project index.
-    $projectRoot = Join-Path $ContextRoot 'projects'
-    if (Test-Path -LiteralPath $projectRoot -PathType Container) {
-        Get-ChildItem -LiteralPath $projectRoot -File -Filter '*.json' -ErrorAction SilentlyContinue | Where-Object {
-            $_.Name -ne '_template.json' -and $_.Name -ne 'index.json'
-        } | ForEach-Object {
-            [void]$files.Add($_.FullName)
-        }
-    }
-
-    # Config profile records are additive files referenced by the config index.
-    $configRoot = Join-Path $ContextRoot 'configs'
-    if (Test-Path -LiteralPath $configRoot -PathType Container) {
-        Get-ChildItem -LiteralPath $configRoot -Recurse -File -Filter '*.json' -ErrorAction SilentlyContinue | Where-Object {
-            $_.Name -ne 'index.json' -and $_.Name -ne '_template.json'
-        } | ForEach-Object {
-            [void]$files.Add($_.FullName)
-        }
-    }
-
-    return @($files | Sort-Object -Unique)
+    return @(Get-ChildItem -LiteralPath $ContextRoot -Recurse -File -Filter '*.json' -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -ne '_template.json' } |
+        ForEach-Object { $_.FullName } |
+        Sort-Object -Unique)
 }

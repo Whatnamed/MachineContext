@@ -379,7 +379,12 @@ function ConvertTo-McJsonText {
 
     $stable = ConvertTo-McStableObject -InputObject $InputObject
     $json = $stable | ConvertTo-Json -Depth $Depth
-    return ($json.TrimEnd("`r", "`n") + [Environment]::NewLine)
+    # ConvertTo-Json separates lines with the platform newline; the repository
+    # form for canonical JSON is LF (see .gitattributes), so normalize the whole
+    # document instead of depending on the collecting machine's default.
+    # Raw CR bytes cannot occur inside string values because ConvertTo-Json
+    # escapes control characters, so this only touches formatting newlines.
+    return ((($json -replace "`r`n", "`n")).TrimEnd("`n") + "`n")
 }
 
 function Write-McJson {

@@ -730,11 +730,52 @@ function Invoke-McValidation {
                     if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) {
                         Add-McValidationFinding -Findings $findings -Severity error -Code 'broken_project_reference' -Message 'Project context_file does not exist.' -Path $projectIndexPath
                     }
+                    else {
+                        try {
+                            $projectRecord = Read-McJson -Path $recordPath
+                            $recordId = [string](Get-McContractProperty -InputObject $projectRecord -Name 'id')
+                            if (-not [string]::IsNullOrWhiteSpace($recordId) -and $recordId -ine [string]$item.id) {
+                                Add-McValidationFinding -Findings $findings -Severity error -Code 'project_id_mismatch' -Message 'Project index id must match the id of the referenced project record.' -Path $projectIndexPath
+                            }
+                        }
+                        catch {
+                            # Unreadable records are reported by the per-file loop
+                            # as invalid_json; skip only the id comparison here.
+                        }
+                    }
                 }
             }
         }
         catch {
             Add-McValidationFinding -Findings $findings -Severity error -Code 'invalid_project_index' -Message (ConvertTo-McSafeDiagnosticText -Text $_.Exception.Message) -Path $projectIndexPath
+        }
+    }
+
+    # Index references must resolve: a registered module path that does not
+    # exist means canonical data silently disappeared behind a valid-looking
+    # index. Checks are forward-only (index -> file); unregistered files are
+    # still covered by the recursive canonical scan above.
+    foreach ($indexContract in @(
+            [pscustomobject]@{ IndexPath = (Join-Path $ContextRoot 'software\index.json'); BaseDir = (Join-Path $ContextRoot 'software'); InvalidCode = 'invalid_software_index'; BrokenCode = 'broken_software_index_reference' },
+            [pscustomobject]@{ IndexPath = (Join-Path $ContextRoot 'configs\index.json'); BaseDir = (Join-Path $ContextRoot 'configs'); InvalidCode = 'invalid_config_index'; BrokenCode = 'broken_config_index_reference' }
+        )) {
+        if (-not (Test-Path -LiteralPath $indexContract.IndexPath -PathType Leaf)) { continue }
+        try {
+            $indexDocument = Read-McJson -Path $indexContract.IndexPath
+            foreach ($module in @($indexDocument.modules)) {
+                $modulePath = [string](Get-McContractProperty -InputObject $module -Name 'path')
+                if ([string]::IsNullOrWhiteSpace($modulePath)) {
+                    Add-McValidationFinding -Findings $findings -Severity error -Code $indexContract.BrokenCode -Message 'Index module entry does not declare a path.' -Path $indexContract.IndexPath
+                    continue
+                }
+                $moduleLocation = Join-Path $indexContract.BaseDir (([string]$modulePath) -replace '/', '\')
+                if (-not (Test-Path -LiteralPath $moduleLocation -PathType Leaf)) {
+                    Add-McValidationFinding -Findings $findings -Severity error -Code $indexContract.BrokenCode -Message 'Index references a module file that does not exist.' -Path ("{0}:{1}" -f $indexContract.IndexPath, $modulePath)
+                }
+            }
+        }
+        catch {
+            Add-McValidationFinding -Findings $findings -Severity error -Code $indexContract.InvalidCode -Message (ConvertTo-McSafeDiagnosticText -Text $_.Exception.Message) -Path $indexContract.IndexPath
         }
     }
 

@@ -1,6 +1,11 @@
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot)
+    [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
+
+    # Runs a tiny synthetic suite (one passing block, one failing assertion,
+    # one throwing block) so the main suite can assert that the runner itself
+    # reports FAIL for a failing block instead of printing a misleading PASS.
+    [switch]$SelfTest
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,6 +18,8 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\lib\curation.ps1')
 . (Join-Path $RepoRoot 'scripts\lib\rendering.ps1')
 . (Join-Path $RepoRoot 'scripts\collectors\visual-studio.ps1')
+. (Join-Path $RepoRoot 'scripts\collectors\ai-tools.ps1')
+. (Join-Path $RepoRoot 'scripts\collectors\host-tool-verifiers.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -45,16 +52,30 @@ function Invoke-McTest {
         [Parameter(Mandatory)][scriptblock]$Body
     )
 
+    $failureCountBefore = $failures.Count
     try {
         & $Body
-        if ($failures.Count -eq 0 -or $failures[$failures.Count - 1] -notlike "${Name}:*") {
-            Write-Host "PASS $Name"
-        }
     }
     catch {
         [void]$failures.Add("$($Name): $($_.Exception.Message)")
+    }
+    if ($failures.Count -gt $failureCountBefore) {
         Write-Host "FAIL $Name"
     }
+    else {
+        Write-Host "PASS $Name"
+    }
+}
+
+if ($SelfTest) {
+    Invoke-McTest -Name 'self-passing' -Body { Assert-McTrue -Condition $true -Message 'never fails' }
+    Invoke-McTest -Name 'self-failing-assertion' -Body { Assert-McTrue -Condition $false -Message 'synthetic assertion failure' }
+    Invoke-McTest -Name 'self-failing-exception' -Body { throw 'synthetic exception' }
+    if ($failures.Count -ne 2) {
+        Write-Host "SELFTEST BROKEN: expected 2 recorded failures, found $($failures.Count)"
+        exit 1
+    }
+    exit 0
 }
 
 Invoke-McTest -Name 'deterministic JSON ordering and UTF-8' -Body {
@@ -983,6 +1004,13 @@ Invoke-McTest -Name 'curated ownership and safe absence semantics' -Body {
         ))
     Assert-McTrue -Condition (@($failureEvents | Where-Object { $_.id -eq 'node' -and $_.provider -eq 'runtimes-package-managers-toolchain' }).Count -ge 1) -Message 'mapped provider failures must mark their entities unverified'
     Assert-McTrue -Condition (@($failureEvents | Where-Object { $_.provider -eq 'nvidia-smi' }).Count -eq 0) -Message 'providers without an entity map must contribute no entity-level failure events'
+
+    $aiToolingEvents = @(Get-McProviderFailureEvents -Failures @([pscustomobject][ordered]@{ provider = 'ai-tooling'; health = 'failed'; message = 'fixture' }))
+    $aiManagedIds = @(Get-McAiDefinitions | ForEach-Object { [string]$_.id })
+    $aiEventIds = @($aiToolingEvents | ForEach-Object { [string]$_.id })
+    $aiUnmappedIds = @($aiManagedIds | Where-Object { $aiEventIds -notcontains $_ })
+    Assert-McEqual -Actual ($aiUnmappedIds -join ',') -Expected '' -Message 'every AI definition id must be covered by the ai-tooling provider failure map'
+    Assert-McTrue -Condition (@($aiToolingEvents | Where-Object { $_.verification -eq 'unverified' }).Count -eq $aiManagedIds.Count) -Message 'ai-tooling provider failure must downgrade exactly its managed entities to unverified'
 }
 
 Invoke-McTest -Name 'provider diagnostics and local state' -Body {
@@ -1748,6 +1776,184 @@ Invoke-McTest -Name 'canonical read failures abort reconciliation instead of los
     $raw = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
     Assert-McTrue -Condition (-not ($raw -match 'schema_version')) -Message 'a corrupt canonical profile must not be overwritten by reconciliation'
     Remove-Item -LiteralPath $tempRoot -Recurse -Force
+}
+
+Invoke-McTest -Name 'Codex CLI known path stays a hint behind persistent PATH resolution' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-codex-hint'
+    $currentRoot = Join-Path $fixtureRoot 'current-install'
+    $rollbackRoot = Join-Path $fixtureRoot 'old-rollback'
+    [void](New-Item -ItemType Directory -Path $currentRoot, $rollbackRoot -Force)
+    $currentPath = Join-Path $currentRoot 'codex.cmd'
+    $rollbackPath = Join-Path $rollbackRoot 'codex.cmd'
+    Set-Content -Path $currentPath -Value '@echo off'
+    Set-Content -Path $rollbackPath -Value '@echo off'
+    $verifierPath = Join-Path $RepoRoot 'scripts\collectors\host-tool-verifiers.ps1'
+    try {
+        $resolved = & {
+            param($VerifierPath, $PathResolved)
+            function Resolve-McPersistentCommand {
+                param([string]$Executable, $PathEntries)
+                return @([pscustomobject][ordered]@{ name = 'codex.cmd'; path = $PathResolved; command_type = 'Application'; scope = 'windows-host'; source = 'persistent-path'; path_index = 0 })
+            }
+            function Invoke-McProbe {
+                param($Executable, $Arguments, [string]$Provider, [string]$ProbeName, $TimeoutMs, $OutputCapBytes, [string]$ResolutionScope)
+                return [pscustomobject][ordered]@{ status = 'success'; stdout = 'codex 9.9.9'; stderr = '' }
+            }
+            . $VerifierPath
+            Invoke-McHostCommandVerifier -Id 'codex-cli' -Kind 'ai-tool' -Name 'Codex CLI' -Command 'codex' -Arguments @('--version') -KnownPaths @((Join-Path $fixtureRoot 'old-rollback\codex.cmd')) -KnownPathsAreHints
+        } $verifierPath $currentPath
+        Assert-McEqual -Actual $resolved.status -Expected 'success' -Message 'a persistent PATH hit must keep the verifier successful'
+        Assert-McEqual -Actual $resolved.entity.observed.executable -Expected (ConvertTo-McNormalizedPath -Path $currentPath -ResolveExisting) -Message 'persistent PATH resolution must remain the primary canonical Codex executable'
+        Assert-McEqual -Actual @($resolved.entity.observed.command_resolution).Count -Expected 2 -Message 'the historical known path must remain recorded as an alternative resolution'
+        Assert-McEqual -Actual ([string]$resolved.entity.observed.command_resolution[1].source) -Expected 'known-install-path' -Message 'the historical known path must stay marked as known-install-path evidence'
+
+        $fallback = & {
+            param($VerifierPath, $PathRollback)
+            function Resolve-McPersistentCommand {
+                param([string]$Executable, $PathEntries)
+                return @()
+            }
+            . $VerifierPath
+            Invoke-McHostCommandVerifier -Id 'codex-cli' -Kind 'ai-tool' -Name 'Codex CLI' -Command 'codex' -Arguments @('--version') -KnownPaths @($PathRollback) -KnownPathsAreHints
+        } $verifierPath $rollbackPath
+        Assert-McEqual -Actual $fallback.status -Expected 'unavailable' -Message 'a known path without PATH resolution must not count as a verified current installation'
+        Assert-McTrue -Condition ($null -eq $fallback.entity) -Message 'a stale rollback copy must never be published as the authoritative current Codex entity'
+        Assert-McEqual -Actual ([string]$fallback.candidate.path) -Expected (ConvertTo-McNormalizedPath -Path $rollbackPath) -Message 'the historical known path must remain visible as a low-confidence candidate hint'
+        Assert-McEqual -Actual ([string]$fallback.candidate.evidence[0].type) -Expected 'known_install_path_present' -Message 'the hint candidate must record its non-authoritative evidence type'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }
+    }
+}
+
+Invoke-McTest -Name 'canonical validation graph covers index-referenced modules' -Body {
+    $fixtureRoot = Join-Path $RepoRoot '.local\test-validation-graph'
+    $contextRoot = Join-Path $fixtureRoot 'context'
+    [void](New-Item -ItemType Directory -Path (Join-Path $contextRoot 'software'), (Join-Path $contextRoot 'projects'), (Join-Path $contextRoot 'configs\ai') -Force)
+
+    # Mirror the real manifest shape: the root manifest names only indexes, and
+    # software modules are reached indirectly through software/index.json.
+    $manifest = [pscustomobject][ordered]@{
+        schema_version = 1
+        canonical = [pscustomobject][ordered]@{
+            status = 'context/status.json'
+            software_index = 'context/software/index.json'
+            projects_index = 'context/projects/index.json'
+            configs_index = 'context/configs/index.json'
+        }
+    }
+    $softwareRecord = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'fixture-runtime'
+        kind = 'runtime'
+        name = 'Fixture Runtime'
+        observed = [pscustomobject][ordered]@{
+            present = $true
+            version = '1.0.0'
+            executable = '%USERPROFILE%\bin\fixture.exe'
+            command_resolution = @()
+            install = [pscustomobject][ordered]@{ root = '%USERPROFILE%\bin' }
+            evidence = @()
+        }
+        curated = [pscustomobject][ordered]@{ status = 'unknown'; constraints = @() }
+    }
+    $teamRecord = Copy-McJsonObject -InputObject $softwareRecord
+    $teamRecord.id = 'fixture-team-tool'
+    $teamRecord.kind = 'cli'
+    $teamRecord.name = 'Fixture Team Tool'
+    $mcpRecord = [pscustomobject][ordered]@{
+        schema_version = 1
+        kind = 'mcp-inventory'
+        observed = [pscustomobject][ordered]@{ servers = @(); redactions = @() }
+        curated = [pscustomobject][ordered]@{}
+    }
+    $projectRecord = [pscustomobject][ordered]@{
+        schema_version = 1
+        id = 'fixture-project'
+        name = 'Fixture Project'
+        observed = [pscustomobject][ordered]@{ local_path = '%USERPROFILE%\src\fixture'; evidence = @() }
+        curated = [pscustomobject][ordered]@{ status = 'active'; constraints = @() }
+    }
+    $documents = [ordered]@{
+        'machine-context.json' = $manifest
+        'context/status.json' = [pscustomobject][ordered]@{ schema_version = 1; state = 'partial' }
+        'context/software/index.json' = [pscustomobject][ordered]@{ schema_version = 1; modules = @([pscustomobject][ordered]@{ path = 'development.json'; scope = 'fixture' }, [pscustomobject][ordered]@{ path = 'team-tools.json'; scope = 'fixture' }) }
+        'context/software/development.json' = [pscustomobject][ordered]@{ schema_version = 1; software = @($softwareRecord) }
+        'context/software/team-tools.json' = [pscustomobject][ordered]@{ schema_version = 1; software = @($teamRecord) }
+        'context/configs/index.json' = [pscustomobject][ordered]@{ schema_version = 1; modules = @([pscustomobject][ordered]@{ kind = 'mcp-inventory'; path = 'mcp.json'; tool = 'multi' }) }
+        'context/configs/mcp.json' = $mcpRecord
+        'context/projects/index.json' = [pscustomobject][ordered]@{ schema_version = 1; projects = @([pscustomobject][ordered]@{ id = 'fixture-project'; name = 'Fixture Project'; context_file = 'context/projects/fixture-project.json' }) }
+        'context/projects/fixture-project.json' = $projectRecord
+    }
+    foreach ($relative in $documents.Keys) {
+        Write-McJson -Path (Join-Path $fixtureRoot $relative) -InputObject $documents[$relative]
+    }
+    $currentPath = Join-Path $fixtureRoot 'CURRENT.md'
+    [System.IO.File]::WriteAllText($currentPath, "> GENERATED VIEW`r`n`r`nfixture`r`n", [System.Text.UTF8Encoding]::new($false))
+
+    function Write-McValidationGraphDocument {
+        param([string]$FixtureRoot, [string]$Relative, [object]$Document)
+        Write-McJson -Path (Join-Path $FixtureRoot $Relative) -InputObject $Document
+    }
+
+    try {
+        $valid = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition $valid.ok -Message 'an index-referenced canonical fixture must pass validation with no hardcoded module list'
+        Assert-McTrue -Condition (@($valid.findings | Where-Object { $_.path -match 'team-tools\.json' }).Count -eq 0) -Message 'a new unregistered-name software module must validate cleanly once indexed'
+
+        # A: software contract applies through the indirect index reference.
+        $brokenContract = Copy-McJsonObject -InputObject $documents['context/software/development.json']
+        $brokenContract.software[0].observed = 'not-a-mapping'
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/development.json' -Document $brokenContract
+        $contract = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($contract.errors | Where-Object { $_.code -eq 'contract_type_mismatch' -and $_.path -match 'development\.json' }).Count -gt 0) -Message 'software modules registered only through the index must still receive the software record contract'
+
+        # B: privacy sweep applies to a software module with a new unhardcoded name.
+        $leakyTeam = Copy-McJsonObject -InputObject $documents['context/software/team-tools.json']
+        Set-McObjectProperty -InputObject $leakyTeam.software[0].observed -Name 'endpoint' -Value 'https://user:secret@example.com/v1'
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/team-tools.json' -Document $leakyTeam
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/development.json' -Document $documents['context/software/development.json']
+        $leaky = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($leaky.errors | Where-Object { $_.code -like 'privacy_*' -and $_.path -match 'team-tools\.json' }).Count -gt 0) -Message 'a secret-shaped value in any indexed software module must fail the privacy sweep'
+
+        # C: software index references must resolve.
+        $ghostModules = Copy-McJsonObject -InputObject $documents['context/software/index.json']
+        $ghostModules.modules = @($ghostModules.modules) + [pscustomobject][ordered]@{ path = 'ghost-module.json'; scope = 'fixture' }
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/index.json' -Document $ghostModules
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/team-tools.json' -Document $documents['context/software/team-tools.json']
+        $ghostSoftware = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($ghostSoftware.errors | Where-Object code -eq 'broken_software_index_reference').Count -gt 0) -Message 'a software index reference to a missing module must fail validation'
+
+        # D: config index references must resolve.
+        $ghostConfig = Copy-McJsonObject -InputObject $documents['context/configs/index.json']
+        $ghostConfig.modules = @($ghostConfig.modules) + [pscustomobject][ordered]@{ kind = 'ai-config-profile'; path = 'ai/ghost-profile.json'; tool = 'ghost' }
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/configs/index.json' -Document $ghostConfig
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/software/index.json' -Document $documents['context/software/index.json']
+        $ghostConfigs = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($ghostConfigs.errors | Where-Object code -eq 'broken_config_index_reference').Count -gt 0) -Message 'a config index reference to a missing profile must fail validation'
+
+        # E: project index id must match the referenced record id.
+        $mismatchedIndex = Copy-McJsonObject -InputObject $documents['context/projects/index.json']
+        $mismatchedIndex.projects[0].id = 'fixture-project-elsewhere'
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/projects/index.json' -Document $mismatchedIndex
+        Write-McValidationGraphDocument -FixtureRoot $fixtureRoot -Relative 'context/configs/index.json' -Document $documents['context/configs/index.json']
+        $mismatch = Invoke-McValidation -RepoRoot $fixtureRoot -ContextRoot $contextRoot -CurrentPath $currentPath
+        Assert-McTrue -Condition (@($mismatch.errors | Where-Object code -eq 'project_id_mismatch').Count -gt 0) -Message 'a project index id that disagrees with its record must fail validation'
+    }
+    finally {
+        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) { Remove-Item -LiteralPath $fixtureRoot -Recurse -Force }
+    }
+}
+
+Invoke-McTest -Name 'test runner cannot print PASS for a failing block' -Body {
+    $pwsh = Join-Path $PSHOME 'pwsh.exe'
+    $output = & $pwsh -NoLogo -NoProfile -File $PSCommandPath -SelfTest 2>&1
+    $text = (@($output | ForEach-Object { [string]$_ }) -join "`n")
+    Assert-McEqual -Actual $LASTEXITCODE -Expected 0 -Message 'runner self-test must exit 0'
+    Assert-McTrue -Condition ($text -match '(?m)^FAIL self-failing-assertion') -Message 'runner must report FAIL for a failing assertion'
+    Assert-McTrue -Condition ($text -match '(?m)^FAIL self-failing-exception') -Message 'runner must report FAIL for a throwing block'
+    Assert-McTrue -Condition ($text -notmatch '(?m)^PASS self-failing') -Message 'runner must never print PASS for a failing block'
+    Assert-McTrue -Condition ($text -match '(?m)^PASS self-passing') -Message 'runner must keep printing PASS for a passing block'
 }
 
 if ($failures.Count -gt 0) {
