@@ -29,7 +29,8 @@ Git provides history; private GitHub provides cross-session/cross-agent sharing 
 - `conventions.json` — installation, location, and update conventions;
 - `relationships.json` — useful cross-tool/project relationships;
 - `software/` — modular software domains;
-- `projects/` — environment-level records for long-lived local projects.
+- `projects/` — environment-level records for long-lived local projects;
+- `configs/` — AI tool configuration profiles and the MCP server inventory as privacy-projected records.
 
 Canonical records distinguish collector-owned `observed` fields from user/agent-owned `curated` semantics where both coexist.
 

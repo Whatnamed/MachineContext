@@ -40,12 +40,11 @@ V1 需要从一开始区分扫描强度，不要让“完整”变成“每次�
 - OS / hardware / storage；
 - canonical 中已有工具的 command/version/path；
 - PATH resolution；
-- Registry installed-app metadata；
 - package-manager/tool-specific metadata；
 - 已登记 projects 的 manifest/path/status；
 - 已登记 local services / proxy state。
 
-Quick 不做广泛 filesystem discovery。
+Quick 不做广泛 filesystem discovery，也不做广泛 Registry uninstall 枚举；这两类 discovery 只属于 Discover/Full。
 
 ### Discover
 

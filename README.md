@@ -34,7 +34,7 @@ Start with `docs/README.md`.
 
 - `docs/PRODUCT.md` — product purpose, principles, scope, non-goals, and future direction;
 - `docs/ARCHITECTURE.md` — source-of-truth boundaries and data flow;
-- `docs/DEVELOPMENT.md` — active V1 implementation phase and acceptance criteria;
+- `docs/DEVELOPMENT.md` — current V1 phase (feature-frozen for normal use) and acceptance criteria;
 - `docs/COLLECTION_SPEC.md` — authoritative list of information worth collecting;
 - `docs/DISCOVERY_DESIGN.md` — how unknown tools/projects are discovered and reconciled;
 - `docs/IMPLEMENTATION_GUIDE.md` — concrete V1 implementation guardrails and edge cases;

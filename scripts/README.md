@@ -31,7 +31,7 @@ pwsh.exe -File .\tests\run-tests.ps1
 
 - `Quick` — routine structured verification;
 - `Discover` — broad candidate discovery;
-- `Enrich` — selected expensive detail;
+- `Enrich` — reserved API surface for targeted expensive checks; there is currently no standalone general-purpose enrichment pipeline, so expensive probes live inside the specific verifiers that need them;
 - `Full` — Initial Audit (`Quick + Discover + selective Enrich`).
 
 Exact CLI parameter names may evolve, but these behavioral modes are a V1 architecture requirement.
