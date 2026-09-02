@@ -151,7 +151,10 @@ command_resolution
 config_paths
 data_paths
 evidence
+distribution_version
 ```
+
+`distribution_version` (optional) records a vendor distribution/package version that extends the upstream semantic `version` — e.g. Git for Windows reports upstream `2.55.0` as `2.55.0.windows.5`. It is recorded only when it adds information beyond `version`, so a package-only patchlevel update (`​.windows.5` → `​.windows.6`) stays a detectable version change.
 
 Typical curated fields (all optional):
 ```text

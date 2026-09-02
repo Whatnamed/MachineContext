@@ -38,10 +38,13 @@ jobs:
       - name: Disable git line-ending conversion
         shell: pwsh
         run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Run test suite
         shell: pwsh
         run: ./tests/run-tests.ps1
+      # Report canonical validation independently of the test suite outcome
+      # so one failing block does not hide validation findings.
       - name: Validate canonical context
+        if: ${{ !cancelled() }}
         shell: pwsh
         run: ./scripts/validate.ps1

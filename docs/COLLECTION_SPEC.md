@@ -168,6 +168,7 @@ V1 不默认深入枚举每个 distro 的所有 Linux runtime/package。以后�
 至少关注：
 
 - Git / Git LFS；
+- Git for Windows 额外记录 `distribution_version`（如 `2.55.0.windows.5`；`version` 保持 upstream 语义版本 `2.55.0`），使发行版包补丁级别变化（`.windows.N`）可被检测为真实版本漂移；
 - Visual Studio edition/version/install path；
 - 关键 VS workloads；
 - MSVC toolset；

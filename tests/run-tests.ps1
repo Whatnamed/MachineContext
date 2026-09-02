@@ -20,6 +20,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $RepoRoot 'scripts\collectors\visual-studio.ps1')
 . (Join-Path $RepoRoot 'scripts\collectors\ai-tools.ps1')
 . (Join-Path $RepoRoot 'scripts\collectors\host-tool-verifiers.ps1')
+. (Join-Path $RepoRoot 'scripts\collectors\git-for-windows.ps1')
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -1209,7 +1210,13 @@ Invoke-McTest -Name 'semantic review contract' -Body {
 }
 
 Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Body {
-    $fixtureRoot = Join-Path $RepoRoot '.local\test-curation-confirmation'
+    # Hermetic: the production curation contract requires
+    # RepoRoot\.local\g2-semantic-review.json, so this test builds a minimal
+    # fixture repository (canonical context plus its own review draft) instead
+    # of depending on - or writing to - the developer's real repository state.
+    # A clean CI runner without .local must pass this block unchanged.
+    $fixtureRepo = Join-Path ([System.IO.Path]::GetTempPath()) ('mc-curation-fixture-' + [guid]::NewGuid().ToString('N'))
+    $fixtureRoot = Join-Path $fixtureRepo '.local\test-curation-confirmation'
     $confirmationPath = Join-Path $fixtureRoot 'valid.json'
     $softwareOnlyPath = Join-Path $fixtureRoot 'software-only.json'
     $unsafePath = Join-Path $fixtureRoot 'unsafe.json'
@@ -1219,11 +1226,47 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $offsetTimestampPath = Join-Path $fixtureRoot 'offset-timestamp.json'
     $projectLifecyclePath = Join-Path $fixtureRoot 'project-lifecycle.json'
     $softwareProjectStatusPath = Join-Path $fixtureRoot 'software-project-status.json'
-    $projectPath = Join-Path $RepoRoot 'context\projects\project-github.com-whatnamed-morpho.json'
-    $softwarePath = Join-Path $RepoRoot 'context\software\ai.json'
-    $conventionsPath = Join-Path $RepoRoot 'context\conventions.json'
+    $projectPath = Join-Path $fixtureRepo 'context\projects\project-github.com-whatnamed-morpho.json'
+    $softwarePath = Join-Path $fixtureRepo 'context\software\ai.json'
+    $conventionsPath = Join-Path $fixtureRepo 'context\conventions.json'
+    $realReviewPath = Join-Path $RepoRoot '.local\g2-semantic-review.json'
+    $realReviewHash = if (Test-Path -LiteralPath $realReviewPath -PathType Leaf) { (Get-FileHash -LiteralPath $realReviewPath -Algorithm SHA256).Hash } else { $null }
     try {
         [void](New-Item -ItemType Directory -Path $fixtureRoot -Force)
+        [void](New-Item -ItemType Directory -Path (Split-Path -Parent $projectPath) -Force)
+        [void](New-Item -ItemType Directory -Path (Split-Path -Parent $softwarePath) -Force)
+        Write-McJson -Path $projectPath -InputObject ([ordered]@{
+                schema_version = 1
+                id = 'project-github.com-whatnamed-morpho'
+                observed = [ordered]@{ local_path = 'D:\Morpho' }
+                curated = [ordered]@{}
+            })
+        Write-McJson -Path $softwarePath -InputObject ([ordered]@{
+                schema_version = 1
+                software = @([ordered]@{
+                        schema_version = 1
+                        id = 'codex-cli'
+                        kind = 'ai-tool'
+                        name = 'Codex CLI'
+                        observed = [ordered]@{ present = $true }
+                        curated = [ordered]@{}
+                    })
+            })
+        Write-McJson -Path $conventionsPath -InputObject ([ordered]@{
+                schema_version = 1
+                meta = [ordered]@{ state = 'curated' }
+            })
+        Write-McJson -Path (Join-Path $fixtureRepo '.local\g2-semantic-review.json') -InputObject ([ordered]@{
+                schema_version = 1
+                kind = 'g2-semantic-review-draft'
+                source = 'fixture evidence'
+                semantic_suggestions = @([ordered]@{
+                        topic = 'installation-conventions'
+                        suggestion = 'Fixture suggestion requires confirmation.'
+                        evidence = @('.local/g2-semantic-review.json')
+                        requires_confirmation = $true
+                    })
+            })
         $valid = [ordered]@{
             schema_version = 1
             kind = 'g2-curation-confirmation'
@@ -1256,40 +1299,40 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
         $beforeProject = (Get-FileHash -LiteralPath $projectPath -Algorithm SHA256).Hash
         $beforeSoftware = (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash
         $beforeConventions = (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash
-        $plan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $confirmationPath
-    Assert-McTrue -Condition $plan.ok -Message 'valid confirmation should produce an applicable plan'
+        $plan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $confirmationPath
+        Assert-McTrue -Condition $plan.ok -Message 'valid confirmation should produce an applicable plan'
         Assert-McEqual -Actual @($plan.changes).Count -Expected 3 -Message 'project, software, and conventions updates should produce three proposed files'
         $proposedProject = $plan.proposed_documents[$projectPath]
         Assert-McEqual -Actual $proposedProject.curated.status -Expected 'active' -Message 'curation plan should update project curated status only in the proposal'
         Assert-McEqual -Actual $proposedProject.observed.local_path -Expected 'D:\Morpho' -Message 'curation plan must preserve project observed facts'
         Assert-McEqual -Actual (Get-FileHash -LiteralPath $projectPath -Algorithm SHA256).Hash -Expected $beforeProject -Message 'dry-run must not write project canonical data'
         Assert-McEqual -Actual (Get-FileHash -LiteralPath $softwarePath -Algorithm SHA256).Hash -Expected $beforeSoftware -Message 'dry-run must not write software canonical data'
-    Assert-McEqual -Actual (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash -Expected $beforeConventions -Message 'dry-run must not write conventions canonical data'
+        Assert-McEqual -Actual (Get-FileHash -LiteralPath $conventionsPath -Algorithm SHA256).Hash -Expected $beforeConventions -Message 'dry-run must not write conventions canonical data'
 
-    $offsetTimestamp = Copy-McJsonObject -InputObject $valid
-    $offsetTimestamp.confirmed_at = '2026-08-26T00:00:00+08:00'
-    Write-McJson -Path $offsetTimestampPath -InputObject $offsetTimestamp
-        $offsetTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $offsetTimestampPath
+        $offsetTimestamp = Copy-McJsonObject -InputObject $valid
+        $offsetTimestamp.confirmed_at = '2026-08-26T00:00:00+08:00'
+        Write-McJson -Path $offsetTimestampPath -InputObject $offsetTimestamp
+        $offsetTimestampPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $offsetTimestampPath
         Assert-McTrue -Condition $offsetTimestampPlan.ok -Message 'explicit non-UTC confirmation offsets must remain valid'
 
         $projectLifecycle = Copy-McJsonObject -InputObject $valid
         $projectLifecycle.project_updates[0].curated.status = 'paused'
         Write-McJson -Path $projectLifecyclePath -InputObject $projectLifecycle
-        $projectLifecyclePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $projectLifecyclePath
+        $projectLifecyclePlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $projectLifecyclePath
         Assert-McTrue -Condition $projectLifecyclePlan.ok -Message 'project policy lifecycle status paused must be accepted'
         Assert-McEqual -Actual $projectLifecyclePlan.proposed_documents[$projectPath].curated.status -Expected 'paused' -Message 'project lifecycle status must remain curated-only in the proposal'
 
         $softwareProjectStatus = Copy-McJsonObject -InputObject $valid
         $softwareProjectStatus.software_updates[0].curated.status = 'paused'
         Write-McJson -Path $softwareProjectStatusPath -InputObject $softwareProjectStatus
-        $softwareProjectStatusPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $softwareProjectStatusPath
+        $softwareProjectStatusPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $softwareProjectStatusPath
         Assert-McTrue -Condition (-not $softwareProjectStatusPlan.ok) -Message 'project-only lifecycle status must not be accepted for software curation'
         Assert-McTrue -Condition (@($softwareProjectStatusPlan.errors | Where-Object code -eq 'curation_status_value').Count -gt 0) -Message 'software project-only status must report a status contract error'
 
         $softwareOnly = Copy-McJsonObject -InputObject $valid
         Remove-McObjectProperty -InputObject $softwareOnly -Name 'project_updates'
         Write-McJson -Path $softwareOnlyPath -InputObject $softwareOnly
-        $softwareOnlyPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $softwareOnlyPath
+        $softwareOnlyPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $softwareOnlyPath
         Assert-McTrue -Condition $softwareOnlyPlan.ok -Message 'a confirmation may omit project_updates when only software is confirmed'
         Assert-McEqual -Actual $softwareOnlyPlan.project_update_count -Expected 0 -Message 'omitted project updates must normalize to an empty set'
         Assert-McEqual -Actual $softwareOnlyPlan.software_update_count -Expected 1 -Message 'software-only confirmation count must remain accurate'
@@ -1308,49 +1351,75 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
             software_updates = @()
         }
         Write-McJson -Path $unsafePath -InputObject $unsafe
-        $unsafePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unsafePath
+        $unsafePlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $unsafePath
         Assert-McTrue -Condition (-not $unsafePlan.ok) -Message 'observed writes must be rejected by curation contract'
         Assert-McTrue -Condition (@($unsafePlan.errors | Where-Object code -eq 'curation_observed_write').Count -gt 0) -Message 'unsafe curation must report observed-write error'
 
-    $unknown = Copy-McJsonObject -InputObject $valid
-    $unknown.project_updates[0].id = 'project-does-not-exist'
-    Write-McJson -Path $unknownPath -InputObject $unknown
-    $unknownPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $unknownPath
-    Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
-    Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
+        $unknown = Copy-McJsonObject -InputObject $valid
+        $unknown.project_updates[0].id = 'project-does-not-exist'
+        Write-McJson -Path $unknownPath -InputObject $unknown
+        $unknownPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $unknownPath
+        Assert-McTrue -Condition (-not $unknownPlan.ok) -Message 'unknown stable IDs must be rejected by curation planning'
+        Assert-McTrue -Condition (@($unknownPlan.errors | Where-Object code -eq 'curation_unknown_id').Count -gt 0) -Message 'unknown curation IDs must be reported'
 
-    $invalidEvidence = Copy-McJsonObject -InputObject $valid
-    $invalidEvidence.project_updates[0].evidence_refs = @('invented evidence')
-    Write-McJson -Path $invalidEvidencePath -InputObject $invalidEvidence
-    $invalidEvidencePlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $invalidEvidencePath
-    Assert-McTrue -Condition (-not $invalidEvidencePlan.ok) -Message 'evidence outside the declared review must be rejected'
-    Assert-McTrue -Condition (@($invalidEvidencePlan.errors | Where-Object code -eq 'curation_evidence_reference').Count -gt 0) -Message 'unproven evidence references must be reported'
+        $invalidEvidence = Copy-McJsonObject -InputObject $valid
+        $invalidEvidence.project_updates[0].evidence_refs = @('invented evidence')
+        Write-McJson -Path $invalidEvidencePath -InputObject $invalidEvidence
+        $invalidEvidencePlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $invalidEvidencePath
+        Assert-McTrue -Condition (-not $invalidEvidencePlan.ok) -Message 'evidence outside the declared review must be rejected'
+        Assert-McTrue -Condition (@($invalidEvidencePlan.errors | Where-Object code -eq 'curation_evidence_reference').Count -gt 0) -Message 'unproven evidence references must be reported'
 
-    $invalidTimestamp = Copy-McJsonObject -InputObject $valid
-    $invalidTimestamp.confirmed_at = 'not-a-timestamp'
-    Write-McJson -Path $invalidTimestampPath -InputObject $invalidTimestamp
-    $invalidTimestampPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $invalidTimestampPath
-    Assert-McTrue -Condition (-not $invalidTimestampPlan.ok) -Message 'invalid confirmation timestamps must be rejected'
-    Assert-McTrue -Condition (@($invalidTimestampPlan.errors | Where-Object code -eq 'curation_timestamp').Count -gt 0) -Message 'invalid confirmation timestamps must be reported'
+        $invalidTimestamp = Copy-McJsonObject -InputObject $valid
+        $invalidTimestamp.confirmed_at = 'not-a-timestamp'
+        Write-McJson -Path $invalidTimestampPath -InputObject $invalidTimestamp
+        $invalidTimestampPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $invalidTimestampPath
+        Assert-McTrue -Condition (-not $invalidTimestampPlan.ok) -Message 'invalid confirmation timestamps must be rejected'
+        Assert-McTrue -Condition (@($invalidTimestampPlan.errors | Where-Object code -eq 'curation_timestamp').Count -gt 0) -Message 'invalid confirmation timestamps must be reported'
 
-    $empty = [ordered]@{
-        schema_version = 1
-        kind = 'g2-curation-confirmation'
-        confirmed = $true
-        confirmed_at = '2026-08-26T00:00:00Z'
-        source_review = '.local/g2-semantic-review.json'
+        $empty = [ordered]@{
+            schema_version = 1
+            kind = 'g2-curation-confirmation'
+            confirmed = $true
+            confirmed_at = '2026-08-26T00:00:00Z'
+            source_review = '.local/g2-semantic-review.json'
+        }
+        $emptyPath = Join-Path $fixtureRoot 'empty.json'
+        Write-McJson -Path $emptyPath -InputObject $empty
+        $emptyPlan = New-McCurationPlan -RepoRoot $fixtureRepo -ConfirmationPath $emptyPath
+        Assert-McTrue -Condition (-not $emptyPlan.ok) -Message 'an empty confirmation must be rejected'
+        Assert-McTrue -Condition (@($emptyPlan.errors | Where-Object code -eq 'curation_empty').Count -gt 0) -Message 'empty confirmation must report curation_empty'
     }
-    $emptyPath = Join-Path $fixtureRoot 'empty.json'
-    Write-McJson -Path $emptyPath -InputObject $empty
-    $emptyPlan = New-McCurationPlan -RepoRoot $RepoRoot -ConfirmationPath $emptyPath
-    Assert-McTrue -Condition (-not $emptyPlan.ok) -Message 'an empty confirmation must be rejected'
-    Assert-McTrue -Condition (@($emptyPlan.errors | Where-Object code -eq 'curation_empty').Count -gt 0) -Message 'empty confirmation must report curation_empty'
-}
     finally {
-        if (Test-Path -LiteralPath $fixtureRoot -PathType Container) {
-            Remove-Item -LiteralPath $fixtureRoot -Recurse -Force
+        if (Test-Path -LiteralPath $fixtureRepo -PathType Container) {
+            Remove-Item -LiteralPath $fixtureRepo -Recurse -Force
+        }
+        if ($null -ne $realReviewHash) {
+            Assert-McEqual -Actual (Get-FileHash -LiteralPath $realReviewPath -Algorithm SHA256).Hash -Expected $realReviewHash -Message 'the test must never rewrite the real G2 semantic review draft'
         }
     }
+}
+
+Invoke-McTest -Name 'git for windows distribution version stays exact' -Body {
+    $parsed = ConvertFrom-McGitVersionText -Text 'git version 2.55.0.windows.5'
+    Assert-McEqual -Actual $parsed.version -Expected '2.55.0' -Message 'upstream part must stay a clean semantic version'
+    Assert-McEqual -Actual $parsed.distribution_version -Expected '2.55.0.windows.5' -Message 'Git for Windows package patchlevel must be preserved'
+    $plain = ConvertFrom-McGitVersionText -Text 'git version 2.55.0'
+    Assert-McEqual -Actual $plain.version -Expected '2.55.0' -Message 'vanilla git version parses as upstream only'
+    Assert-McEqual -Actual $plain.distribution_version -Expected '2.55.0' -Message 'no windows suffix means no distribution delta'
+    Assert-McEqual -Actual (ConvertFrom-McGitVersionText -Text 'not a git banner') -Expected $null -Message 'non-git version text must be rejected'
+    Assert-McEqual -Actual (ConvertFrom-McGitVersionText -Text $null) -Expected $null -Message 'missing version text must be rejected'
+}
+
+Invoke-McTest -Name 'ai alternative installations observe known off-PATH copies' -Body {
+    $selfExecutable = (Get-Process -Id $PID -ErrorAction Stop).Path
+    $found = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @($selfExecutable)
+    Assert-McEqual -Actual @($found).Count -Expected 1 -Message 'an existing alternative location must produce one record'
+    Assert-McTrue -Condition (-not [string]::IsNullOrWhiteSpace([string]$found[0].version)) -Message 'alternative record must carry a normalized version'
+    Assert-McTrue -Condition (([string]$found[0].executable).EndsWith('pwsh.exe', [System.StringComparison]::OrdinalIgnoreCase)) -Message 'alternative record must point at the probed executable'
+    $missing = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @('%USERPROFILE%\__mc_missing_fixture__\tool.exe')
+    Assert-McEqual -Actual @($missing).Count -Expected 0 -Message 'a missing alternative location must contribute no record'
+    $empty = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @()
+    Assert-McEqual -Actual @($empty).Count -Expected 0 -Message 'no declared locations must contribute no record'
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {

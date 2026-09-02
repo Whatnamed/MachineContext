@@ -20,6 +20,35 @@ function Get-McGitCommandResolution {
     )
 }
 
+function ConvertFrom-McGitVersionText {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [string]$Text
+    )
+
+    # 'git version 2.55.0.windows.5' → upstream 2.55.0 plus the Git for
+    # Windows distribution patchlevel. The generic semantic-version parser
+    # keeps only the upstream part; this collector owns the vendor suffix so
+    # a .windows.N package update stays a detectable version change.
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $null
+    }
+    $match = [regex]::Match($Text.Trim(), '(?i)^git\s+version\s+(?<upstream>\d+\.\d+(?:\.\d+)?)(?:\.(?<dist>windows(?:\.\d+)?))?$')
+    if (-not $match.Success) {
+        return $null
+    }
+    $upstream = $match.Groups['upstream'].Value
+    $distribution = $upstream
+    if ($match.Groups['dist'].Success) {
+        $distribution = '{0}.{1}' -f $upstream, $match.Groups['dist'].Value
+    }
+    return [pscustomobject][ordered]@{
+        version              = $upstream
+        distribution_version = $distribution
+    }
+}
+
 function Get-McGitForWindowsObservation {
     [CmdletBinding()]
     param()
@@ -76,19 +105,32 @@ function Get-McGitForWindowsObservation {
                 reason = 'version-probe-success'
                 source_key = 'git.exe'
             })
+        $gitVersionText = Get-McProbeVersionText -Probe $gitProbe
+        $gitVersion = ConvertFrom-McGitVersionText -Text $gitVersionText
+        $distributionVersion = $null
+        if ($gitVersion -and [string]$gitVersion.distribution_version -ne [string]$gitVersion.version) {
+            $distributionVersion = [string]$gitVersion.distribution_version
+        }
+        $gitEvidenceFields = @('present', 'version', 'executable', 'command_resolution')
+        if ($null -ne $distributionVersion) {
+            $gitEvidenceFields = @('present', 'version', 'distribution_version', 'executable', 'command_resolution')
+        }
         $gitObserved = [ordered]@{
             present = $true
             verification = 'verified-present'
             executable = ConvertTo-McNormalizedPath -Path $gitPath
-            version = Get-McProbeVersionText -Probe $gitProbe
+            version = if ($gitVersion) { [string]$gitVersion.version } else { $gitVersionText }
             scope = 'windows-host'
             command_resolution = @(Get-McGitCommandResolution -Candidates $gitCandidates)
             evidence = @([pscustomobject][ordered]@{
                     provider = 'git-for-windows'
                     provider_key = 'git.exe'
-                    fields = @('present', 'version', 'executable', 'command_resolution')
+                    fields = $gitEvidenceFields
                     confidence = 'high'
                 })
+        }
+        if ($null -ne $distributionVersion) {
+            $gitObserved['distribution_version'] = $distributionVersion
         }
         if (-not [string]::IsNullOrWhiteSpace([string]$gitRoot)) {
             $gitObserved.install = [ordered]@{ root = $gitRoot }

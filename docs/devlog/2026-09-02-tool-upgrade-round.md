@@ -20,7 +20,7 @@ and stable updates are welcome again.
 | Git for Windows | 2.54.0 → 2.55.0.5 | Inno `/VERYSILENT /DIR=D:\Git\Git` (LFS 3.7.1 unchanged) |
 | GitHub CLI | 2.98.0 → 2.99.0 | official MSI `/qn` (machine-scope, needed elevation) |
 | Bandizip | 7.40.0.1 → 7.46.0.1 | vendor setup `/S` (upgrades in the registered install dir) |
-| FreeFileSync | 14.5 (skipped) | see below |
+| FreeFileSync | 14.5 → 14.11 | official interactive installer (updated in place; see below) |
 
 Findings worth keeping:
 
@@ -29,11 +29,16 @@ Findings worth keeping:
   `D:\GrokBuild\home\bin` (via `GROK_HOME`) instead of the default `%USERPROFILE%\.grok\bin`.
   The official installer script with `GROK_BIN_DIR` pointed at the existing bin dir updates in
   place (and also refreshes the stale `agent.exe`). A stale off-PATH 0.2.112 copy remains at
-  `%USERPROFILE%\.grok\bin`; left untouched, documented in curated notes.
-- **FreeFileSync cannot be updated in place on the free edition**: the vendor installer
-  rejects `/DIR` outside the Business edition (message box: “/dir 安装选项只在FreeFileSync商用版有效”).
-  Installing without `/DIR` would create a second copy in the default location, so the update
-  was skipped and 14.5 stays recorded.
+  `%USERPROFILE%\.grok\bin`; left untouched, later modeled as collector-owned
+  `observed.alternative_installations` (2026-09-02 close-out).
+- **FreeFileSync (corrected 2026-09-02, later round)**: the first attempt
+  misread the vendor restriction. `/DIR` (and `/silent`) is a **Business
+  edition** installer feature, but the free edition's **interactive**
+  installer happily updates the existing installation in place. Running the
+  official 14.11 installer interactively upgraded 14.5 → 14.11 inside
+  `E:\FreeFileSync` with config and sync jobs intact — no second install.
+  The interactive step is the actual update constraint, now recorded in the
+  entity's curated notes.
 - **Elevation**: the interactive shell is a split-token admin; gh's machine-scope MSI failed
   with 1603 until the four installer steps (git/gh/bandizip/ffs) ran inside one elevated batch.
   The batch waits for all `D:\Git\Git\*` processes to exit before replacing Git, because every

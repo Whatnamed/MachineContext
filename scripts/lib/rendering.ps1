@@ -1,5 +1,22 @@
 Set-StrictMode -Version Latest
 
+function Get-McRenderVersionText {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object]$Observed
+    )
+
+    # A vendor distribution version (e.g. Git for Windows 2.55.0.windows.5)
+    # is strictly more precise than the upstream semantic version, so prefer
+    # it for display when the collector recorded one.
+    $distribution = Get-McRenderProperty -InputObject $Observed -Name 'distribution_version'
+    if (-not [string]::IsNullOrWhiteSpace([string]$distribution)) {
+        return [string]$distribution
+    }
+    return Get-McRenderProperty -InputObject $Observed -Name 'version'
+}
+
 function Get-McRenderProperty {
     [CmdletBinding()]
     param(
@@ -192,7 +209,7 @@ function Invoke-McRender {
     }
     else {
         foreach ($item in $developmentItems) {
-            $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+            $itemVersion = Get-McRenderVersionText -Observed $item.observed
             $itemLocation = Get-McRenderLocation -Observed $item.observed
             [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
         }
@@ -207,7 +224,7 @@ function Invoke-McRender {
     }
     else {
         foreach ($item in $aiItems) {
-            $itemVersion = Get-McRenderProperty -InputObject $item.observed -Name 'version'
+            $itemVersion = Get-McRenderVersionText -Observed $item.observed
             $itemLocation = Get-McRenderLocation -Observed $item.observed
             [void]$lines.Add(('- **{0}** `{1}` — {2} — `{3}`' -f (ConvertTo-McMarkdownValue -Value $item.name), (ConvertTo-McMarkdownValue -Value $item.id), (ConvertTo-McMarkdownValue -Value $itemVersion), (ConvertTo-McMarkdownValue -Value $itemLocation)))
         }

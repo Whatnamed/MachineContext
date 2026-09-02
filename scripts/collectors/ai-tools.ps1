@@ -25,7 +25,16 @@ function Get-McAiDefinitions {
         [pscustomobject]@{ id = 'gemini-cli'; name = 'Gemini CLI'; command = 'gemini'; args = @('--version') },
         [pscustomobject]@{ id = 'cursor-cli'; name = 'Cursor CLI'; command = 'cursor'; args = @('--version') },
         [pscustomobject]@{ id = 'opencodex'; name = 'OpenCodex'; command = 'opencodex'; args = @('--version') },
-        [pscustomobject]@{ id = 'grok'; name = 'Grok Build CLI'; command = 'grok'; args = @('--version') },
+        [pscustomobject]@{
+            id = 'grok'
+            name = 'Grok Build CLI'
+            command = 'grok'
+            args = @('--version')
+            # Known vendor default install locations that may hold off-PATH
+            # copies (e.g. the default %USERPROFILE%\.grok\bin layout the
+            # official installer creates when GROK_BIN_DIR is not set).
+            alternative_locations = @('%USERPROFILE%\.grok\bin\grok.exe')
+        },
         [pscustomobject]@{ id = 'windsurf-cli'; name = 'Windsurf CLI'; command = 'windsurf'; args = @('--version') }
     )
 }
@@ -74,6 +83,37 @@ function Get-McSafeAiPathChecks {
     }
 
     return @($checks)
+}
+
+function Get-McAiAlternativeInstallations {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$DefinitionId,
+
+        [Parameter(Mandatory)]
+        [object[]]$CommandArgs,
+
+        [AllowEmptyCollection()]
+        [object[]]$Locations
+    )
+
+    # Safe existence + version probe of known vendor-default locations that
+    # are not the primary resolution. Fail-soft: a missing file or a failed
+    # probe simply contributes no alternative record.
+    $items = [System.Collections.Generic.List[object]]::new()
+    foreach ($location in @($Locations)) {
+        if ([string]::IsNullOrWhiteSpace([string]$location)) { continue }
+        $expanded = [Environment]::ExpandEnvironmentVariables([string]$location)
+        if (-not (Test-Path -LiteralPath $expanded -PathType Leaf -ErrorAction SilentlyContinue)) { continue }
+        $probe = Invoke-McProbe -Executable $expanded -Arguments @($CommandArgs) -Provider 'ai-tooling' -ProbeName ('{0}-alternative' -f $DefinitionId) -TimeoutMs 8000 -OutputCapBytes 8192
+        if ($probe.status -ne 'success') { continue }
+        [void]$items.Add([pscustomobject][ordered]@{
+            executable = ConvertTo-McNormalizedPath -Path $expanded
+            version    = ConvertTo-McSemanticVersion -Text (Get-McProbeVersionText -Probe $probe) -EntityId $DefinitionId
+        })
+    }
+    return @($items)
 }
 
 function Get-McAiToolObservations {
@@ -173,6 +213,22 @@ function Get-McAiToolObservations {
                     confidence   = 'high'
                 }
             )
+        }
+        $alternativeLocations = @(Get-McCollectionProperty -InputObject $definition -Name 'alternative_locations')
+        if ($alternativeLocations.Count -gt 0) {
+            $alternatives = @(Get-McAiAlternativeInstallations -DefinitionId ([string]$definition.id) -CommandArgs @($definition.args) -Locations $alternativeLocations)
+            if ($alternatives.Count -gt 0) {
+                $observed['alternative_installations'] = @($alternatives)
+                $observed['evidence'] = @(
+                    $observed['evidence']
+                    [pscustomobject][ordered]@{
+                        provider     = 'command'
+                        provider_key = ('{0}-alternative' -f [string]$definition.command)
+                        fields       = @('alternative_installations')
+                        confidence   = 'high'
+                    }
+                )
+            }
         }
         [void]$entities.Add([pscustomobject][ordered]@{
             id = [string]$definition.id
