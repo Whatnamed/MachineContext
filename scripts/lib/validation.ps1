@@ -223,7 +223,7 @@ function Validate-McSoftwareRecord {
 
     $observed = Get-McContractProperty -InputObject $Record -Name 'observed'
     if (Test-McMapping -InputObject $observed) {
-        foreach ($name in @('present', 'version', 'executable')) {
+        foreach ($name in @('present', 'version', 'executable', 'distribution_version')) {
             if (Test-McContractProperty -InputObject $observed -Name $name) {
                 Assert-McContractScalar -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name $name) -Path ("{0}.observed.{1}" -f $Path, $name)
             }

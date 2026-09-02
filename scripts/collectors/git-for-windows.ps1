@@ -107,12 +107,12 @@ function Get-McGitForWindowsObservation {
             })
         $gitVersionText = Get-McProbeVersionText -Probe $gitProbe
         $gitVersion = ConvertFrom-McGitVersionText -Text $gitVersionText
-        $distributionVersion = $null
-        if ($gitVersion -and [string]$gitVersion.distribution_version -ne [string]$gitVersion.version) {
-            $distributionVersion = [string]$gitVersion.distribution_version
-        }
+        # Always manage the field when the banner parses - even with no vendor
+        # delta, where it equals the upstream version - so reconciliation
+        # overwrites the previous value and a removed .windows.N suffix cannot
+        # linger next to a newer upstream version.
         $gitEvidenceFields = @('present', 'version', 'executable', 'command_resolution')
-        if ($null -ne $distributionVersion) {
+        if ($null -ne $gitVersion) {
             $gitEvidenceFields = @('present', 'version', 'distribution_version', 'executable', 'command_resolution')
         }
         $gitObserved = [ordered]@{
@@ -129,8 +129,8 @@ function Get-McGitForWindowsObservation {
                     confidence = 'high'
                 })
         }
-        if ($null -ne $distributionVersion) {
-            $gitObserved['distribution_version'] = $distributionVersion
+        if ($null -ne $gitVersion) {
+            $gitObserved['distribution_version'] = [string]$gitVersion.distribution_version
         }
         if (-not [string]::IsNullOrWhiteSpace([string]$gitRoot)) {
             $gitObserved.install = [ordered]@{ root = $gitRoot }

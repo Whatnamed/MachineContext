@@ -1231,6 +1231,7 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
     $conventionsPath = Join-Path $fixtureRepo 'context\conventions.json'
     $realReviewPath = Join-Path $RepoRoot '.local\g2-semantic-review.json'
     $realReviewHash = if (Test-Path -LiteralPath $realReviewPath -PathType Leaf) { (Get-FileHash -LiteralPath $realReviewPath -Algorithm SHA256).Hash } else { $null }
+    $realReviewExisted = Test-Path -LiteralPath $realReviewPath -PathType Leaf
     try {
         [void](New-Item -ItemType Directory -Path $fixtureRoot -Force)
         [void](New-Item -ItemType Directory -Path (Split-Path -Parent $projectPath) -Force)
@@ -1396,6 +1397,9 @@ Invoke-McTest -Name 'curation confirmation stays explicit and curated-only' -Bod
         if ($null -ne $realReviewHash) {
             Assert-McEqual -Actual (Get-FileHash -LiteralPath $realReviewPath -Algorithm SHA256).Hash -Expected $realReviewHash -Message 'the test must never rewrite the real G2 semantic review draft'
         }
+        if (-not $realReviewExisted) {
+            Assert-McTrue -Condition (-not (Test-Path -LiteralPath $realReviewPath -PathType Leaf)) -Message 'the test must not create the real G2 semantic review draft'
+        }
     }
 }
 
@@ -1412,14 +1416,49 @@ Invoke-McTest -Name 'git for windows distribution version stays exact' -Body {
 
 Invoke-McTest -Name 'ai alternative installations observe known off-PATH copies' -Body {
     $selfExecutable = (Get-Process -Id $PID -ErrorAction Stop).Path
-    $found = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @($selfExecutable)
+    $found = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @($selfExecutable) -PrimaryExecutable 'C:\elsewhere\tool.exe'
     Assert-McEqual -Actual @($found).Count -Expected 1 -Message 'an existing alternative location must produce one record'
     Assert-McTrue -Condition (-not [string]::IsNullOrWhiteSpace([string]$found[0].version)) -Message 'alternative record must carry a normalized version'
     Assert-McTrue -Condition (([string]$found[0].executable).EndsWith('pwsh.exe', [System.StringComparison]::OrdinalIgnoreCase)) -Message 'alternative record must point at the probed executable'
-    $missing = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @('%USERPROFILE%\__mc_missing_fixture__\tool.exe')
+
+    $deduped = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @($selfExecutable) -PrimaryExecutable $selfExecutable
+    Assert-McEqual -Actual @($deduped).Count -Expected 0 -Message 'the primary executable must never be recorded as its own alternative'
+
+    $nonExecutable = Join-Path ([System.IO.Path]::GetTempPath()) ('mc-alt-fixture-' + [guid]::NewGuid().ToString('N') + '.txt')
+    try {
+        Set-Content -LiteralPath $nonExecutable -Value 'fixture' -ErrorAction Stop
+        $existenceOnly = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @($nonExecutable) -PrimaryExecutable 'C:\elsewhere\tool.exe'
+        Assert-McEqual -Actual @($existenceOnly).Count -Expected 1 -Message 'an existing but unprovable alternative must still record its existence'
+        Assert-McEqual -Actual (Get-McObjectPropertyOrNull -InputObject $existenceOnly[0] -Name 'version') -Expected $null -Message 'a failed version probe must not fabricate a version'
+    }
+    finally {
+        Remove-Item -LiteralPath $nonExecutable -Force -ErrorAction SilentlyContinue
+    }
+
+    $missing = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @('%USERPROFILE%\__mc_missing_fixture__\tool.exe') -PrimaryExecutable 'C:\elsewhere\tool.exe'
     Assert-McEqual -Actual @($missing).Count -Expected 0 -Message 'a missing alternative location must contribute no record'
-    $empty = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @()
+    $empty = Get-McAiAlternativeInstallations -DefinitionId 'fixture-tool' -CommandArgs @('--version') -Locations @() -PrimaryExecutable 'C:\elsewhere\tool.exe'
     Assert-McEqual -Actual @($empty).Count -Expected 0 -Message 'no declared locations must contribute no record'
+}
+
+Invoke-McTest -Name 'collector-owned observed fields clear through explicit empty payloads' -Body {
+    $previous = [pscustomobject][ordered]@{
+        present = $true
+        version = '1.0.13'
+        alternative_installations = @([pscustomobject][ordered]@{ executable = '%USERPROFILE%\.grok\bin\grok.exe'; version = '0.2.112' })
+    }
+    $current = [pscustomobject][ordered]@{
+        present = $true
+        version = '1.0.13'
+        alternative_installations = @()
+    }
+    $merged = Merge-McObservedObject -Previous $previous -Current $current
+    Assert-McEqual -Actual @(Get-McObjectPropertyOrNull -InputObject $merged -Name 'alternative_installations').Count -Expected 0 -Message 'an explicit empty alternative list must clear previous entries through reconciliation'
+
+    $previousGit = [pscustomobject][ordered]@{ version = '2.55.0'; distribution_version = '2.55.0.windows.5' }
+    $currentGit = [pscustomobject][ordered]@{ version = '2.56.0'; distribution_version = '2.56.0' }
+    $mergedGit = Merge-McObservedObject -Previous $previousGit -Current $currentGit
+    Assert-McEqual -Actual ([string](Get-McObjectPropertyOrNull -InputObject $mergedGit -Name 'distribution_version')) -Expected '2.56.0' -Message 'a removed vendor delta must overwrite the stale distribution version'
 }
 
 Invoke-McTest -Name 'network listener ownership stays local-only' -Body {

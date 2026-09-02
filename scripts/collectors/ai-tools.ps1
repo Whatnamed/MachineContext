@@ -95,23 +95,28 @@ function Get-McAiAlternativeInstallations {
         [object[]]$CommandArgs,
 
         [AllowEmptyCollection()]
-        [object[]]$Locations
+        [object[]]$Locations,
+
+        [AllowNull()]
+        [string]$PrimaryExecutable
     )
 
-    # Safe existence + version probe of known vendor-default locations that
-    # are not the primary resolution. Fail-soft: a missing file or a failed
-    # probe simply contributes no alternative record.
+    # Safe observation of known vendor-default locations that are not the
+    # primary resolution. Fail-soft on the version probe, but existence is
+    # recorded even when the probe fails; the caller must still publish the
+    # (possibly empty) result so reconciliation can clear stale entries.
     $items = [System.Collections.Generic.List[object]]::new()
     foreach ($location in @($Locations)) {
         if ([string]::IsNullOrWhiteSpace([string]$location)) { continue }
         $expanded = [Environment]::ExpandEnvironmentVariables([string]$location)
+        if (-not [string]::IsNullOrWhiteSpace($PrimaryExecutable) -and $expanded.Equals($PrimaryExecutable, [System.StringComparison]::OrdinalIgnoreCase)) { continue }
         if (-not (Test-Path -LiteralPath $expanded -PathType Leaf -ErrorAction SilentlyContinue)) { continue }
         $probe = Invoke-McProbe -Executable $expanded -Arguments @($CommandArgs) -Provider 'ai-tooling' -ProbeName ('{0}-alternative' -f $DefinitionId) -TimeoutMs 8000 -OutputCapBytes 8192
-        if ($probe.status -ne 'success') { continue }
-        [void]$items.Add([pscustomobject][ordered]@{
-            executable = ConvertTo-McNormalizedPath -Path $expanded
-            version    = ConvertTo-McSemanticVersion -Text (Get-McProbeVersionText -Probe $probe) -EntityId $DefinitionId
-        })
+        $item = [ordered]@{ executable = ConvertTo-McNormalizedPath -Path $expanded }
+        if ($probe.status -eq 'success') {
+            $item['version'] = ConvertTo-McSemanticVersion -Text (Get-McProbeVersionText -Probe $probe) -EntityId $DefinitionId
+        }
+        [void]$items.Add([pscustomobject]$item)
     }
     return @($items)
 }
@@ -214,21 +219,26 @@ function Get-McAiToolObservations {
                 }
             )
         }
-        $alternativeLocations = @(Get-McCollectionProperty -InputObject $definition -Name 'alternative_locations')
-        if ($alternativeLocations.Count -gt 0) {
-            $alternatives = @(Get-McAiAlternativeInstallations -DefinitionId ([string]$definition.id) -CommandArgs @($definition.args) -Locations $alternativeLocations)
-            if ($alternatives.Count -gt 0) {
-                $observed['alternative_installations'] = @($alternatives)
-                $observed['evidence'] = @(
-                    $observed['evidence']
-                    [pscustomobject][ordered]@{
-                        provider     = 'command'
-                        provider_key = ('{0}-alternative' -f [string]$definition.command)
-                        fields       = @('alternative_installations')
-                        confidence   = 'high'
-                    }
-                )
-            }
+        # Always publish the field when locations are declared - including an
+        # empty list - so reconciliation overwrites (and can clear) the
+        # previous value instead of retaining a stale alternative forever.
+        # Property-existence check: a null-safe getter returns $null for a
+        # missing property, and @($null).Count is 1, which would wrongly enter
+        # this branch for every definition.
+        $alternativeLocationsProp = $definition.PSObject.Properties['alternative_locations']
+        if ($alternativeLocationsProp) {
+            $alternativeLocations = @($alternativeLocationsProp.Value | Where-Object { $null -ne $_ })
+            $alternatives = @(Get-McAiAlternativeInstallations -DefinitionId ([string]$definition.id) -CommandArgs @($definition.args) -Locations $alternativeLocations -PrimaryExecutable ([Environment]::ExpandEnvironmentVariables([string]$primary.path)))
+            $observed['alternative_installations'] = @($alternatives)
+            $observed['evidence'] = @(
+                $observed['evidence']
+                [pscustomobject][ordered]@{
+                    provider     = 'command'
+                    provider_key = ('{0}-alternative' -f [string]$definition.command)
+                    fields       = @('alternative_installations')
+                    confidence   = 'high'
+                }
+            )
         }
         [void]$entities.Add([pscustomobject][ordered]@{
             id = [string]$definition.id

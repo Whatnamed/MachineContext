@@ -154,7 +154,9 @@ evidence
 distribution_version
 ```
 
-`distribution_version` (optional) records a vendor distribution/package version that extends the upstream semantic `version` — e.g. Git for Windows reports upstream `2.55.0` as `2.55.0.windows.5`. It is recorded only when it adds information beyond `version`, so a package-only patchlevel update (`​.windows.5` → `​.windows.6`) stays a detectable version change.
+`distribution_version` (optional) records a vendor distribution/package version that extends the upstream semantic `version` — e.g. Git for Windows reports upstream `2.55.0` as `2.55.0.windows.5`. A collector that owns this field manages it explicitly on every successful observation (it equals `version` when there is no vendor delta), so both a package-only patchlevel update (`.windows.5` → `.windows.6`) and the later removal of a vendor delta stay detectable instead of lingering as stale values.
+
+The same overwrite rule applies to collector-owned list fields: when a collector re-observes a field it must always publish it — including as an explicit empty sequence — because reconciliation only replaces fields present in the current observation and would otherwise retain stale entries (for example `alternative_installations` after the alternative copy is deleted).
 
 Typical curated fields (all optional):
 ```text

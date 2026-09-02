@@ -46,6 +46,8 @@ curated            user/agent-owned semantics
 
 **Routine collector 只更新 observed，不得覆盖 curated。**
 
+**Collector 重新观测的字段必须每轮显式发布**（包括显式空列表/等于 `version` 的冗余值）：reconciliation 只覆盖本轮 observation 中出现的字段，未出现的字段会原样保留，因此"条件性省略"会让已删除对象的记录永久残留（见 SCHEMA.md 的 overwrite rule）。
+
 ## A. Machine / OS
 
 V1 采集：
@@ -168,7 +170,7 @@ V1 不默认深入枚举每个 distro 的所有 Linux runtime/package。以后�
 至少关注：
 
 - Git / Git LFS；
-- Git for Windows 额外记录 `distribution_version`（如 `2.55.0.windows.5`；`version` 保持 upstream 语义版本 `2.55.0`），使发行版包补丁级别变化（`.windows.N`）可被检测为真实版本漂移；
+- Git for Windows 额外记录 `distribution_version`（如 `2.55.0.windows.5`；`version` 保持 upstream 语义版本 `2.55.0`）。collector 每轮显式管理该字段（无 vendor delta 时等于 `version`），使 `.windows.N` 补丁级别变化**及其消失**都能被检测为真实版本漂移；
 - Visual Studio edition/version/install path；
 - 关键 VS workloads；
 - MSVC toolset；
