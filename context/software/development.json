@@ -421,12 +421,14 @@
             "fields": [
               "present",
               "version",
+              "distribution_version",
               "executable",
               "command_resolution"
             ],
             "confidence": "high"
           }
-        ]
+        ],
+        "distribution_version": "2.55.0.windows.5"
       },
       "curated": {}
     },

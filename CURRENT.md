@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-02T13:24:02.9192881Z
+- Verified at: 2026-09-02T15:15:09.0254394Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,14 +38,14 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
   - `C:\` NTFS (16.5/195.9 GiB free/total)
-  - `D:\` NTFS (33.0/279.3 GiB free/total)
+  - `D:\` NTFS (31.0/279.3 GiB free/total)
   - `E:\` NTFS (21.8/953.9 GiB free/total)
 
 ## Development environment
 
 - **Agently CLI** `agently-cli` — 1.0.5 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.4 — `E:\Dev\npm-global\codex-threadripper.cmd`
-- **Git** `git` — 2.55.0 — `D:\Git\Git\cmd\git.exe`
+- **Git** `git` — 2.55.0.windows.5 — `D:\Git\Git\cmd\git.exe`
 - **Git LFS** `git-lfs` — 3.7.1 — `D:\Git\Git\cmd\git-lfs.exe`
 - **Lark CLI** `lark-cli` — 1.0.64 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
@@ -81,7 +81,7 @@
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.152.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.825.6671.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.831.2377.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.831.2377.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`

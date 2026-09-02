@@ -173,7 +173,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "14.5",
+        "version": "14.11",
         "executable": "E:\\FreeFileSync\\FreeFileSync.exe",
         "evidence": [
           {
@@ -185,10 +185,22 @@
               "executable"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKLM/WOW6432Node/FreeFileSync_is1",
+            "fields": [
+              "version"
+            ],
+            "confidence": "high"
           }
         ]
       },
-      "curated": {}
+      "curated": {
+        "notes": [
+          "free/standard edition: silent installation (/silent and /dir) is a Business-edition feature; in-place updates run the official interactive installer, which preserves the registered E:\\FreeFileSync root (2026-09-02: 14.5 -> 14.11 in place)"
+        ]
+      }
     },
     {
       "schema_version": 1,

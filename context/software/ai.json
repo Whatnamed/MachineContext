@@ -277,7 +277,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.825.6671.0",
+        "version": "26.831.2377.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -291,8 +291,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.831.2377.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.831.2377.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -482,6 +482,12 @@
             "command_type": "PersistentApplication"
           }
         ],
+        "alternative_installations": [
+          {
+            "version": "0.2.112",
+            "executable": "%USERPROFILE%\\.grok\\bin\\grok.exe"
+          }
+        ],
         "evidence": [
           {
             "provider": "command",
@@ -493,13 +499,20 @@
               "command_resolution"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "command",
+            "provider_key": "grok-alternative",
+            "fields": [
+              "alternative_installations"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
         "notes": [
-          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)",
-          "a stale off-PATH 0.2.112 copy remains in the default installer location %USERPROFILE%\\.grok\\bin; the primary install is D:\\GrokBuild\\home\\bin (GROK_HOME)"
+          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)"
         ],
         "purpose": "Grok build tool and agent runner."
       }
