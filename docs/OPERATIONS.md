@@ -110,11 +110,11 @@
 - **收集字段**:
   - config.yml:`shellPath`、`defaultThinkingLevel`、`modelRoles`(名→标量)、`providers.webSearchOrder`(标量序列);
   - models.yml 每个 provider:`api`、`authHeader`、`baseUrl`(safe-url)、`apiKey`/`apiKeyEnv`→`credentialEnvName`、`models[]` 的 `id/name/reasoning/input/tokenizer/supportsTools/contextWindow/maxTokens` + `thinking{mode,efforts,defaultLevel,requiresEffort}` + `compat{supportsReasoningEffort}`、`modelOverrides`(同模型 allowlist)。
-- **记录位置**:profile → `context/configs/ai/omp.json`(`credential_env_names` 汇总环境变量名);实体 → `context/software/ai.json`(`install.root` 每次从解析到的 executable 自动推导;`curated.notes` 记录版本钉住策略)。
+- **记录位置**:profile → `context/configs/ai/omp.json`(`credential_env_names` 汇总环境变量名);实体 → `context/software/ai.json`(`install.root` 每次从解析到的 executable 自动推导;`curated.notes` 记录更新策略)。
 - **变更后易漏项**:
   - models.yml 新加 provider → sync 自动投影;**检查 `unprojected_keys` 是否出现意料外字段名**(说明源里有 allowlist 外的东西,需评估是否扩 allowlist);
   - 新增 `compat`/`thinking` 子字段需要显式扩 allowlist(嵌套 object schema 是 mapping-only,未知形状会被拒并记 redaction);
-  - OMP 版本有意钉在 18.0.6,**不要执行 `omp update`**;
+  - OMP 跟随上游 stable 更新(2026-09-02 用户决定取消早先的 18.0.6 临时钉版):直接执行 `omp update`,它会把 `D:\OMP\omp.exe` 原地替换并在同目录留一个 `omp.exe.*.bak` 旧版备份(更新器自身行为,无需处理);
   - OMP 无文件级 MCP 配置,mcp.json 的 `unresolved` 说明是预期状态。
 
 ### 4.3 DSH
