@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-08-31T07:43:49.6043569Z
+- Verified at: 2026-09-02T13:24:02.9192881Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,30 +37,30 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (610.88)
 - Storage:
-  - `C:\` NTFS (18.0/195.9 GiB free/total)
-  - `D:\` NTFS (33.2/279.3 GiB free/total)
-  - `E:\` NTFS (22.5/953.9 GiB free/total)
+  - `C:\` NTFS (16.5/195.9 GiB free/total)
+  - `D:\` NTFS (33.0/279.3 GiB free/total)
+  - `E:\` NTFS (21.8/953.9 GiB free/total)
 
 ## Development environment
 
 - **Agently CLI** `agently-cli` — 1.0.5 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.4 — `E:\Dev\npm-global\codex-threadripper.cmd`
-- **Git** `git` — 2.54.0 — `D:\Git\Git\cmd\git.exe`
+- **Git** `git` — 2.55.0 — `D:\Git\Git\cmd\git.exe`
 - **Git LFS** `git-lfs` — 3.7.1 — `D:\Git\Git\cmd\git-lfs.exe`
 - **Lark CLI** `lark-cli` — 1.0.64 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
 - **OpenCLI** `opencli` — 1.8.4 — `E:\Dev\npm-global\opencli.cmd`
 - **Supabase CLI** `supabase` — 2.116.0 — `D:\Tools\SupabaseCLI\2.116.0\node_modules\.bin\supabase.cmd`
-- **GitHub CLI** `gh` — 2.98.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
+- **GitHub CLI** `gh` — 2.99.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.98.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Unity Hub** `unity-hub` — 3.3.3-c3 — `D:\Unity\Unity Hub\Unity Hub.exe`
 - **Visual Studio** `visual-studio` — 17.13.35919.96 — `D:\Visual Studio\product`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.98.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
-- **pip** `pip` — 25.0.1 — `D:\Python\3.12.10\Scripts\pip.exe`
-- **uv** `uv` — 0.12.5 — `E:\Dev\uv\uv.exe`
-- **uvx** `uvx` — 0.12.5 — `E:\Dev\uv\uvx.exe`
+- **pip** `pip` — 26.2.1 — `D:\Python\3.12.10\Scripts\pip.exe`
+- **uv** `uv` — 0.12.9 — `E:\Dev\uv\uv.exe`
+- **uvx** `uvx` — 0.12.9 — `E:\Dev\uv\uvx.exe`
 - **winget** `winget` — 1.29.290 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
 - **Bun** `bun` — 1.4.0 — `%USERPROFILE%\.bun\bin\bun.exe`
@@ -80,16 +80,16 @@
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.241 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
-- **Codex CLI** `codex-cli` — 0.149.1 — `E:\Codex\codex-cli\codex.cmd`
+- **Codex CLI** `codex-cli` — 0.152.1 — `E:\Codex\codex-cli\codex.cmd`
 - **Codex Desktop** `codex-desktop` — 26.825.6671.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.825.6671.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.1.1-rc.2 — `D:\DSH\dsh.cmd`
-- **Grok Build CLI** `grok` — 1.0.4 — `D:\GrokBuild\home\bin\grok.exe`
-- **Oh My Pi** `omp` — 18.0.6 — `D:\OMP\omp.exe`
+- **Grok Build CLI** `grok` — 1.0.13 — `D:\GrokBuild\home\bin\grok.exe`
+- **Oh My Pi** `omp` — 18.1.2 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
-- **OpenCodex** `opencodex` — 2.33.0 — `E:\Dev\npm-global\opencodex.cmd`
+- **OpenCodex** `opencodex` — 2.40.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.1.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`

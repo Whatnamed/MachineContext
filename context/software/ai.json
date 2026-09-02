@@ -215,7 +215,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.149.1",
+        "version": "0.152.1",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
@@ -474,7 +474,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.4",
+        "version": "1.0.13",
         "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
         "command_resolution": [
           {
@@ -497,6 +497,10 @@
         ]
       },
       "curated": {
+        "notes": [
+          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)",
+          "a stale off-PATH 0.2.112 copy remains in the default installer location %USERPROFILE%\\.grok\\bin; the primary install is D:\\GrokBuild\\home\\bin (GROK_HOME)"
+        ],
         "purpose": "Grok build tool and agent runner."
       }
     },
@@ -508,7 +512,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.0.6",
+        "version": "18.1.2",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -556,9 +560,8 @@
       },
       "curated": {
         "notes": [
-          "version intentionally pinned to 18.0.6; do not run omp update"
-        ],
-        "update_method": "manual-pin"
+          "tracks upstream stable releases; update with the official `omp update` (the earlier temporary 18.0.6 pin was removed by user decision on 2026-09-02)"
+        ]
       }
     },
     {
@@ -596,7 +599,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.33.0",
+        "version": "2.40.0",
         "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
         "command_resolution": [
           {

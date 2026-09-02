@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 19327352832,
+      "free_bytes": 17716740096,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 35701915648,
+      "free_bytes": 35433480192,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 24159191040,
+      "free_bytes": 23353884672,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -211,7 +211,7 @@
         "verification": "verified-present",
         "verification_provider": "git-for-windows",
         "verification_reason": "version-probe-success",
-        "version": "5.3.9",
+        "version": "5.3.15",
         "executable": "D:\\Git\\Git\\bin\\bash.exe",
         "command_resolution": [
           {
@@ -403,10 +403,10 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Git\\Git\\cmd",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
-      "%PROGRAMFILES%\\GitHub CLI",
-      "D:\\Go\\bin"
+      "D:\\Go\\bin",
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI"
     ],
     "persistent_effective_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -424,10 +424,10 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Git\\Git\\cmd",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
-      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Go\\bin",
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
       "D:\\GrokBuild\\home\\bin",
@@ -485,10 +485,10 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Git\\Git\\cmd",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
-      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Go\\bin",
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
       "D:\\GrokBuild\\home\\bin",

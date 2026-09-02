@@ -362,7 +362,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.98.0",
+        "version": "2.99.0",
         "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
         "command_resolution": [
           {
@@ -400,14 +400,14 @@
         "verification": "verified-present",
         "verification_provider": "git-for-windows",
         "verification_reason": "version-probe-success",
-        "version": "2.54.0",
+        "version": "2.55.0",
         "executable": "D:\\Git\\Git\\cmd\\git.exe",
         "command_resolution": [
           {
             "scope": "windows-host",
             "executable": "D:\\Git\\Git\\cmd\\git.exe",
             "command_type": "PersistentApplication",
-            "path_index": 15,
+            "path_index": 17,
             "source": "persistent-path"
           }
         ],
@@ -682,7 +682,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "25.0.1",
+        "version": "26.2.1",
         "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
         "command_resolution": [
           {
@@ -978,7 +978,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.5",
+        "version": "0.12.9",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1013,7 +1013,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.5",
+        "version": "0.12.9",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {

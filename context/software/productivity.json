@@ -40,7 +40,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "7.40.0.1",
+        "version": "7.46.0.1",
         "executable": "D:\\BANDIZIP\\Bandizip.exe",
         "evidence": [
           {
@@ -50,6 +50,14 @@
               "present",
               "version",
               "executable"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKLM/Bandizip",
+            "fields": [
+              "version"
             ],
             "confidence": "high"
           }
