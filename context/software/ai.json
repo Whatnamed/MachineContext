@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.1.22",
+        "version": "1.1.27",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -37,7 +37,7 @@
         "config_paths": [
           {
             "kind": "config-file",
-            "path": "%USERPROFILE%\\.gemini\\settings.json",
+            "path": "%USERPROFILE%\\.gemini\\antigravity-cli\\settings.json",
             "exists": true
           }
         ],
@@ -64,10 +64,21 @@
               "command_resolution"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "agy-config-paths",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
+        "notes": [
+          "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers"
+        ],
         "purpose": "Google Antigravity CLI coding assistant."
       }
     },
@@ -215,7 +226,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.152.1",
+        "version": "0.153.4",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
@@ -277,7 +288,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.831.2377.0",
+        "version": "26.901.4073.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -291,8 +302,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.831.2377.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.831.2377.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.901.4073.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.901.4073.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -525,7 +536,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.1.2",
+        "version": "18.1.10",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -612,7 +623,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.40.0",
+        "version": "2.42.0",
         "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
         "command_resolution": [
           {

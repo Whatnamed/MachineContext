@@ -342,7 +342,7 @@
           "name": "BigModel - Coding Plan",
           "baseURL": "https://open.bigmodel.cn/api/anthropic",
           "credential_configured": true,
-          "enabled": true,
+          "enabled": false,
           "models": {
             "GLM-5-Turbo": {
               "name": "glm-5-turbo",
