@@ -1791,7 +1791,9 @@ Invoke-McTest -Name 'Agy MCP source projects servers and filters credentials' -B
 
     # remote server with Authorization/X-Api-Key headers, credentialed URL and
     # a credential argv pair must not leak any of that material
-    $remote = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.remote-secret.json')
+    # (named remote-headers because the repo gitignore excludes *secret* and
+    # *credential* path names, which would silently drop the fixture)
+    $remote = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.remote-headers.json')
     $agyRemote = @($remote.observed.servers) | Where-Object { $_.tool -eq 'agy' }
     Assert-McEqual -Actual ([string]$agyRemote.name) -Expected 'fixture-agy-remote' -Message 'Agy remote MCP server collected'
     Assert-McEqual -Actual ([string]$agyRemote.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'Agy MCP url sanitized (userinfo and query stripped)'

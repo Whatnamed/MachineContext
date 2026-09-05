@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "fixture-agy-remote": {
+      "type": "http",
+      "url": "https://fixture-user-id-must-not-leak:must-not-leak-either@mcp.fixture.example.com/mcp?token=sk-test-do-not-publish",
+      "headers": {
+        "Authorization": "Bearer sk-test-do-not-publish",
+        "X-Api-Key": "fixture-header-secret"
+      },
+      "args": ["--api-key", "opaque-secret-value", "--verbose"]
+    }
+  }
+}
