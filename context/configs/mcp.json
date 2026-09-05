@@ -102,8 +102,7 @@
     "unresolved": [
       "omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext",
       "dsh: no file-based MCP configuration discovered",
-      "zcode: no file-based MCP configuration discovered",
-      "agy: no file-based MCP configuration discovered"
+      "zcode: no file-based MCP configuration discovered"
     ],
     "value_basis": "configured-local"
   },
@@ -140,6 +139,12 @@
       },
       {
         "path": "%USERPROFILE%\\.qoder-cn\\settings.json",
+        "exists": true,
+        "format": "json",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.gemini\\config\\mcp_config.json",
         "exists": true,
         "format": "json",
         "role": "mcp-config"
