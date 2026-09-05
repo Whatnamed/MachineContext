@@ -412,7 +412,7 @@ Canonical module：`context/configs/`（index + 每工具一个 profile 文件 +
 - args 按序列检查：credential 类 flag（`--token`、`--api-key`、`-H`/`--header` 等）连同它消费的下一个 argv 一起丢弃并记 redaction，`--token=...` 形式单独丢弃；
 - env 只保存变量名。
 
-无文件级 MCP 配置的工具在 `unresolved` 中说明（OMP 的状态数据库永远不被读取）。
+无文件级 MCP 配置的工具在 `unresolved` 中说明（OMP 的状态数据库永远不被读取）。源文件存在但未声明任何 server 属正常观察：记 0 个 server、不进 `unresolved`（如 agy 的 `~/.gemini/config/mcp_config.json`——它与 Gemini CLI 的 `~/.gemini/settings.json` 是两个不同文件）；只有确认源文件缺失才记 unresolved。
 
 ### 刷新与删除
 

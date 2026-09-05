@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fixture-agy-stdio": {
+      "command": "C:\\Users\\fixture\\.agy\\mcp\\out\\server.exe",
+      "args": ["--app", "cursor", "--agent", "agyCLI"]
+    }
+  }
+}

@@ -601,7 +601,8 @@ function Get-McMcpInventoryRecord {
         [string]$GeminiSettingsPath = (Join-Path $env:USERPROFILE '.gemini\settings.json'),
         [string]$CodexConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml'),
         [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json'),
-        [string]$QoderSettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json')
+        [string]$QoderSettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json'),
+        [string]$AgyMcpConfigPath = (Join-Path $env:USERPROFILE '.gemini\config\mcp_config.json')
     )
 
     $redactions = [System.Collections.Generic.List[object]]::new()
@@ -701,13 +702,38 @@ function Get-McMcpInventoryRecord {
             Add-McProjectionRedaction -Redactions $Redactions -Path 'mcp.qoder' -Reason 'unparseable-source'
         }
     }
+    if (Test-Path -LiteralPath $AgyMcpConfigPath -PathType Leaf) {
+        # Antigravity CLI's global MCP configuration. Distinct from Gemini
+        # CLI's %USERPROFILE%\.gemini\settings.json. The file may be a genuine
+        # 0-byte placeholder - Agy's own parser treats that as "no servers" -
+        # so emptiness is a normal observation, not an unparseable source.
+        # Headers (Authorization, OAuth tokens) are never read; only
+        # type/command/url/args/env names go through the shared sanitizers.
+        [void]$files.Add((New-McConfigSourceFileRecord -Path $AgyMcpConfigPath -Format json -Role mcp-config))
+        try {
+            $agyMcpText = [System.IO.File]::ReadAllText($AgyMcpConfigPath).TrimStart([char]0xFEFF)
+            if (-not [string]::IsNullOrWhiteSpace($agyMcpText)) {
+                $agyMcp = $agyMcpText | ConvertFrom-Json -Depth 100
+                foreach ($entry in (Get-McPropertyEntries -InputObject (Get-McCollectionProperty -InputObject $agyMcp -Name 'mcpServers'))) {
+                    Add-McMcpServer -Tool 'agy' -Scope 'user' -Name ([string]$entry.Name) -Definition $entry.Value
+                }
+            }
+        }
+        catch {
+            Add-McProjectionRedaction -Redactions $Redactions -Path 'mcp.agy' -Reason 'unparseable-source'
+        }
+    }
 
-    $unresolved = @(
-        'omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext'
-        'dsh: no file-based MCP configuration discovered'
-        'zcode: no file-based MCP configuration discovered'
-        'agy: no file-based MCP configuration discovered'
-    )
+    $unresolved = [System.Collections.Generic.List[string]]::new()
+    $unresolved.Add('omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext')
+    $unresolved.Add('dsh: no file-based MCP configuration discovered')
+    $unresolved.Add('zcode: no file-based MCP configuration discovered')
+    # Agy's global MCP file is an official source: when it exists the servers
+    # above are authoritative even if empty, so only a missing file stays
+    # unresolved.
+    if ((-not [string]::IsNullOrWhiteSpace($AgyMcpConfigPath)) -and -not (Test-Path -LiteralPath $AgyMcpConfigPath -PathType Leaf)) {
+        $unresolved.Add('agy: no file-based MCP configuration discovered')
+    }
 
     return [pscustomobject][ordered]@{
         schema_version = 1
@@ -741,7 +767,8 @@ function Get-McConfigProfileObservations {
         [string]$ClaudeConfigPath = (Join-Path $env:USERPROFILE '.claude.json'),
         [string]$GeminiSettingsPath = (Join-Path $env:USERPROFILE '.gemini\settings.json'),
         [string]$CodexConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml'),
-        [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json')
+        [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json'),
+        [string]$AgyMcpConfigPath = (Join-Path $env:USERPROFILE '.gemini\config\mcp_config.json')
     )
 
     $profiles = [System.Collections.Generic.List[object]]::new()
@@ -788,7 +815,7 @@ function Get-McConfigProfileObservations {
         }
     }
 
-    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath -QoderSettingsPath $QoderSettingsPath
+    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath -QoderSettingsPath $QoderSettingsPath -AgyMcpConfigPath $AgyMcpConfigPath
 
     $health = if ($warnings.Count -gt 0) { 'partial' } else { 'success' }
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{

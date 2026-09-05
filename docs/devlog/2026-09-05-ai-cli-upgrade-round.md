@@ -32,6 +32,15 @@ Notes:
 - ZCode provider toggle (BigModel - Coding Plan disabled) — user action in the desktop app.
 - Storage free-space heartbeat on C:/D:/E:.
 
+## Follow-up: Agy global MCP source added to the collector (reviewer feedback)
+
+The main round left the mcp.json `unresolved` note "agy: no file-based MCP configuration discovered" in place, but the official Antigravity CLI global MCP file `%USERPROFILE%\.gemini\config\mcp_config.json` does exist on this machine (a 0-byte placeholder) — a future `/mcp add` in Agy would have been invisible to routine sync. `config-profiles.ps1` now collects it as the sixth MCP source:
+
+- reads the official `mcpServers` key through the shared sanitizers (transport/command/normalized command/safe URL/sequence-checked args/env names only; `headers` are never read);
+- a 0-byte or whitespace file is a normal observation (source recorded, 0 servers, no redaction, no unresolved) — the machine's real file is exactly this state; only a genuinely malformed source records `unparseable-source`, and only a missing file stays unresolved;
+- fixtures: `{}`, 0-byte, one stdio server, and a remote server with Authorization/X-Api-Key headers plus a credentialed URL (userinfo/query stripped, credential argv pair dropped);
+- docs: OPERATIONS §4.7 now lists six MCP sources and spells out the Gemini CLI vs Agy file distinction; COLLECTION_SPEC records the empty-file semantics.
+
 ## Gates
 
 sync (validation ok) → agy one-time correction → diff review (line by line) → validate 0 findings → second sync idempotent → privacy sweep clean. No collector/schema changes this round, so the test suite gate was not triggered (no code changed).

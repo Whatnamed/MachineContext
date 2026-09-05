@@ -1738,9 +1738,12 @@ Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing 
         -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
         -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
         -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json') `
-        -QoderSettingsPath (Join-Path $configFixtureRoot 'qoder\settings.json')
+        -QoderSettingsPath (Join-Path $configFixtureRoot 'qoder\settings.json') `
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
     $servers = @($mcp.observed.servers)
-    Assert-McEqual -Actual $servers.Count -Expected 6 -Message 'MCP servers collected from all five sources'
+    Assert-McEqual -Actual $servers.Count -Expected 6 -Message 'MCP servers collected from all six sources (Agy source currently empty)'
+    Assert-McTrue -Condition (@($mcp.source.files | Where-Object { $_.path -like '*mcp_config.empty.json' }).Count -eq 1) -Message 'Agy MCP source file must be recorded when it exists'
+    Assert-McTrue -Condition (@($mcp.observed.unresolved | Where-Object { $_ -like 'agy:*' }).Count -eq 0) -Message 'an existing (even empty) Agy MCP source must not be unresolved'
     $qoderServer = $servers | Where-Object { $_.tool -eq 'qoder' }
     Assert-McEqual -Actual ([string]$qoderServer.name) -Expected 'fixture-github' -Message 'Qoder MCP server collected'
     Assert-McEqual -Actual ([string]$qoderServer.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'Qoder MCP url kept (sanitized)'
@@ -1767,6 +1770,53 @@ Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing 
     Assert-McTrue -Condition ($mcpText -notmatch 'X-Api-Key') -Message 'MCP inventory must not contain header credential material'
     Assert-McTrue -Condition ($mcpText -notmatch 'fixture-user-id-must-not-leak') -Message 'MCP inventory must not leak unrelated config state'
     Assert-McTrue -Condition ($mcpText -notmatch 'fixture-uuid-must-not-leak') -Message 'MCP inventory must not leak account identifiers'
+}
+
+Invoke-McTest -Name 'Agy MCP source projects servers and filters credentials' -Body {
+    $baseArgs = @{
+        ClaudeConfigPath   = (Join-Path $configFixtureRoot 'mcp\claude.json')
+        GeminiSettingsPath = (Join-Path $configFixtureRoot 'mcp\gemini-settings.json')
+        CodexConfigPath    = (Join-Path $configFixtureRoot 'mcp\codex-config.toml')
+        CursorMcpPath      = (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+        QoderSettingsPath  = (Join-Path $configFixtureRoot 'qoder\settings.json')
+    }
+
+    # stdio server flows through the shared safe projection path
+    $stdio = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.stdio.json')
+    $agyStdio = @($stdio.observed.servers) | Where-Object { $_.tool -eq 'agy' }
+    Assert-McEqual -Actual @($agyStdio).Count -Expected 1 -Message 'Agy stdio MCP server collected'
+    Assert-McEqual -Actual ([string]$agyStdio.name) -Expected 'fixture-agy-stdio' -Message 'Agy MCP server name projected'
+    Assert-McEqual -Actual ([string]$agyStdio.transport) -Expected 'stdio' -Message 'Agy MCP transport defaults to stdio'
+    Assert-McEqual -Actual (@($agyStdio.args) -join ' ') -Expected '--app cursor --agent agyCLI' -Message 'Agy MCP safe args kept'
+
+    # remote server with Authorization/X-Api-Key headers, credentialed URL and
+    # a credential argv pair must not leak any of that material
+    $remote = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.remote-secret.json')
+    $agyRemote = @($remote.observed.servers) | Where-Object { $_.tool -eq 'agy' }
+    Assert-McEqual -Actual ([string]$agyRemote.name) -Expected 'fixture-agy-remote' -Message 'Agy remote MCP server collected'
+    Assert-McEqual -Actual ([string]$agyRemote.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'Agy MCP url sanitized (userinfo and query stripped)'
+    $remoteText = ConvertTo-McJsonText -InputObject $remote
+    Assert-McTrue -Condition ($remoteText -notmatch 'sk-test-do-not-publish') -Message 'Agy MCP inventory must not contain the fake token value'
+    Assert-McTrue -Condition ($remoteText -notmatch 'opaque-secret-value') -Message 'Agy credential argv value must be dropped with its flag'
+    Assert-McTrue -Condition ($remoteText -notmatch 'Authorization') -Message 'Agy MCP headers must never be read'
+    Assert-McTrue -Condition ($remoteText -notmatch 'X-Api-Key') -Message 'Agy MCP header names must never be read'
+    Assert-McTrue -Condition ($remoteText -notmatch 'fixture-user-id-must-not-leak') -Message 'Agy MCP url userinfo must not leak'
+    Assert-McTrue -Condition (@($remote.observed.redactions | Where-Object { $_.path -like 'mcp.agy.fixture-agy-remote*' }).Count -ge 2) -Message 'Agy credential URL and argv must be recorded as redactions'
+
+    # missing file: agy becomes an unresolved entry with no source record
+    $missing = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\does-not-exist.json')
+    Assert-McTrue -Condition (@($missing.source.files | Where-Object { $_.path -like '*does-not-exist.json' }).Count -eq 0) -Message 'missing Agy MCP source must not be recorded as a file'
+    Assert-McTrue -Condition (@($missing.observed.unresolved | Where-Object { $_ -like 'agy:*' }).Count -eq 1) -Message 'missing Agy MCP source must stay unresolved'
+
+    # A 0-byte mcp_config.json is a real placeholder state (the machine's
+    # actual file): source recorded, zero servers, no redaction, no unresolved
+    $zeroByte = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.zero-byte.json')
+    Assert-McTrue -Condition (@($zeroByte.source.files | Where-Object { $_.path -like '*mcp_config.zero-byte.json' }).Count -eq 1) -Message 'zero-byte Agy MCP source must still be recorded as a file'
+    Assert-McEqual -Actual @($zeroByte.observed.servers | Where-Object { $_.tool -eq 'agy' }).Count -Expected 0 -Message 'zero-byte Agy MCP config must yield zero servers'
+    Assert-McTrue -Condition (@($zeroByte.observed.unresolved | Where-Object { $_ -like 'agy:*' }).Count -eq 0) -Message 'zero-byte Agy MCP source must not be unresolved'
+    Assert-McTrue -Condition (@($zeroByte.observed.redactions | Where-Object { $_.path -like 'mcp.agy*' }).Count -eq 0) -Message 'empty Agy MCP source must not be treated as unparseable'
+    $emptyRecord = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
+    Assert-McTrue -Condition (@($emptyRecord.observed.redactions | Where-Object { $_.path -like 'mcp.agy*' }).Count -eq 0) -Message 'empty-object Agy MCP source must not be treated as unparseable'
 }
 
 Invoke-McTest -Name 'config profile validation rejects sensitive keys and accepts good records' -Body {
@@ -1814,7 +1864,8 @@ Invoke-McTest -Name 'config profile reconciliation writes index and preserves cu
         -ClaudeConfigPath (Join-Path $configFixtureRoot 'mcp\claude.json') `
         -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
         -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
-        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+        -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json') `
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
     Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @($profile) -McpInventory $mcp
 
     $written = Read-McJson -Path (Join-Path $aiRoot 'omp.json')

@@ -152,7 +152,7 @@
 
 ### 4.7 MCP 跨工具清单
 
-- **采集源**(五个):`%USERPROFILE%\.claude.json`、`%USERPROFILE%\.gemini\settings.json`、`%USERPROFILE%\.codex\config.toml`(`[mcp_servers.*]` 表)、`%USERPROFILE%\.cursor\mcp.json`、`%USERPROFILE%\.qoder-cn\settings.json`(`mcpServers` 键;运行时 `mcp-router.json` 含 API key,永不读取)。
+- **采集源**(六个):`%USERPROFILE%\.claude.json`、`%USERPROFILE%\.gemini\settings.json`(**Gemini CLI** 的 MCP 源)、`%USERPROFILE%\.gemini\config\mcp_config.json`(**Antigravity CLI (agy)** 的全局 MCP 源,`mcpServers` 键——与 Gemini CLI 的 settings.json 是两个不同文件;文件存在但为空时不算 unresolved,只有文件缺失才记 unresolved)、`%USERPROFILE%\.codex\config.toml`(`[mcp_servers.*]` 表)、`%USERPROFILE%\.cursor\mcp.json`、`%USERPROFILE%\.qoder-cn\settings.json`(`mcpServers` 键;运行时 `mcp-router.json` 含 API key,永不读取)。
 - **收集字段**:`tool/scope/name/transport`、`command`(归一化)、`url`(safe-url)、`args`(**按序列检查**:credential 类 flag(`--token`、`--api-key`、`-H`/`--header` 等)连同它消费的下一个 argv 一起丢弃;`flag=value` 形式单独丢弃)、`env` 只存变量名。
 - **记录位置**:`context/configs/mcp.json`;无文件级 MCP 的工具在 `unresolved` 中说明。
 - **变更后易漏项**:新工具若也有 MCP 配置文件,需要给 collector 增加对应源(参考 §7 checklist);diff 里 `redactions` 出现 `unsafe-argument`/`credential-argument` 属预期防护。
