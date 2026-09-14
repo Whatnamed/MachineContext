@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.1.27",
+        "version": "1.2.2",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -38,6 +38,11 @@
           {
             "kind": "config-file",
             "path": "%USERPROFILE%\\.gemini\\antigravity-cli\\settings.json",
+            "exists": true
+          },
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.gemini\\config\\GEMINI.md",
             "exists": true
           }
         ],
@@ -72,12 +77,21 @@
               "config_paths"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-15",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
         "notes": [
-          "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers"
+          "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers",
+          "global customization root is %USERPROFILE%\\.gemini\\config (per agy embedded docs); global rules deployed at config\\GEMINI.md (2026-09-15, verified via agy -p) — not %USERPROFILE%\\.gemini\\GEMINI.md"
         ],
         "purpose": "Google Antigravity CLI coding assistant."
       }
@@ -144,7 +158,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.1.241",
+        "version": "2.1.270",
         "executable": "D:\\Claude\\cli\\claude.cmd",
         "command_resolution": [
           {
@@ -156,6 +170,11 @@
           {
             "kind": "config-file",
             "path": "%USERPROFILE%\\.claude.json",
+            "exists": true
+          },
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.claude\\CLAUDE.md",
             "exists": true
           }
         ],
@@ -177,10 +196,21 @@
               "command_resolution"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-15",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
+        "notes": [
+          "user-level global rules deployed at %USERPROFILE%\\.claude\\CLAUDE.md (2026-09-15, shared personal ruleset; also feeds Grok via its Claude compatibility)"
+        ],
         "purpose": "Anthropic Claude Code CLI assistant."
       }
     },
@@ -226,7 +256,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.153.4",
+        "version": "0.154.0",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
@@ -244,6 +274,11 @@
           {
             "kind": "config-file",
             "path": "%USERPROFILE%\\.codex\\config.toml",
+            "exists": true
+          },
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.codex\\AGENTS.md",
             "exists": true
           }
         ],
@@ -270,10 +305,21 @@
               "command_resolution"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-15",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
+        "notes": [
+          "user-level global rules deployed at %USERPROFILE%\\.codex\\AGENTS.md (2026-09-15, shared personal ruleset; Codex verified via codex exec)"
+        ],
         "purpose": "OpenAI Codex CLI coding assistant."
       }
     },
@@ -288,7 +334,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.901.5280.0",
+        "version": "26.908.4834.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -302,8 +348,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.901.5280.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.901.5280.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.908.4834.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.908.4834.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -439,7 +485,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.1.1-rc.2",
+        "version": "0.1.5-rc.1",
         "executable": "D:\\DSH\\dsh.cmd",
         "command_resolution": [
           {
@@ -485,7 +531,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.13",
+        "version": "1.0.30",
         "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
         "command_resolution": [
           {
@@ -523,7 +569,9 @@
       },
       "curated": {
         "notes": [
-          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)"
+          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)",
+          "global rules come from %USERPROFILE%\\.claude\\CLAUDE.md via Grok Claude Code compatibility (verified with grok inspect 2026-09-15); no AGENTS.md in the grok home because Grok would inject both copies",
+          "2026-09-15: 1.0.13 -> 1.0.30 by copying the official stable-channel artifact (storage.googleapis.com/grok-build-public-artifacts/cli) over grok.exe in place; `grok update` still reports \"program not found\" and its npm-reinstall hint would create a second install"
         ],
         "purpose": "Grok build tool and agent runner."
       }
@@ -536,7 +584,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.1.10",
+        "version": "18.1.21",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -584,7 +632,8 @@
       },
       "curated": {
         "notes": [
-          "tracks upstream stable releases; update with the official `omp update` (the earlier temporary 18.0.6 pin was removed by user decision on 2026-09-02)"
+          "tracks upstream stable releases; update with the official `omp update` (the earlier temporary 18.0.6 pin was removed by user decision on 2026-09-02)",
+          "reads user-level global rules from %USERPROFILE%\\.codex\\AGENTS.md via its context discovery (verified 2026-09-15 via omp -p); no OMP-specific global rules file exists by design to avoid duplicate injection"
         ]
       }
     },
@@ -646,6 +695,10 @@
         ]
       },
       "curated": {
+        "status": "inactive",
+        "notes": [
+          "no longer used by the user (decision 2026-09-15); still installed at E:\\Dev\\npm-global (2.42.0) — not uninstalled, and absence of use must not be recorded as absent"
+        ],
         "purpose": "Open-source Codex protocol CLI and multi-agent harness."
       }
     },
@@ -659,6 +712,13 @@
         "verification": "verified-present",
         "version": "0.1.2",
         "executable": "D:\\Qoder-CN\\Qoder CN\\Qoder CN.exe",
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.qoder-cn\\rules\\global-personal-rules.md",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "registry-uninstall",
@@ -678,6 +738,14 @@
               "present"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-15",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ],
         "install_location": "D:\\Qoder-CN\\Qoder CN"
@@ -685,7 +753,9 @@
       "curated": {
         "notes": [
           "the desktop agent is the component actually used (user decision, 2026-08)",
-          "the bundled qoderclicn CLI and qodersec helpers under %USERPROFILE%\\.qodersec are installer components the user does not use"
+          "the bundled qoderclicn CLI and qodersec helpers under %USERPROFILE%\\.qodersec are installer components the user does not use",
+          "global rules deployed 2026-09-15 as an always_on user-level rule under %USERPROFILE%\\.qoder-cn\\rules\\; the embedded desktop runtime enumerates <configDir>\\rules and <configDir>\\AGENTS.md (scope home), GUI-level load test blocked by the startup failure below",
+          "2026-09-15: desktop app 0.1.2 fails to start (FutureDatabaseVersionError: local DB schema v74 is newer than app-supported v64, %APPDATA%\\com.qodercn.app.stable); recovery requires updating the app itself; a zombie instance had been running since 2026-09-14"
         ],
         "purpose": "Qoder CN desktop agent (Alibaba Qoder)."
       }
@@ -796,6 +866,13 @@
         "verification": "verified-present",
         "version": "3.8.1.5310",
         "executable": "D:\\ZCode\\ZCode\\ZCode.exe",
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.zcode\\AGENTS.md",
+            "exists": true
+          }
+        ],
         "evidence": [
           {
             "provider": "filesystem",
@@ -806,10 +883,21 @@
               "executable"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-15",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
           }
         ]
       },
       "curated": {
+        "notes": [
+          "user-level global rules deployed at %USERPROFILE%\\.zcode\\AGENTS.md (2026-09-15; ZCode loads it before workspace AGENTS.md)"
+        ],
         "purpose": "Zhipu AI coding workbench."
       }
     }

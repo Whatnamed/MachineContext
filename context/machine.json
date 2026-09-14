@@ -129,7 +129,7 @@
           "vram_bytes": 8589934592,
           "vram_source": "nvidia-smi",
           "vram_status": "verified",
-          "driver_version": "610.88"
+          "driver_version": "616.92"
         }
       ],
       "logical_cores": 12,
@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 21206401024,
+      "free_bytes": 23622320128,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 25769803776,
+      "free_bytes": 15837691904,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 36775657472,
+      "free_bytes": 156229435392,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -265,7 +265,7 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "7.6.5",
+        "version": "7.6.6",
         "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
         "command_resolution": [
           {

@@ -31,7 +31,7 @@
       "config": {
         "defaultThinkingLevel": "auto",
         "modelRoles": {
-          "default": "tokenrhythm/glm-5.3-flash:max"
+          "default": "google-antigravity/gemini-3.8-flash"
         },
         "providers": {
           "webSearchOrder": [
