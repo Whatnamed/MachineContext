@@ -9,7 +9,6 @@
         "fields": [
           "agent-default-model",
           "llm-pi-ai",
-          "agent-presets",
           "llm-deepseek"
         ],
         "source_path": "%USERPROFILE%\\.dsh\\settings.yaml"
@@ -23,30 +22,9 @@
       "TOKENRHYTHM_API_KEY"
     ],
     "projection": {
-      "agent_presets": [
-        {
-          "name": "Anchored Standard (experimental)",
-          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\anchored-standard"
-        },
-        {
-          "name": "Apex Standard (Pro/Flash unified, experimental)",
-          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\apex-standard"
-        },
-        {
-          "name": "梁神模式",
-          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\liangshen"
-        },
-        {
-          "name": "Pristine",
-          "path": "%USERPROFILE%\\.dsh\\.agent-presets\\pristine"
-        }
-      ],
       "agent-default-model": {
         "provider": "tokenrhythm",
         "model": "glm-5.3-flash"
-      },
-      "agent-presets": {
-        "default": "apex-standard"
       },
       "llm-deepseek": {
         "baseURL": "https://wkapi.work/v1",
