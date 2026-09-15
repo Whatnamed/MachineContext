@@ -21,7 +21,8 @@
         "qoder-context@qoderapp-bundler": true
       },
       "unprojected_keys": [
-        "qoder.mcpServers"
+        "qoder.mcpServers",
+        "qoder.providers"
       ]
     },
     "redactions": [],
@@ -41,7 +42,7 @@
       },
       {
         "path": "%USERPROFILE%\\.qoder-cn\\mcp-router.json",
-        "exists": false,
+        "exists": true,
         "format": "json",
         "role": "sensitive-config"
       }

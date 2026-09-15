@@ -334,7 +334,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.908.4834.0",
+        "version": "26.908.9136.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -348,8 +348,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.908.4834.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.908.4834.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -485,7 +485,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.1.5-rc.1",
+        "version": "0.1.5-rc.2",
         "executable": "D:\\DSH\\dsh.cmd",
         "command_resolution": [
           {

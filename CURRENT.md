@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-14T18:20:11.8000153Z
+- Verified at: 2026-09-15T15:03:03.8169923Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,8 +37,8 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (22.0/195.9 GiB free/total)
-  - `D:\` NTFS (14.8/279.3 GiB free/total)
+  - `C:\` NTFS (21.0/195.9 GiB free/total)
+  - `D:\` NTFS (13.2/279.3 GiB free/total)
   - `E:\` NTFS (145.5/953.9 GiB free/total)
 
 ## Development environment
@@ -81,11 +81,11 @@
 - **Claude Code** `claude-code` — 2.1.270 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.154.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.908.4834.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.908.4834.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.908.9136.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
-- **DSH** `dsh` — 0.1.5-rc.1 — `D:\DSH\dsh.cmd`
+- **DSH** `dsh` — 0.1.5-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.30 — `D:\GrokBuild\home\bin\grok.exe`
 - **Oh My Pi** `omp` — 18.1.21 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
