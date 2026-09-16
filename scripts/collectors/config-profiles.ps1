@@ -65,8 +65,14 @@ function Get-McOmpConfigProfile {
             # webSearchOrder is a scalar sequence today; a future nested
             # provider object would be rejected until explicitly allowlisted.
             providers            = 'scalars'
+            # enabledProviders is a scalar sequence of context-source provider
+            # ids (e.g. ["codex"]) and is load-bearing, not cosmetic: OMP's
+            # Codex context-source loader is gated on it, so a user-global
+            # ~/.codex/AGENTS.md is ignored unless "codex" is listed here. It
+            # must stay projected so a change back to [] is visible as drift.
+            enabledProviders     = 'scalar-leaf'
         }
-        $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $configAllowlist -Path 'omp.config' -Redactions $Redactions
+        $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $configAllowlist -Path 'omp.config' -Redactions $Redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
         if (@(Get-McPropertyEntries -InputObject $configProjection).Count -gt 0) {
             $projection['config'] = $configProjection
             [void]$evidence.Add([pscustomobject][ordered]@{

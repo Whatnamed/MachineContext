@@ -7,4 +7,6 @@ providers:
 modelRoles:
   default: tokenrhythm/test-model:max
 defaultThinkingLevel: auto
+enabledProviders:
+  - codex
 setupVersion: 2

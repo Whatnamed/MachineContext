@@ -1573,6 +1573,10 @@ Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-n
     Assert-McEqual -Actual $profile.id -Expected 'omp-config' -Message 'OMP profile id'
     Assert-McEqual -Actual ([string]$profile.observed.projection.config.shellPath) -Expected 'D:\Git\Git\bin\bash.exe' -Message 'OMP shellPath projected'
     Assert-McEqual -Actual ([string]$profile.observed.projection.config.modelRoles.default) -Expected 'tokenrhythm/test-model:max' -Message 'OMP model role projected'
+    $enabledProviders = @($profile.observed.projection.config.enabledProviders)
+    Assert-McEqual -Actual $enabledProviders.Count -Expected 1 -Message 'OMP enabledProviders must be projected as a scalar leaf'
+    Assert-McEqual -Actual ([string]$enabledProviders[0]) -Expected 'codex' -Message 'OMP enabledProviders must keep its provider id'
+    Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'omp.config.setupVersion') -Message 'unallowlisted top-level OMP config keys must be recorded by path, not dropped silently'
     $providers = $profile.observed.projection.models.providers
     Assert-McEqual -Actual ([string]$providers.tokenrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'tokenrhythm apiKey projected as env name'
     Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $providers.tokenrhythm -Name 'apiKey')) -Message 'apiKey key must not survive projection'
