@@ -10,7 +10,8 @@
           "shellPath",
           "providers",
           "modelRoles",
-          "defaultThinkingLevel"
+          "defaultThinkingLevel",
+          "enabledProviders"
         ],
         "source_path": "%USERPROFILE%\\.omp\\agent\\config.yml"
       },
@@ -30,6 +31,9 @@
     "projection": {
       "config": {
         "defaultThinkingLevel": "auto",
+        "enabledProviders": [
+          "codex"
+        ],
         "modelRoles": {
           "default": "google-antigravity/gemini-3.8-flash"
         },
@@ -134,7 +138,17 @@
             }
           }
         }
-      }
+      },
+      "unprojected_keys": [
+        "omp.config.composer",
+        "omp.config.display",
+        "omp.config.hideThinkingBlock",
+        "omp.config.setupVersion",
+        "omp.config.statusLine",
+        "omp.config.symbolPreset",
+        "omp.config.theme",
+        "omp.config.tui"
+      ]
     },
     "redactions": [],
     "source_state": "current",

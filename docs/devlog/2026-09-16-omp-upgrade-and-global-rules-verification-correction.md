@@ -53,7 +53,7 @@ function dl(e, t) {
 }
 ```
 
-`codex` is an **opt-out** context-source provider: it is not default-on, so it only loads when explicitly enabled. `omp config get enabledProviders` returned `[]`, so `g3` returned `null`, `Mll` returned an empty item list, and the source contributed nothing — **with no warning at all**, which is why this looked like a working feature for a whole round.
+`codex` is a **default-off (opt-in)** context-source provider: it is not default-on, so it only loads when explicitly enabled. `omp config get enabledProviders` returned `[]`, so `g3` returned `null`, `Mll` returned an empty item list, and the source contributed nothing — **with no warning at all**, which is why this looked like a working feature for a whole round.
 
 - **`provider` here means a context-source provider id, not an LLM provider.**
 - **Fix:** `omp config set enabledProviders '["codex"]'`. The value must be a JSON array — a bare `codex` is rejected with `Invalid array JSON`. This wrote a top-level `enabledProviders: [codex]` to `%USERPROFILE%\.omp\agent\config.yml` (1046 → 1074 bytes); the pre-change file is saved at `.local/backup-omp-config-2026-09-16.yml`.
@@ -64,27 +64,51 @@ function dl(e, t) {
 | Directory | Result | Meaning |
 | --- | --- | --- |
 | scratch project, `.git` only | `COUNT=6 LANG=chinese` | the shared global ruleset now loads (was `NONE`) |
-| `E:\MachineContext` | `COUNT=6 LANG=english` | the project file is what reaches the model |
+| `E:\MachineContext` | `COUNT=6 LANG=english` | (see the retraction below — this summary answer was misleading) |
 
-So OMP surfaces the **project-level** `AGENTS.md` instead of the user-global one rather than concatenating both. The bundled descriptor "(user-level only)" reads consistently with that, but whether this is deliberate precedence/dedup or merely first-match was **not** proven and is not asserted here.
+### Retraction: the "project replaces global" reading was wrong
+
+The `COUNT`/`LANG` table above originally led to the conclusion that OMP surfaces the **project-level** `AGENTS.md` *instead of* the user-global one. **That was wrong.** The two `COUNT=6` results were the model's own summaries, and a summary can be wrong while still looking like a clean A/B outcome — the second row was reporting only the project file's six headings, not the total in context.
+
+Asking for a **verbatim** list of every `##` heading settles it:
+
+| Directory | Headings seen |
+| --- | --- |
+| scratch project, `.git` only | the 6 Chinese global headings only |
+| `E:\MachineContext` | the 6 Chinese global headings **and** the 6 English project headings |
+
+So OMP loads user-global and project instructions **additively**, with the same semantics as Codex — the shared personal ruleset stays in force inside repositories that have their own `AGENTS.md`. The bundled descriptor "(user-level only)" refers to where that source looks, not to a suppression of the project chain.
+
+**Method lesson (the second one this round, and the same shape as the first):** do not decide a question like this from a model's own count or summary. Require verbatim enumeration. The earlier mistake was testing from a directory that had its own `AGENTS.md`; this one was trusting a summary number instead of the text itself. Both produced confident, wrong conclusions.
 
 So this is **not** a regression introduced by the update — the user-global file was never reaching the model, on either version.
 
 - The bundled context-source descriptor exists in 18.2.1 and reads: *"Load context files from ~/.codex/AGENTS.md (user-level only)"*, registered alongside the other Codex-compat sources. A source being registered is not sufficient for it to contribute content — it also has to pass the per-provider opt-in gate above.
 - OMP session transcripts do not persist the system prompt (a headless run writes ~7 records: title/session/model_change/two messages/credential_pin/session_exit), so transcript grepping cannot settle this class of question — a behavioural test is required. That is also why the earlier round's mistake was invisible from the session log.
 
+## Closure round (same session, after review)
+
+A review of the six commits in this round found that the fix was real but under-recorded, and that one of its stated conclusions was wrong. Both were closed here.
+
+1. **Collector blind spot (the substantive one).** `enabledProviders` is load-bearing — it decides whether OMP reads the shared user-global rules at all — yet the OMP `config.yml` allowlist never contained it, and unlike the `models.yml` projection the `config.yml` call passed **neither** `-UnprojectedKeys` **nor** `-RecordUnprojectedKeys`. A new top-level key therefore vanished with no trace, contradicting the walker's own documented "unknown keys are dropped by default and recorded as unprojected_keys" contract. Fixed in `scripts/collectors/config-profiles.ps1`: `enabledProviders = 'scalar-leaf'` added to the allowlist, and the config call now records unprojected keys. The fixture gained `enabledProviders: [codex]` and the existing-but-unlisted `setupVersion: 2` now serves as the assertion that unknown top-level keys are surfaced (`omp.config.setupVersion`). `context/configs/ai/omp.json` now projects `enabledProviders` and lists 8 unprojected top-level keys that were previously invisible. `OPERATIONS.md` §4.2 documents the field as load-bearing and explains the gate, and notes that `disabledProviders` is the inverse switch, currently only captured via unprojected keys. **Consequence worth keeping:** if someone sets `enabledProviders` back to `[]`, the sync diff will now show it instead of canonical continuing to imply the global rules work.
+2. **Retraction of the additivity conclusion.** See "Retraction" above: OMP loads user-global and project instructions additively, so no workaround is needed and the shared ruleset is not shadowed inside projects that have their own `AGENTS.md`.
+3. **Qoder live turn — attempted, still not obtained, and recorded as such.** The in-use 0.2.5 payload confirms at runtime-code level that the memory/RuleHandler enumerates `<globalDir>\rules` (level "home") and `<workDir>\rules` (level "workspace"), i.e. additively, and `globalDir` resolves to `%USERPROFILE%\.qoder-cn`; our `always_on` file sits in the user-level set. A live turn is *mechanically* possible — the bundled worker doubles as `qoderclicn` (`node <...>\qoder-worker-runtime.obf.mjs -p ...`) — but it exits with `Not logged in — Please run /login`, and `%USERPROFILE%\.qoder-cn\.auth` holds no usable credential files. The desktop app is logged in but cannot be driven non-interactively. The verification debt is therefore **narrowed, not cleared**, and the canonical note says so explicitly rather than implying a live confirmation.
+4. **Terminology.** `codex` was described as an "**opt-out**" context-source provider; it is **default-off / opt-in**. Corrected in canonical and here. The command itself was always right.
+5. **Stale pointer.** The 2026-09-15 devlog's RETRACTED OMP row now ends with a pointer that it was resolved on 2026-09-16, so an agent reading only that older entry cannot conclude the problem is still open.
+
 ## Canonical
 
-- Routine provider refresh: `omp` 18.1.21 → 18.2.1. Also captured by the same sync, unrelated to this work: `C:\` free space 22,011,707,392 → 21,743,271,936 bytes (the update's download/staging churn).
+- Routine provider refresh: `omp` 18.1.21 → 18.2.1. Also captured by the same sync, unrelated to this work: `C:\` free space changes from the update's download/staging churn.
+- Collector capability change (the only code change this round): `scripts/collectors/config-profiles.ps1` OMP `config.yml` allowlist + unprojected-key recording; test assertions added to `tests/run-tests.ps1`; fixture updated.
 - Curated (`.local/curated-2026-09-16-omp-upgrade.ps1`): the upgrade record with hashes, the duplicate-install guard result, and the global-rules finding.
-- Curated fixes (`.local/fix-2026-09-16-omp-note-replace.ps1`, `.local/fix-2026-09-16-omp-root-cause.ps1`): the stale and then-unresolved sentences were **rewritten in place** each time rather than left beside newer notes, so the canonical record never asserts two contradictory states of the same fact.
-- The 2026-09-15 devlog's OMP row is marked RETRACTED with the reason, and a method note was added to that entry covering every row of its table.
+- Curated fixes (`.local/fix-2026-09-16-omp-note-replace.ps1`, `.local/fix-2026-09-16-omp-root-cause.ps1`): the stale, then-unresolved, then partially-wrong sentences were **rewritten in place** each time rather than left beside newer notes, so the canonical record never asserts two contradictory states of the same fact.
+- The 2026-09-15 devlog's OMP row is marked RETRACTED with the reason, a method note covers every row of its table, and it now carries a resolved-on pointer.
 - Machine config changed by this work: `%USERPROFILE%\.omp\agent\config.yml` gained top-level `enabledProviders: [codex]`. Backup at `.local/backup-omp-config-2026-09-16.yml`.
 
 ## Gates
 
+- `tests/run-tests.ps1`: all PASS, including the new OMP assertions (run after the collector change).
 - `sync.ps1 -AllowDirty`: all ten providers success, validation ok (0 warnings, 0 findings).
-- `tests/run-tests.ps1`: not re-run — no collector, lib, or test changes in this round (the version came from the existing provider).
 - Post-upgrade smoke: `omp/18.2.1`; `omp models` resolves the provider catalog (20 `google-antigravity` models listed, including the configured `gemini-3.8-flash`); a headless turn completed normally against the configured default model.
-- Fix verification used ASCII-only answers (`COUNT=`/`LANG=`) specifically to avoid console encoding noise; the behavioural matrix (baseline / `codex` / `claude` / `cursor`) was re-run cleanly to rule out a fluke before the config was persisted.
-- Self-inflicted artifacts cleaned: all scratch projects (`E:\Dev\oprobe*`), overlay and result files, and the temporary OMP package download removed; no parked binary left in `D:\OMP`.
+- Fix verification used ASCII-only answers (`COUNT=`/`LANG=`) to avoid console encoding noise, and was superseded by verbatim heading enumeration once the summary answers proved unreliable; the behavioural matrix (baseline / `codex` / `claude` / `cursor`) was re-run cleanly to rule out a fluke before the config was persisted.
+- Self-inflicted artifacts cleaned: all scratch projects (`E:\Dev\oprobe*`, `E:\Dev\axprobe*`, `E:\Dev\qprobe`), overlay/result files, the temporary OMP package download, and the temporary `~/.gemini/config/system.md` probe removed; no parked binary left in `D:\OMP`. The running Qoder desktop instance was left untouched.

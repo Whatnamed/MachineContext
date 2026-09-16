@@ -108,11 +108,17 @@
 
 - **采集源**:`%USERPROFILE%\.omp\agent\config.yml`(shell、默认思考档、模型角色、搜索顺序)+ `models.yml`(provider 与模型目录)。不透明文件:`.env`、`agent.db`(认证状态)、`history.db`(会话历史)只记 path+exists,**永不读取**。
 - **收集字段**:
-  - config.yml:`shellPath`、`defaultThinkingLevel`、`modelRoles`(名→标量)、`providers.webSearchOrder`(标量序列);
+  - config.yml:`shellPath`、`defaultThinkingLevel`、`modelRoles`(名→标量)、`providers.webSearchOrder`(标量序列)、`enabledProviders`(标量序列);
   - models.yml 每个 provider:`api`、`authHeader`、`baseUrl`(safe-url)、`apiKey`/`apiKeyEnv`→`credentialEnvName`、`models[]` 的 `id/name/reasoning/input/tokenizer/supportsTools/contextWindow/maxTokens` + `thinking{mode,efforts,defaultLevel,requiresEffort}` + `compat{supportsReasoningEffort}`、`modelOverrides`(同模型 allowlist)。
 - **记录位置**:profile → `context/configs/ai/omp.json`(`credential_env_names` 汇总环境变量名);实体 → `context/software/ai.json`(`install.root` 每次从解析到的 executable 自动推导;`curated.notes` 记录更新策略)。
+- **`enabledProviders` 是承重字段,不是样式项(2026-09-16)**:OMP 的 Codex 上下文源加载器 `Mll` 先调 `g3(e)`,而 `g3` 在 `!dl("codex", e)` 时直接返回 `null`,于是整个用户级 `~/.codex/AGENTS.md` 源**静默短路、不报任何警告**。`dl()` 对 `codex` 这种「默认关闭」的上下文源 provider 只在它被列进 `enabledProviders`(或 `"*"`/`"all"`,或调用侧传 `explicitProviders`/`includeOptOutUserSources`)时才放行。因此:
+  - 该字段必须保持投影——有人把它改回 `[]` 时,diff 必须能显示出来,而 canonical 不能继续宣称全局规则生效中;
+  - 注意这里的 `provider` 指**上下文源 provider id**,与 LLM provider 无关;
+  - 开启 `codex` 源会连带启用 `~/.codex/` 下的 skills/extensions/commands/prompts/hooks/tools(本机这些目录均不存在);
+  - `disabledProviders` 是同一门禁的反向开关,目前**未加入 allowlist**,但已被未投影记录捕获;若将来需要主动用它停用某源,再评估是否提升为投影字段。
 - **变更后易漏项**:
-  - models.yml 新加 provider → sync 自动投影;**检查 `unprojected_keys` 是否出现意料外字段名**(说明源里有 allowlist 外的东西,需评估是否扩 allowlist);
+  - config.yml 与 models.yml 顶层出现 allowlist 外的新键 → 记入 `unprojected_keys`(`omp.config.<key>` / `omp.models...`);**检查它是否出现意料外字段名**,既可能是源里多了东西,也可能是我们漏了承重字段(2026-09-16 的 `enabledProviders` 就是这样漏了一轮);
+  - models.yml 新加 provider → sync 自动投影;
   - 新增 `compat`/`thinking` 子字段需要显式扩 allowlist(嵌套 object schema 是 mapping-only,未知形状会被拒并记 redaction);
   - OMP 跟随上游 stable 更新(2026-09-02 用户决定取消早先的 18.0.6 临时钉版):直接执行 `omp update`,它会把 `D:\OMP\omp.exe` 原地替换并在同目录留一个 `omp.exe.*.bak` 旧版备份(更新器自身行为,无需处理);
   - OMP 无文件级 MCP 配置,mcp.json 的 `unresolved` 说明是预期状态。

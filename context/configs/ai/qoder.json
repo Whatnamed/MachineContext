@@ -22,7 +22,8 @@
       },
       "unprojected_keys": [
         "qoder.mcpServers",
-        "qoder.providers"
+        "qoder.providers",
+        "qoder.securityScan"
       ]
     },
     "redactions": [],
