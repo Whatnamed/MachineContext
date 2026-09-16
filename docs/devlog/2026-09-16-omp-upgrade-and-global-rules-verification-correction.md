@@ -1,6 +1,6 @@
-# Devlog — 2026-09-16 OMP 18.1.21 → 18.2.1 upgrade, and a correction to how global-rules loading is verified
+# Devlog — 2026-09-16 OMP 18.1.21 → 18.2.1 upgrade, and why OMP never loaded the global ruleset
 
-Scope: apply the previously-assessed-but-not-executed OMP upgrade, prove it landed in the correct install root, and re-check that the shared global ruleset still reaches OMP. The re-check falsified an earlier claim, so this entry also records the methodology error behind it.
+Scope: apply the previously-assessed-but-not-executed OMP upgrade, prove it landed in the correct install root, and re-check that the shared global ruleset reaches OMP. The re-check falsified an earlier claim, exposed the silent gate that caused it, and the gate was then fixed and re-verified. It also records the methodology error that hid the problem for a full round.
 
 ## Upgrade
 
@@ -27,22 +27,64 @@ Re-tested properly from a scratch directory containing `.git` but **no** `AGENTS
 | 18.2.1 | no injected instruction file (answered `NONE`) |
 | 18.1.21 (controlled A/B: parked 18.2.1, restored the saved `.bak`, then restored 18.2.1 and re-verified its hash) | no injected instruction file (answered `NONE`) |
 
-So this is **not** a regression introduced by the update — the user-global file was evidently never reaching the model. Injection from a project directory does work on the same 18.2.1 binary.
+## Root cause and fix (resolved in the same session)
 
-- The bundled context-source descriptor still exists in 18.2.1 and reads: *"Load context files from ~/.codex/AGENTS.md (user-level only)"*, registered alongside other Codex-compat sources (`~/.codex/skills`, `config.toml [mcp_servers.*]`). A source being declared is evidently not sufficient for it to contribute content.
-- **Unresolved, and deliberately not asserted:** whether the missing user-global load is a bug, intended behaviour, or gated on a condition. OMP is therefore recorded as **not covered** by the shared global ruleset until a project-isolated test says otherwise. `~/.codex/AGENTS.md` itself is present and unchanged and remains the source for Codex proper.
-- OMP session transcripts do not persist the system prompt (a headless run writes ~7 records: title/session/model_change/two messages/credential_pin/session_exit), so transcript grepping cannot settle this class of question — a behavioural test is required.
+The loader for this source is readable in the bundled `omp.exe` source:
+
+```js
+function R7(e) { return path.join(e.cwd, ".codex"); }
+function g3(e, t = false) {
+  if (!t && !dl("codex", e)) return null;          // <-- the gate
+  return path.join(e.home, d8.codex.userBase);
+}
+async function Mll(e) {
+  const o = g3(e);
+  if (!o) return { items: [], warnings: [] };      // short-circuits silently
+  const n = path.join(o, "AGENTS.md");
+  ...
+}
+function dl(e, t) {
+  const s = e.replace(/^\./, "");
+  if (pC.has(s)) return false;                                    // disabledProviders
+  if (X4s[s] !== true) return true;                               // default-on provider
+  if (t?.explicitProviders?.has(s) || t?.includeOptOutUserSources) return true;
+  if (Dk.has(s) || Dk.has("*") || Dk.has("all")) return true;      // enabledProviders
+  return false;
+}
+```
+
+`codex` is an **opt-out** context-source provider: it is not default-on, so it only loads when explicitly enabled. `omp config get enabledProviders` returned `[]`, so `g3` returned `null`, `Mll` returned an empty item list, and the source contributed nothing — **with no warning at all**, which is why this looked like a working feature for a whole round.
+
+- **`provider` here means a context-source provider id, not an LLM provider.**
+- **Fix:** `omp config set enabledProviders '["codex"]'`. The value must be a JSON array — a bare `codex` is rejected with `Invalid array JSON`. This wrote a top-level `enabledProviders: [codex]` to `%USERPROFILE%\.omp\agent\config.yml` (1046 → 1074 bytes); the pre-change file is saved at `.local/backup-omp-config-2026-09-16.yml`.
+- Enabling it also activates the sibling Codex-compat sources (`~/.codex/skills`, `extensions`, `commands`, `prompts`, `hooks`, `tools`). None of those directories exist on this machine — only the global `AGENTS.md` is present — so there was no other effect.
+
+**Post-fix verification.** With no overlay, asking for `COUNT`/`LANG` (ASCII-only answers, to avoid console encoding noise):
+
+| Directory | Result | Meaning |
+| --- | --- | --- |
+| scratch project, `.git` only | `COUNT=6 LANG=chinese` | the shared global ruleset now loads (was `NONE`) |
+| `E:\MachineContext` | `COUNT=6 LANG=english` | the project file is what reaches the model |
+
+So OMP surfaces the **project-level** `AGENTS.md` instead of the user-global one rather than concatenating both. The bundled descriptor "(user-level only)" reads consistently with that, but whether this is deliberate precedence/dedup or merely first-match was **not** proven and is not asserted here.
+
+So this is **not** a regression introduced by the update — the user-global file was never reaching the model, on either version.
+
+- The bundled context-source descriptor exists in 18.2.1 and reads: *"Load context files from ~/.codex/AGENTS.md (user-level only)"*, registered alongside the other Codex-compat sources. A source being registered is not sufficient for it to contribute content — it also has to pass the per-provider opt-in gate above.
+- OMP session transcripts do not persist the system prompt (a headless run writes ~7 records: title/session/model_change/two messages/credential_pin/session_exit), so transcript grepping cannot settle this class of question — a behavioural test is required. That is also why the earlier round's mistake was invisible from the session log.
 
 ## Canonical
 
 - Routine provider refresh: `omp` 18.1.21 → 18.2.1. Also captured by the same sync, unrelated to this work: `C:\` free space 22,011,707,392 → 21,743,271,936 bytes (the update's download/staging churn).
-- Curated (`.local/curated-2026-09-16-omp-upgrade.ps1`): the upgrade record with hashes, the duplicate-install guard result, and the global-rules correction.
-- Curated fix (`.local/fix-2026-09-16-omp-note-replace.ps1`): the stale "reads user-level global rules from `%USERPROFILE%\.codex\AGENTS.md`" sentence was **rewritten in place** rather than left beside a correction note, so the canonical record is not self-contradictory.
+- Curated (`.local/curated-2026-09-16-omp-upgrade.ps1`): the upgrade record with hashes, the duplicate-install guard result, and the global-rules finding.
+- Curated fixes (`.local/fix-2026-09-16-omp-note-replace.ps1`, `.local/fix-2026-09-16-omp-root-cause.ps1`): the stale and then-unresolved sentences were **rewritten in place** each time rather than left beside newer notes, so the canonical record never asserts two contradictory states of the same fact.
 - The 2026-09-15 devlog's OMP row is marked RETRACTED with the reason, and a method note was added to that entry covering every row of its table.
+- Machine config changed by this work: `%USERPROFILE%\.omp\agent\config.yml` gained top-level `enabledProviders: [codex]`. Backup at `.local/backup-omp-config-2026-09-16.yml`.
 
 ## Gates
 
 - `sync.ps1 -AllowDirty`: all ten providers success, validation ok (0 warnings, 0 findings).
 - `tests/run-tests.ps1`: not re-run — no collector, lib, or test changes in this round (the version came from the existing provider).
 - Post-upgrade smoke: `omp/18.2.1`; `omp models` resolves the provider catalog (20 `google-antigravity` models listed, including the configured `gemini-3.8-flash`); a headless turn completed normally against the configured default model.
-- Self-inflicted artifacts cleaned: scratch project `E:\Dev\oprobe` removed; the temporary OMP package download used for changelog reading removed; no parked binary left in `D:\OMP`.
+- Fix verification used ASCII-only answers (`COUNT=`/`LANG=`) specifically to avoid console encoding noise; the behavioural matrix (baseline / `codex` / `claude` / `cursor`) was re-run cleanly to rule out a fluke before the config was persisted.
+- Self-inflicted artifacts cleaned: all scratch projects (`E:\Dev\oprobe*`), overlay and result files, and the temporary OMP package download removed; no parked binary left in `D:\OMP`.
