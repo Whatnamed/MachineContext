@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-15T17:31:06.2856209Z
+- Verified at: 2026-09-16T04:39:06.6959623Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -90,7 +90,7 @@
 - **Oh My Pi** `omp` — 18.1.21 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.42.0 — `E:\Dev\npm-global\opencodex.cmd`
-- **Qoder CN** `qoder` — 0.1.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
+- **Qoder CN** `qoder` — 0.1.3 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **WorkBuddy** `workbuddy` — 5.3.14 — `E:\WorkBuddy\WorkBuddy.exe`

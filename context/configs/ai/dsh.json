@@ -22,7 +22,7 @@
     "projection": {
       "agent-default-model": {
         "provider": "tokenrhythm",
-        "model": "glm-5.3-flash"
+        "model": "deepseek-flash"
       },
       "llm-deepseek": {
         "baseURL": "https://api.deepseek.com/v1",
