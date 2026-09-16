@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-16T04:48:58.9142515Z
+- Verified at: 2026-09-16T04:57:45.7930651Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,7 +37,7 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (20.5/195.9 GiB free/total)
+  - `C:\` NTFS (20.2/195.9 GiB free/total)
   - `D:\` NTFS (13.2/279.3 GiB free/total)
   - `E:\` NTFS (145.5/953.9 GiB free/total)
 
@@ -87,7 +87,7 @@
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.1.5-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.30 — `D:\GrokBuild\home\bin\grok.exe`
-- **Oh My Pi** `omp` — 18.1.21 — `D:\OMP\omp.exe`
+- **Oh My Pi** `omp` — 18.2.1 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.42.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.2.5 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`

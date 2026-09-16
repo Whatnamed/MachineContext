@@ -607,7 +607,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.1.21",
+        "version": "18.2.1",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -656,7 +656,9 @@
       "curated": {
         "notes": [
           "tracks upstream stable releases; update with the official `omp update` (the earlier temporary 18.0.6 pin was removed by user decision on 2026-09-02)",
-          "reads user-level global rules from %USERPROFILE%\\.codex\\AGENTS.md via its context discovery (verified 2026-09-15 via omp -p); no OMP-specific global rules file exists by design to avoid duplicate injection"
+          "no OMP-specific global rules file exists, to avoid duplicate injection. The 2026-09-15 claim that OMP reads the user-global rules from %USERPROFILE%\\.codex\\AGENTS.md was NOT correct as verified — see the 2026-09-16 correction note below: that verification was run from inside E:\\MachineContext and actually observed the project-level AGENTS.md. Treat OMP as NOT covered by the shared global ruleset until re-verified.",
+          "2026-09-16: 18.1.21 -> 18.2.1 via `omp update`, verified in-place at D:\\OMP\\omp.exe (sha256 FEE52652C7B0B90EB7716B3C6DA50AB4D90442505EEF1C5349C9428E8D966679, matching the updater-reported hash); the previous 18.1.21 binary was kept by the updater as omp.exe.1789534362039.11444.0.bak (sha256 61856ACAC3845C3CB8F12C8F6BFB7ECF30E10543AC0EBD69F6FDB404D23C45DA). Binary size 161.7 MB -> 211.7 MB, matching the 18.2.0 change to ship precompiled bytecode. Update requires closing running omp sessions first (Windows cannot replace a locked exe); no duplicate install was created outside D:\\OMP and no npm-global omp.cmd shim exists.",
+          "CORRECTION 2026-09-16 to the global-rules claim: the 2026-09-15 round recorded that OMP reads user-level rules from %USERPROFILE%\\.codex\\AGENTS.md, \"verified 2026-09-15 via omp -p, reproduced the six section headings\". That verification was invalid — it was run from inside E:\\MachineContext, so the headings reproduced were the PROJECT file E:\\MachineContext\\AGENTS.md, not the user-global one. Tested properly on 2026-09-16 from a scratch directory containing .git but no AGENTS.md, `omp -p` reports no injected instruction file (answered NONE) on BOTH 18.2.1 and, in a controlled A/B swap of the saved 18.1.21 .bak binary, on 18.1.21 as well. So this is NOT a regression from the 18.2.1 update; the user-global file was evidently never being injected. Project-level AGENTS.md injection does work (same 18.2.1 binary from E:\\MachineContext reproduced that file's headings exactly: Purpose, Read first, Repository invariants, Engineering principles, Safety and privacy, Documentation hygiene). Whether the missing user-global load is a bug, an intended design (the bundled source descriptor literally reads \"Load context files from ~/.codex/AGENTS.md (user-level only)\"), or gated on some condition is unresolved and must not be asserted either way. Consequence to remember: do NOT claim OMP is covered by the shared global ruleset until this is re-verified with a project-directory-isolated test."
         ]
       }
     },
