@@ -29,7 +29,8 @@ Scope: fill the user-level global-rules gaps left by the 2026-09-15 round withou
 ## Incidental real drift captured by the same sync (user's own changes, not caused by this round)
 
 - DSH `agent-default-model.model` `glm-5.3-flash` → `deepseek-flash` (matches the live `settings.yaml`).
-- Qoder CN desktop self-updated **0.1.2 → 0.1.3** and **recovered from the recorded startup failure**. The 2026-09-15 `FutureDatabaseVersionError` (DB schema v74 vs app-supported v64) no longer reproduces: the registry now reports `Qoder CN 0.1.3`, logs under `%USERPROFILE%\.qoder-cn\logs` are live, and `.qoder-app-status.json` shows a logged-in session at 2026-09-15T16:38Z. The 2026-09-15 curated note claiming recovery "requires updating the desktop app itself" was replaced with a RESOLVED note — leaving it would have kept a fixed blocker recorded as current.
+- Qoder CN desktop **recovered from the recorded startup failure**. The 2026-09-15 `FutureDatabaseVersionError` (DB schema v74 vs app-supported v64) no longer reproduces, logs under `%USERPROFILE%\.qoder-cn\logs` are live, and `.qoder-app-status.json` shows a logged-in session. The 2026-09-15 curated note claiming recovery "requires updating the desktop app itself" was replaced with a RESOLVED note — leaving it would have kept a fixed blocker recorded as current.
+- **Qoder CN version correction (same session, caught by the user):** the entity is **0.2.5**, not 0.1.3. Qoder CN keeps a versioned payload library at `D:\Qoder-CN\Qoder CN\.qoder-versions\<ver>\` and executes the app from there, so **both** the registry `DisplayVersion` and the install-root `Qoder CN.exe` stay at the installer baseline (0.1.3) and are misleading on their own. Authoritative evidence: the live agent worker resolves its runtime from `.qoder-versions\0.2.5\resources\app.asar.unpacked\...\qoder-worker-runtime.obf.mjs`; `.qoder-versions\0.2.5\resources\build-manifest.json` reports `productVersion: 0.2.5` (commit `cb28e393`, buildTime 2026-09-11T11:13:53Z); `0.2.5.qoder-update-ready.json` was staged 2026-09-15T22:09; and the app status file reports `version: 0.2.5`. Staged payloads observed: 0.1.8 (2026-09-06) and 0.2.5 (2026-09-15, current). **Lesson for OPERATIONS §8:** registry `DisplayVersion` alone must not refresh a desktop entity that stages versioned payloads — check `build-manifest.json` in the newest `.qoder-versions\*` and the running process path.
 - `%USERPROFILE%\.qoder-cn\mcp-router.json` is now absent (it was previously recorded as a sensitive runtime-credential file by path only); the routine config collector flipped `files[].exists` to false. Nothing under `.qoder-cn` matches `mcp-router*` any more.
 
 ## Canonical
@@ -42,4 +43,6 @@ Scope: fill the user-level global-rules gaps left by the 2026-09-15 round withou
 
 - `tests/run-tests.ps1`: all PASS.
 - `sync.ps1 -AllowDirty`: all ten providers success, validation ok (0 warnings, 0 findings).
+- Second sync after the Qoder version correction: idempotent, and the render correctly picked up the corrected `0.2.5` in `CURRENT.md`.
 - Privacy sweep over `git diff context/`: only the expected paths, booleans and model/provider identifiers — no credential shapes.
+- `docs/OPERATIONS.md` §8 gained the versioned-payload exception so the next refresh of a Qoder-like app does not repeat this mistake.

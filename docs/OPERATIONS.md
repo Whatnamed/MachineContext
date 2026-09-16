@@ -199,6 +199,15 @@
 
   **数据核对时的教训(2026-08-29)**:只验证"路径存在性"查不出这类过期——trae 的 exe 路径一直有效,版本却落后了一个。核对补充桌面实体必须**把注册表 `DisplayVersion` 与 canonical `observed.version` 全量比对一遍**(qoder/trae/workbuddy/antigravity 等),不能只查路径。
 
+  **例外:注册表 `DisplayVersion` 并非总是权威(2026-09-16)**。Qoder CN 采用**版本化 payload 库**:程序下载后落到 `D:\Qoder-CN\Qoder CN\.qoder-versions\<ver>\`,并从那里执行,而安装根目录的 `Qoder CN.exe` 与注册表 `DisplayVersion` **始终停留在安装器基线**(当时是 0.1.3),实际在跑的是 0.2.5。只按 §8 上面的做法刷注册表会把版本记错。对这类 app,刷新 `observed.version` 的证据优先级是:
+
+  1. **运行中进程的实际路径**——`(Get-Process <name>).Path` 往往指向 `.qoder-versions\<ver>\<app>.exe`,这是最硬的证据;
+  2. 最新 `.qoder-versions\<ver>\resources\build-manifest.json` 的 `productVersion`;
+  3. `.qoder-versions\<ver>.qoder-update-ready.json` 的 `releaseId`(只能证明已暂存,不能单独证明在跑);
+  4. 注册表 `DisplayVersion`(此处仅为安装器基线,仅供参考)。
+
+  判断"是否版本化 payload"的快速方法:安装根目录存在 `.qoder-versions\` / `.qoder-update\` 之类目录,或根 exe 版本明显低于应用界面/状态文件自报版本。同理要注意桌面 app 的状态文件(如 `.qoder-app-status.json`)可能报的是另一个口径的版本。
+
 - **CURRENT.md 是生成物**:手改会被下次渲染覆盖;要改内容改 canonical 或渲染器。
 - **`unprojected_keys` / `redactions` 是信息不是错误**:出现新条目时先判断是"源里多了东西"还是"allowlist 缺口",在 devlog 里说明处理决定。
 - **stale 语义**:只有**确认源文件不存在**才把 profile 标 `source_state: stale`;解析失败保留旧记录不动。反过来,一个实体"本次扫描没出现"不等于被卸载。
