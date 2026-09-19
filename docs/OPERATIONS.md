@@ -194,7 +194,7 @@
 
 ## 8. 已知限制与全局易漏项
 
-- **补充桌面实体会静默过期**:qoder、trae、workbuddy、antigravity 等桌面 app 的实体由 registry/文件系统证据一次性记录,**routine scan 不刷新它们**。用户报告升级后,按注册表 `DisplayVersion` 用一次性脚本刷新 `observed.version`(trae 0.1.39→0.1.58 即为此修复);MSIX 商店应用(claude-desktop)同理且路径也会变:
+- **补充桌面实体会静默过期**:qoder、trae、workbuddy、antigravity、zcode 等桌面 app 的实体由 registry/文件系统证据一次性记录,**routine scan 不刷新它们**。用户报告升级后,按注册表 `DisplayVersion` 用一次性脚本刷新 `observed.version`(trae 0.1.39→0.1.58、zcode 3.8.1.5310→3.14.0.7681 即为此修复);MSIX 商店应用(claude-desktop)同理且路径也会变:
 
   ```powershell
   $package = Get-AppxPackage -Name 'Claude'
@@ -205,16 +205,16 @@
 
   **数据核对时的教训(2026-08-29)**:只验证"路径存在性"查不出这类过期——trae 的 exe 路径一直有效,版本却落后了一个。核对补充桌面实体必须**把注册表 `DisplayVersion` 与 canonical `observed.version` 全量比对一遍**(qoder/trae/workbuddy/antigravity 等),不能只查路径。
 
-  **例外:注册表 `DisplayVersion` 并非总是权威(2026-09-16)**。Qoder CN 采用**版本化 payload 库**:程序下载后落到 `D:\Qoder-CN\Qoder CN\.qoder-versions\<ver>\`,并从那里执行,而安装根目录的 `Qoder CN.exe` 与注册表 `DisplayVersion` **始终停留在安装器基线**(当时是 0.1.3),实际在跑的是 0.2.5。只按 §8 上面的做法刷注册表会把版本记错。对这类 app,刷新 `observed.version` 的证据优先级是:
+  **例外:注册表 `DisplayVersion` 并非总是权威(2026-09-16;2026-09-19 修正)**。Qoder CN 采用**版本化 payload 库**:程序下载后落到 `D:\Qoder-CN\Qoder CN\.qoder-versions\<ver>\`,并从那里执行,而安装根目录的 `Qoder CN.exe` **始终停留在安装器基线**(0.1.3),实际在跑的是 `.qoder-versions\` 下的最新 payload。只按 §8 上面的做法刷注册表会把版本记错。对这类 app,刷新 `observed.version` 的证据优先级是:
 
   1. **运行中进程的实际路径**——`(Get-Process <name>).Path` 往往指向 `.qoder-versions\<ver>\<app>.exe`,这是最硬的证据;
   2. 最新 `.qoder-versions\<ver>\resources\build-manifest.json` 的 `productVersion`;
   3. `.qoder-versions\<ver>.qoder-update-ready.json` 的 `releaseId`(只能证明已暂存,不能单独证明在跑);
-  4. 注册表 `DisplayVersion`(此处仅为安装器基线,仅供参考)。
+  4. 注册表 `DisplayVersion`(会跟随 payload 更新,但不保证及时——0.2.5 时读 0.1.3,0.3.4 时读到 0.3.4,所以只能当"可能已更新、不可单独采信"的来源,不是恒为基线;根 exe 则始终是基线,不能作版本依据)。
 
   判断"是否版本化 payload"的快速方法:安装根目录存在 `.qoder-versions\` / `.qoder-update\` 之类目录,或根 exe 版本明显低于应用界面/状态文件自报版本。同理要注意桌面 app 的状态文件(如 `.qoder-app-status.json`)可能报的是另一个口径的版本。
 
 - **CURRENT.md 是生成物**:手改会被下次渲染覆盖;要改内容改 canonical 或渲染器。
 - **`unprojected_keys` / `redactions` 是信息不是错误**:出现新条目时先判断是"源里多了东西"还是"allowlist 缺口",在 devlog 里说明处理决定。
 - **stale 语义**:只有**确认源文件不存在**才把 profile 标 `source_state: stale`;解析失败保留旧记录不动。反过来,一个实体"本次扫描没出现"不等于被卸载。
-- **不采集清单**见 `PRIVACY.md`(never-collect);遇到任何拿不准的敏感内容,默认不收,先问用户。qoder 的 `mcp-router.json`(运行时 API key)就是"只记存在"的现成例子。
+- **不采集清单**见 `PRIVACY.md`(never-collect);遇到任何拿不准的敏感内容,默认不收,先问用户。qoder 的 `mcp-router.json`(运行时 API key)就是"只记存在"的现成例子。注意它是**运行时临时文件**:由运行中的桌面进程在启动后写出(内含自己的 pid),因此 `exists` 会随 app 是否在跑而翻转——两种读数都正常,不能解读为"文件被删除"或"软件消失"。
