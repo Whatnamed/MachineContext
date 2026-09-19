@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.2.3",
+        "version": "1.2.7",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -91,7 +91,8 @@
       "curated": {
         "notes": [
           "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers",
-          "global customization root is %USERPROFILE%\\.gemini\\config (per agy embedded docs); global rules deployed at config\\GEMINI.md (2026-09-15, verified via agy -p) — not %USERPROFILE%\\.gemini\\GEMINI.md"
+          "global customization root is %USERPROFILE%\\.gemini\\config (per agy embedded docs); global rules deployed at config\\GEMINI.md (2026-09-15) — not %USERPROFILE%\\.gemini\\GEMINI.md. Load re-verified 2026-09-19 on 1.2.7, because that release changed customization token budgeting (user/workspace rules now get a dedicated 20,000-token budget): from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered LANG=简体中文 INDEX=E:\\MachineContext\\CURRENT.md DESTRUCTIVE=YES, exactly matching %USERPROFILE%\\.gemini\\config\\GEMINI.md lines 5/22/34, while a negative control asking for a never-provided secret answered NONE. The global ruleset still reaches the model on 1.2.7.",
+          "2026-09-19: 1.2.3 -> 1.2.7 via the native self-updater `agy update` (in-place at %LOCALAPPDATA%\\agy\\bin\\agy.exe; no duplicate install created and no npm-global shim). The updater reported \"Found new version 1.2.7\" and its own \"Verification successful\"; the installed binary was then independently re-verified: sha512 3b2008ed40276e125e5960ae30c1a376d33bd8637fa941742f287aa244a3d609f11d1bb2694947db170ed7452561ba0b721be3f6fa03a955e2737bed043377bd matches the official windows_amd64 release manifest (version 1.2.7, build 6731160148115456), sha256 162607893eaacaf7b4a34bcd0bc3978342c6707b0340f96040f0139ac904dd22, size 195,186,840 -> 203,523,736 bytes. The updater parked the previous 1.2.3 binary as agy.exe.1789831711622230000.old and then removed it itself; no .old remains in the bin directory."
         ],
         "purpose": "Google Antigravity CLI coding assistant."
       }
@@ -338,7 +339,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.908.9136.0",
+        "version": "26.915.4065.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -352,8 +353,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -735,7 +736,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.2.5",
+        "version": "0.3.4",
         "executable": "D:\\Qoder-CN\\Qoder CN\\Qoder CN.exe",
         "config_paths": [
           {
@@ -781,9 +782,10 @@
           "the bundled qoderclicn CLI and qodersec helpers under %USERPROFILE%\\.qodersec are installer components the user does not use",
           "global rules deployed 2026-09-15 as an always_on user-level rule at %USERPROFILE%\\.qoder-cn\\rules\\global-personal-rules.md. Runtime mechanism confirmed 2026-09-16 directly in the in-use 0.2.5 payload (`...\\.qoder-versions\\0.2.5\\resources\\app.asar.unpacked\\node_modules\\@qoder-ai\\qoder-cn-agent-sdk\\dist\\_worker\\qoder-worker-runtime.obf.mjs`): the memory/RuleHandler enumerates `path.join(Nl(A).userDir, \"rules\")` at level \"home\" AND `path.join(Nl(A).projectDir, \"rules\")` at level \"workspace\", where `Nl(A)` resolves userDir to `A.globalDir` (= %USERPROFILE%\\.qoder-cn) and projectDir to `join(A.workDir, Xn)`. So user-level and workspace-level rules are enumerated ADDITIVELY, and our always_on file is in the user-level set. LIVE TURN STILL NOT DONE (2026-09-16): the desktop app is logged in (product qodercn, version 0.2.5) so a GUI turn would work, but it cannot be driven non-interactively; and the bundled `qoderclicn` CLI (reachable as `node <...>\\qoder-worker-runtime.obf.mjs`, which self-identifies as \"Qoder CLI CN\" with `-p/--print`) refuses with \"Not logged in - Please run /login\" while %USERPROFILE%\\.qoder-cn\\.auth holds no usable credential files. Recording this honestly: the path and the additive enumeration are runtime-code-level evidence, not a live-load observation.",
           "2026-09-16: RESOLVED — the startup failure no longer reproduces and the desktop agent runs normally again. The app self-updates and starts cleanly.",
-          "2026-09-16: %USERPROFILE%\\.qoder-cn\\mcp-router.json (previously recorded as a sensitive runtime-credential file, path-only) is absent as of the 0.2.5 payload now in use and no longer appears anywhere under .qoder-cn; the config profile was updated by the routine collector to reflect that, not by a one-time edit",
-          "2026-09-16 version correction: this entity is 0.2.5, not 0.1.3. Qoder CN keeps a versioned payload library at D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\<ver>\\ and executes the app from there, so BOTH the registry DisplayVersion and the install-root Qoder CN.exe stay at the installer baseline (0.1.3) and are misleading on their own. Authoritative evidence for 0.2.5: the live agent worker at 2026-09-16T12:39+08:00 resolves its runtime from .qoder-versions\\0.2.5\\resources\\app.asar.unpacked\\...\\qoder-worker-runtime.obf.mjs; .qoder-versions\\0.2.5\\resources\\build-manifest.json reports productVersion 0.2.5 (commit cb28e393, buildTime 2026-09-11); 0.2.5.qoder-update-ready.json was staged 2026-09-15T22:09; and the app status file reports version 0.2.5. Do not use registry DisplayVersion alone to refresh this entity.",
-          "Qoder CN version history observed 2026-09-16: staged payloads are 0.1.8 (staged 2026-09-06) and 0.2.5 (staged 2026-09-15, current); the installer baseline in the install root is 0.1.3."
+          "2026-09-19 correction: %USERPROFILE%\\.qoder-cn\\mcp-router.json is a RUNTIME-TRANSIENT file written by the running desktop app, not a removed artifact. The 2026-09-16 reading of it as absent \"and no longer appearing anywhere under .qoder-cn\" was a scan-timing artifact, not a payload change: on 2026-09-19 the file was created at 22:52:43, two seconds after the main Qoder CN process (pid 26592) started at 22:52:41, and its content carries that same live pid (alongside baseUrl/apiKey/startedAt). Its presence therefore tracks whether Qoder is running, so exists:true and exists:false are both legitimate observations and neither implies the file was removed; the routine collector currently records exists:true. It remains a sensitive runtime-credential file: path and existence only, contents never read.",
+          "2026-09-16 version correction (registry sentence updated 2026-09-19): this entity is not the installer baseline. Qoder CN keeps a versioned payload library at D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\<ver>\\ and executes the app from there, so the install-root Qoder CN.exe stays at the installer baseline (0.1.3) and is misleading on its own. The registry DisplayVersion is NOT permanently pinned to that baseline either: it read 0.1.3 on 2026-09-16 but reported 0.3.4 on 2026-09-19, so treat it as possibly-current rather than always-stale — and still confirm against the running process. Historical evidence for 0.2.5 (2026-09-16): the live agent worker resolved its runtime from .qoder-versions\\0.2.5\\resources\\app.asar.unpacked\\...\\qoder-worker-runtime.obf.mjs; .qoder-versions\\0.2.5\\resources\\build-manifest.json reported productVersion 0.2.5 (commit cb28e393, buildTime 2026-09-11); 0.2.5.qoder-update-ready.json was staged 2026-09-15T22:09; and the app status file reported 0.2.5. Do not use registry DisplayVersion alone to refresh this entity.",
+          "Qoder CN version history observed 2026-09-19: staged payloads under .qoder-versions are 0.1.8 (2026-09-06), 0.2.5 (2026-09-15) and 0.3.4 (2026-09-19, current); the installer baseline in the install root remains 0.1.3.",
+          "2026-09-19 version refresh: this entity is 0.3.4, not 0.2.5. Evidence: 13 running Qoder CN processes resolve their executable from .qoder-versions\\0.3.4\\Qoder CN.exe (started 2026-09-19T22:52+08:00); .qoder-versions\\0.3.4\\resources\\build-manifest.json reports productVersion 0.3.4 (commit 081b9000518bbd81daf8108840085007425d9bb9, buildTime 2026-09-19T09:22:27Z, electron 43.1.1); .qoder-app-status.json reports version 0.3.4; 0.3.4.qoder-update-ready.json (releaseId 0.3.4, payloadLayout pending-asar-v1) was staged 2026-09-19T22:35; and the registry DisplayVersion now also reads 0.3.4. Refreshed by a one-time script because this supplementary desktop entity has no routine provider coverage."
         ],
         "purpose": "Qoder CN desktop agent (Alibaba Qoder)."
       }
@@ -911,7 +913,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "3.8.1.5310",
+        "version": "3.14.0.7681",
         "executable": "D:\\ZCode\\ZCode\\ZCode.exe",
         "config_paths": [
           {
@@ -943,7 +945,8 @@
       },
       "curated": {
         "notes": [
-          "user-level global rules deployed at %USERPROFILE%\\.zcode\\AGENTS.md (2026-09-15; ZCode loads it before workspace AGENTS.md)"
+          "user-level global rules deployed at %USERPROFILE%\\.zcode\\AGENTS.md (2026-09-15; ZCode loads it before workspace AGENTS.md)",
+          "2026-09-19 version refresh: 3.8.1.5310 -> 3.14.0.7681. ZCode has no routine provider coverage, so this entity had silently gone stale since the 2026-08-26 initial scan (OPERATIONS section 8). Evidence: D:\\ZCode\\ZCode\\ZCode.exe FileVersion/ProductVersion 3.14.0.7681 (mtime 2026-09-19T10:13+08:00); the HKCU uninstall entry \"ZCode 3.14.0\" (DisplayVersion 3.14.0, key 268ce9e6-a30b-5890-ad18-d4b3ebba5377); and the bundled app package.json (@zcode/desktop) version 3.14.0. The executable path is unchanged."
         ],
         "purpose": "Zhipu AI coding workbench."
       }

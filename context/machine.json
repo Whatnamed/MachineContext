@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 21743271936,
+      "free_bytes": 24427626496,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 14227079168,
+      "free_bytes": 6979321856,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 156229435392,
+      "free_bytes": 144418275328,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 36,
+    "entry_count": 37,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -444,7 +444,8 @@
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
-      "D:\\OMP"
+      "D:\\OMP",
+      "%USERPROFILE%\\.dotnet\\tools"
     ],
     "user_path": [
       "E:\\Dev\\uv",
@@ -464,7 +465,8 @@
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
-      "D:\\OMP"
+      "D:\\OMP",
+      "%USERPROFILE%\\.dotnet\\tools"
     ]
   },
   "environment": {
@@ -505,7 +507,8 @@
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
       "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
-      "D:\\OMP"
+      "D:\\OMP",
+      "%USERPROFILE%\\.dotnet\\tools"
     ],
     "shell_profiles": [
       {

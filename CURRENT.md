@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-16T08:25:40.7970022Z
+- Verified at: 2026-09-19T16:32:34.4942144Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (20.2/195.9 GiB free/total)
-  - `D:\` NTFS (13.2/279.3 GiB free/total)
-  - `E:\` NTFS (145.5/953.9 GiB free/total)
+  - `C:\` NTFS (22.8/195.9 GiB free/total)
+  - `D:\` NTFS (6.5/279.3 GiB free/total)
+  - `E:\` NTFS (134.5/953.9 GiB free/total)
 
 ## Development environment
 
@@ -75,13 +75,13 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.2.3 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.2.7 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.11.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.270 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.154.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.908.9136.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.908.9136.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.915.4065.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
@@ -90,11 +90,11 @@
 - **Oh My Pi** `omp` — 18.2.1 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.42.0 — `E:\Dev\npm-global\opencodex.cmd`
-- **Qoder CN** `qoder` — 0.2.5 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
+- **Qoder CN** `qoder` — 0.3.4 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
 - **WorkBuddy** `workbuddy` — 5.3.14 — `E:\WorkBuddy\WorkBuddy.exe`
-- **ZCode** `zcode` — 3.8.1.5310 — `D:\ZCode\ZCode\ZCode.exe`
+- **ZCode** `zcode` — 3.14.0.7681 — `D:\ZCode\ZCode\ZCode.exe`
 
 ## AI configuration profiles
 
