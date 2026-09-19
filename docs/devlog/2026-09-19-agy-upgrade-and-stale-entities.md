@@ -2,6 +2,8 @@
 
 Scope: apply the available Agy CLI update, then run the routine sync. The §8 full-comparison step (mandated after the 2026-08-29 trae lesson) turned up two more silently-stale supplementary desktop entities, and the same sync falsified a qoder curated note. All three were closed in this round.
 
+> **Self-review correction (same session).** The qoder evidence row below first read "13 running Qoder CN processes resolve their executable from `.qoder-versions\0.3.4\`". That was wrong: the actual split is **12 on 0.3.4 plus one leftover still on 0.2.5**. The published curated note was corrected in place by a follow-up commit. The error did not change the recorded version (0.3.4 is corroborated independently by `build-manifest.json`, `.qoder-app-status.json` and the registry), but the process count as written overstated the evidence.
+
 ## Upgrade
 
 | Item | Value |
@@ -18,7 +20,7 @@ Scope: apply the available Agy CLI update, then run the routine sync. The §8 fu
 
 ## Global-rules re-verification (why this was not assumed)
 
-1.2.7 explicitly changed customization token budgeting — *"giving user and workspace rules a dedicated 20,000-token budget … so large rule sets no longer evict skills, workflows, subagents, or MCP tools"*. Because this repo has already been burned twice by silently-broken global-rules loading (the OMP `enabledProviders` gate), the load was re-tested rather than assumed.
+1.2.7 explicitly changed customization token budgeting — *"giving user and workspace rules a dedicated 20,000-token budget … so large rule sets no longer evict skills, workflows, subagents, or MCP tools"*. Global-rules loading in this repo has already produced one silent failure (the OMP `enabledProviders` gate, invisible for a full round) and one invalid verification (the 2026-09-15 OMP test run from a directory that owned its own `AGENTS.md`), so the load was re-tested rather than assumed.
 
 Tested from a scratch git repository containing **no** `AGENTS.md`/`GEMINI.md`, using content questions instead of heading enumeration (the model refuses to list its own instruction headings):
 
@@ -37,7 +39,7 @@ The 2026-08-29 lesson requires comparing **every** supplementary desktop entity'
 
 No routine provider covers this entity, so it had been stale since the 2026-09-16 correction. Evidence, all agreeing:
 
-- 13 running `Qoder CN` processes resolve their executable from `D:\Qoder-CN\Qoder CN\.qoder-versions\0.3.4\Qoder CN.exe`;
+- of the 13 running `Qoder CN` processes, 12 resolve their executable from `D:\Qoder-CN\Qoder CN\.qoder-versions\0.3.4\Qoder CN.exe` (the newest cohort, started 22:52+08:00), while 1 leftover (pid 18628, started 12:44+08:00) still runs the older 0.2.5 payload — a stale process, not evidence against the refresh;
 - `.qoder-versions\0.3.4\resources\build-manifest.json` → `productVersion 0.3.4` (commit `081b9000`, buildTime 2026-09-19T09:22:27Z, electron 43.1.1);
 - `.qoder-app-status.json` → `version 0.3.4`;
 - `0.3.4.qoder-update-ready.json` (releaseId 0.3.4, payloadLayout `pending-asar-v1`) staged 2026-09-19T22:35;
@@ -47,7 +49,7 @@ The install-root `Qoder CN.exe` is still the 0.1.3 installer baseline, as expect
 
 ### zcode 3.8.1.5310 → 3.14.0.7681
 
-Also uncovered by the routine scan. Evidence: `D:\ZCode\ZCode\ZCode.exe` FileVersion/ProductVersion `3.14.0.7681` (mtime 2026-09-19T10:13+08:00), the HKCU uninstall entry `ZCode 3.14.0`, and the bundled `@zcode/desktop` package.json version `3.14.0`. The executable path is unchanged.
+Also uncovered by the same §8 full comparison (this entity has no routine provider either, so the routine scan alone would not have touched it). Evidence: `D:\ZCode\ZCode\ZCode.exe` FileVersion/ProductVersion `3.14.0.7681` (mtime 2026-09-19T10:13+08:00), the HKCU uninstall entry `ZCode 3.14.0`, and the bundled `@zcode/desktop` package.json version `3.14.0`. The executable path is unchanged.
 
 ## Corrections to existing records
 
@@ -65,12 +67,13 @@ Also uncovered by the routine scan. Evidence: `D:\ZCode\ZCode\ZCode.exe` FileVer
 - Routine provider refresh: `agy` 1.2.3 → 1.2.7, `codex-desktop` 26.908.9136.0 → 26.915.4065.0.
 - Curated (`.local/curated-2026-09-19-agy-upgrade.ps1`): the agy upgrade record with hashes and manifest verification; the agy global-rules re-verification; `qoder` 0.2.5 → 0.3.4 with the payload evidence and the `mcp-router.json` retraction; `zcode` 3.8.1.5310 → 3.14.0.7681.
 - Docs: `OPERATIONS.md` §8 registry-authority correction, `zcode` added to the stale-entity list, and the runtime-transient `mcp-router.json` note.
-- No collector, schema, or test change this round — both stale entities are one-time curated refreshes by design (§8), not new collection capability. The test gate was therefore not triggered.
+- No collector, schema, or test change this round — both stale entities are one-time curated refreshes by design (§8), not new collection capability, so the test gate was not *required*. The suite was run anyway and passed in full.
 
 ## Gates
 
 - `sync.ps1`: all ten providers success, validation ok.
 - `git diff` reviewed line by line; every canonical change is accounted for above.
 - `validate.ps1`: 0 errors, 0 findings.
-- Second sync idempotent (only the `context/status.json` `verified_at` heartbeat).
+- `tests/run-tests.ps1`: all tests passed (run although not required — no collector or test code changed).
+- Third sync idempotent: `ai.json`, `mcp.json`, `qoder.json` and `machine.json` byte-identical; only the `verified_at` heartbeat moved in `context/status.json` and `CURRENT.md`.
 - Privacy sweep over `git diff context/` clean.
