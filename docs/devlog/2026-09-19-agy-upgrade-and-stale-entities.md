@@ -66,6 +66,7 @@ Also uncovered by the same §8 full comparison (this entity has no routine provi
 
 - Routine provider refresh: `agy` 1.2.3 → 1.2.7, `codex-desktop` 26.908.9136.0 → 26.915.4065.0.
 - Curated (`.local/curated-2026-09-19-agy-upgrade.ps1`): the agy upgrade record with hashes and manifest verification; the agy global-rules re-verification; `qoder` 0.2.5 → 0.3.4 with the payload evidence and the `mcp-router.json` retraction; `zcode` 3.8.1.5310 → 3.14.0.7681.
+- Curated fix (`.local/fix-2026-09-20-qoder-process-count.ps1`): the qoder process-evidence sentence was **rewritten in place** (not left beside the wrong one) so canonical never carries two contradictory readings of the same evidence.
 - Docs: `OPERATIONS.md` §8 registry-authority correction, `zcode` added to the stale-entity list, and the runtime-transient `mcp-router.json` note.
 - No collector, schema, or test change this round — both stale entities are one-time curated refreshes by design (§8), not new collection capability, so the test gate was not *required*. The suite was run anyway and passed in full.
 
