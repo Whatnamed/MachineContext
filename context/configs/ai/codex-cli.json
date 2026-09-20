@@ -18,10 +18,10 @@
       }
     ],
     "projection": {
-      "model": "gpt-5.6-luna",
+      "model": "gpt-6-astra",
       "model_auto_compact_token_limit": 330000,
       "model_context_window": 372000,
-      "model_reasoning_effort": "max",
+      "model_reasoning_effort": "high",
       "sandbox_mode": "danger-full-access",
       "unprojected_keys": [
         "codex-cli.disable_response_storage",
