@@ -57,9 +57,9 @@ Behavioral confirmation, rather than inference from the flag alone: `codex debug
 
 Conclusion for this version: enabling `features.context_management.experimental_mode` flips the harness feature flag but does not deliver the capability to `gpt-6-astra`, because the model catalog gates it with `supports_experimental_context = false`. This is a capability regression relative to what the flag name implies — recorded as a finding, not worked around. Note the 0.154.0 binary also embeds a sample catalog entry showing `"slug": "gpt-6-astra"` with `"supports_experimental_context": true`, so the field is expected to be `true` for Astra in some client/catalog combination; the catalog this machine actually receives says otherwise.
 
-## Compatibility caveat: a stale 0.130.0 binary now rejects the file
+## Stale 0.130.0 binary in the Codex app data tree — identified, then deleted
 
-`%LOCALAPPDATA%\OpenAI\Codex\bin\codex.exe` (`codex-cli 0.130.0-alpha.5`, written 2026-05-09, 245,812,016 bytes) fails to load the edited config:
+While verifying the edit, `%LOCALAPPDATA%\OpenAI\Codex\bin\codex.exe` (`codex-cli 0.130.0-alpha.5`, written 2026-05-09, 245,812,016 bytes) turned out to fail on the edited config:
 
 ```
 Error: C:\Users\hasee\.codex\config.toml:194:1: invalid type: map, expected a boolean
@@ -68,7 +68,19 @@ Caused by:
     in `features`
 ```
 
-Its `FeatureToml` predates the untagged-enum form and accepts booleans only. It is a leftover from the May desktop install, **not an active consumer**: it is not on PATH (the only Codex PATH entry is `E:\Codex\codex-cli`), no config file references it, and the active clients are the npm CLI 0.154.0 (`E:\Codex\codex-cli`) and the desktop bundle 0.155.0-alpha.9.2 (`…\bin\247581e40ee272fb\codex.exe`, which `config.toml` itself names via `CODEX_CLI_PATH`). Both parse the edited file correctly. Nothing was changed to accommodate the stale binary.
+Its `FeatureToml` predates the untagged-enum form and accepts booleans only. The Codex app data tree uses a content-addressed layout — `bin\<hash>\` per component — and this file sits at the **root** of `bin\`, beside an equally old `node.exe` (2026-04-17), `node_repl.exe` (2026-05-08), `codex-command-runner.exe` / `codex-windows-sandbox-setup.exe` (2026-05-09) and `rg.exe` (2026-03-18). All of them are remnants of the pre-hash-directory layout.
+
+Deletion was preceded by a reference search, not by the version mismatch alone:
+
+- no text file under `%LOCALAPPDATA%\OpenAI` mentions `OpenAI\Codex\bin\codex.exe` (0 hits), including the stale `chrome-native-hosts.json`, which points at a `bin\7dea4a003bc76627\codex.exe` that no longer exists and is superseded by the empty `chrome-native-hosts-v2.json`;
+- no mention in `%USERPROFILE%\.codex` (`.codex-global-state.json`, `config.toml`, `session_index.jsonl`, `version.json`, plus depth-2 config files): 0 hits;
+- not on PATH — the only Codex PATH entry is `E:\Codex\codex-cli`;
+- no Start Menu / Desktop shortcut targets anything under `OpenAI\Codex`;
+- no running process resolves from it; the live `codex` process (pid 5000) runs `bin\247581e40ee272fb\codex.exe`, which is also what `config.toml` names via `CODEX_CLI_PATH`.
+
+Deleted 2026-09-20 (sha256 `DD4ADF30…0A6B3E3E`, 245,812,016 bytes). Verified after: `codex --version` → 0.154.0, all desktop `codex`/`node_repl`/`ChatGPT` processes still running from their versioned paths. A `sync.ps1 -NoPublish` dry run then reported `changed_files: []` and a clean `git_status`, confirming no collector observes that path — the deletion required no canonical re-publish.
+
+Not deleted: the five sibling root-level binaries listed above. They are the same category and equally unreferenced, but they were outside what was asked, so they are left in place and flagged instead.
 
 ## Incidental real drift captured by the same sync (not caused by this round)
 
@@ -96,4 +108,5 @@ Closing that would mean changing the collection contract (allowlist shape, fixtu
 - `validate.ps1`: 0 errors, 0 warnings, 0 findings.
 - `tests/run-tests.ps1`: all tests passed (run although not required — no collector or test code changed).
 - Second sync idempotent: `git diff` of the two runs differs only in the `verified_at` heartbeat in `context/status.json` and `CURRENT.md`; every canonical data file byte-identical.
+- Third sync, `-NoPublish` dry run after the stale-binary deletion: `changed_files: []`, clean `git_status`, validation ok — the deletion introduced no canonical drift.
 - Privacy sweep over `git diff context/`: no `sk-`, `bearer`, `authorization`, `opaque`, `secret`, `password`, or private-key shapes. The single `token` hit is the `model_auto_compact_token_limit` field name.
