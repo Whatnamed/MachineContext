@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-20T10:58:30.7035296Z
+- Verified at: 2026-09-24T17:33:09.5058896Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,8 +38,8 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
   - `C:\` NTFS (21.0/195.9 GiB free/total)
-  - `D:\` NTFS (7.2/279.3 GiB free/total)
-  - `E:\` NTFS (102.0/953.9 GiB free/total)
+  - `D:\` NTFS (57.8/279.3 GiB free/total)
+  - `E:\` NTFS (110.0/953.9 GiB free/total)
 
 ## Development environment
 
@@ -61,7 +61,7 @@
 - **pip** `pip` — 26.2.1 — `D:\Python\3.12.10\Scripts\pip.exe`
 - **uv** `uv` — 0.12.9 — `E:\Dev\uv\uv.exe`
 - **uvx** `uvx` — 0.12.9 — `E:\Dev\uv\uvx.exe`
-- **winget** `winget` — 1.29.290 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
+- **winget** `winget` — 1.29.380 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
 - **Bun** `bun` — 1.4.0 — `%USERPROFILE%\.bun\bin\bun.exe`
 - **Dart** `dart` — 3.11.5 — `E:\dev\flutter\bin\dart.bat`
@@ -75,21 +75,21 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.2.7 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.2.10 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.11.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
-- **Claude Code** `claude-code` — 2.1.270 — `D:\Claude\cli\claude.cmd`
+- **Claude Code** `claude-code` — 2.1.281 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
-- **Codex CLI** `codex-cli` — 0.154.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.915.4065.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0`
+- **Codex CLI** `codex-cli` — 0.156.1 — `E:\Codex\codex-cli\codex.cmd`
+- **Codex Desktop** `codex-desktop` — 26.917.9434.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.1.5-rc.2 — `D:\DSH\dsh.cmd`
-- **Grok Build CLI** `grok` — 1.0.30 — `D:\GrokBuild\home\bin\grok.exe`
-- **Oh My Pi** `omp` — 18.2.1 — `D:\OMP\omp.exe`
+- **Grok Build CLI** `grok` — 1.0.41 — `D:\GrokBuild\home\bin\grok.exe`
+- **Oh My Pi** `omp` — 18.3.0 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
-- **OpenCodex** `opencodex` — 2.42.0 — `E:\Dev\npm-global\opencodex.cmd`
+- **OpenCodex** `opencodex` — 2.64.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.3.4 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`

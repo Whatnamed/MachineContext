@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.2.7",
+        "version": "1.2.10",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -92,7 +92,8 @@
         "notes": [
           "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers",
           "global customization root is %USERPROFILE%\\.gemini\\config (per agy embedded docs); global rules deployed at config\\GEMINI.md (2026-09-15) — not %USERPROFILE%\\.gemini\\GEMINI.md. Load re-verified 2026-09-19 on 1.2.7, because that release changed customization token budgeting (user/workspace rules now get a dedicated 20,000-token budget): from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered LANG=简体中文 INDEX=E:\\MachineContext\\CURRENT.md DESTRUCTIVE=YES, exactly matching %USERPROFILE%\\.gemini\\config\\GEMINI.md lines 5/22/34, while a negative control asking for a never-provided secret answered NONE. The global ruleset still reaches the model on 1.2.7.",
-          "2026-09-19: 1.2.3 -> 1.2.7 via the native self-updater `agy update` (in-place at %LOCALAPPDATA%\\agy\\bin\\agy.exe; no duplicate install created and no npm-global shim). The updater reported \"Found new version 1.2.7\" and its own \"Verification successful\"; the installed binary was then independently re-verified: sha512 3b2008ed40276e125e5960ae30c1a376d33bd8637fa941742f287aa244a3d609f11d1bb2694947db170ed7452561ba0b721be3f6fa03a955e2737bed043377bd matches the official windows_amd64 release manifest (version 1.2.7, build 6731160148115456), sha256 162607893eaacaf7b4a34bcd0bc3978342c6707b0340f96040f0139ac904dd22, size 195,186,840 -> 203,523,736 bytes. The updater parked the previous 1.2.3 binary as agy.exe.1789831711622230000.old and then removed it itself; no .old remains in the bin directory."
+          "2026-09-19: 1.2.3 -> 1.2.7 via the native self-updater `agy update` (in-place at %LOCALAPPDATA%\\agy\\bin\\agy.exe; no duplicate install created and no npm-global shim). The updater reported \"Found new version 1.2.7\" and its own \"Verification successful\"; the installed binary was then independently re-verified: sha512 3b2008ed40276e125e5960ae30c1a376d33bd8637fa941742f287aa244a3d609f11d1bb2694947db170ed7452561ba0b721be3f6fa03a955e2737bed043377bd matches the official windows_amd64 release manifest (version 1.2.7, build 6731160148115456), sha256 162607893eaacaf7b4a34bcd0bc3978342c6707b0340f96040f0139ac904dd22, size 195,186,840 -> 203,523,736 bytes. The updater parked the previous 1.2.3 binary as agy.exe.1789831711622230000.old and then removed it itself; no .old remains in the bin directory.",
+          "2026-09-25 canonical catch-up — this was NOT an upgrade performed in this session. The machine was already on 1.2.10 while canonical still recorded 1.2.7, so the 1.2.7 -> 1.2.10 upgrade happened outside this session (E:\\AGY\\cli\\agy.exe mtime 2026-09-24T17:30:28+08:00; the official GitHub release 1.2.10 is dated 2026-09-24T06:26:54Z). `agy update` on 2026-09-25 printed \"Checking for updates... (current version 1.2.10)\" then \"You are already on the latest version.\" and exited 0. Executable resolution is unchanged and is one level of indirection deeper than the recorded path suggests: %LOCALAPPDATA%\\agy\\bin is a DIRECTORY JUNCTION to E:\\AGY\\cli, so where.exe and Get-Command legitimately report %LOCALAPPDATA%\\agy\\bin\\agy.exe while the real file is E:\\AGY\\cli\\agy.exe (sha256 9EBAE3CFAF6D7FF7A17ECBE7870350018A30A7790364792A873917693E744A05, 198,761,112 bytes). Global-rules load re-verified on 1.2.10: from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered E:\\MachineContext\\CURRENT.md — a path that appears only in %USERPROFILE%\\.gemini\\config\\GEMINI.md — so the user-global ruleset still reaches the model."
         ],
         "purpose": "Google Antigravity CLI coding assistant."
       }
@@ -163,7 +164,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.1.270",
+        "version": "2.1.281",
         "executable": "D:\\Claude\\cli\\claude.cmd",
         "command_resolution": [
           {
@@ -261,7 +262,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.154.0",
+        "version": "0.156.1",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
@@ -339,7 +340,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.915.4065.0",
+        "version": "26.917.9434.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -353,8 +354,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -555,7 +556,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.30",
+        "version": "1.0.41",
         "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
         "command_resolution": [
           {
@@ -593,9 +594,10 @@
       },
       "curated": {
         "notes": [
-          "`grok update` self-check fails with \"program not found\" in this custom layout; update in place with the official install.ps1 and GROK_BIN_DIR=D:\\GrokBuild\\home\\bin (2026-09-02: 1.0.4 -> 1.0.13)",
+          "2026-09-25: root cause of the long-standing `grok update` \"program not found\" failure, and its fix. D:\\GrokBuild\\home\\config.toml (the grok home) carried `[cli] installer = \"npm\"`. The updater honours that value and takes the npm install path, which fails on this machine. Verified by A/B on the same binary: with installer=\"npm\", `grok update --check` prints \"Update check failed: program not found\" (exit 1); with any other value it takes the native path and prints \"A new version of Grok Build is available: 1.0.30 -> 1.0.41 [stable]\". The value the official installer (x.ai/cli/install.sh) persists for native installs is `installer = \"internal\"`, which is what this layout actually is (native grok.exe/agent.exe under %GROK_HOME%\\bin), so that value was written. Likely but NOT proven mechanism for the npm-path failure: the updater spawns `npm`, which on Windows is npm.cmd and is not found by a bare process spawn. The earlier install.ps1 + GROK_BIN_DIR=D:\\GrokBuild\\home\\bin workaround is retired; the npm-reinstall hint remains wrong for this layout.",
           "global rules come from %USERPROFILE%\\.claude\\CLAUDE.md via Grok Claude Code compatibility (verified with grok inspect 2026-09-15); no AGENTS.md in the grok home because Grok would inject both copies",
-          "2026-09-15: 1.0.13 -> 1.0.30 by copying the official stable-channel artifact (storage.googleapis.com/grok-build-public-artifacts/cli) over grok.exe in place; `grok update` still reports \"program not found\" and its npm-reinstall hint would create a second install"
+          "2026-09-15: 1.0.13 -> 1.0.30 by copying the official stable-channel artifact (storage.googleapis.com/grok-build-public-artifacts/cli) over grok.exe in place. SUPERSEDED 2026-09-25: the justification recorded then — that `grok update` reports \"program not found\" and its npm-reinstall hint would create a second install — was a fixable config-provenance bug, not a property of the layout; see the 2026-09-25 root-cause note. Prefer `grok update` from now on.",
+          "2026-09-25: 1.0.30 -> 1.0.41 via the native in-place self-updater `grok update`, stable channel (x.ai/cli/stable reported 1.0.41; the alpha channel reported the same 1.0.41, so 1.0.41 is stable latest). It installed grok.exe and agent.exe into D:\\GrokBuild\\home\\bin and rewrote config.toml as a TOML round-trip. That rewrite was verified value-preserving: the ONLY semantic delta is the `[cli] installer` line, everything else is formatting (digit separators 500_000 -> 500000, array line-wrapping, and trailing commas inside arrays, which TOML 1.0 permits). Confirmed by masking the installer value, normalizing whitespace/digit-separators/trailing-commas and comparing byte-for-byte (equal), plus an independent TOML parse of the result: 17 [model.*] tables, 5 [mcp_servers.*] tables, 16 inline api_key values, 7 skill paths and models.default grok-4.5 all unchanged. grok.exe sha256 AB5D2A424F08281798ACBDBB06076166FE000D7995EDE94A673417B805210A25, 150,036,808 -> 154,082,120 bytes. Smoke: `grok -p \"Reply exactly: OK\"` -> OK. `grok inspect` still resolves the global personal ruleset from %USERPROFILE%\\.claude\\CLAUDE.md through Grok Claude Code compatibility, and 52 user-scope skills still load."
         ],
         "purpose": "Grok build tool and agent runner."
       }
@@ -608,7 +610,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.2.1",
+        "version": "18.3.0",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -659,7 +661,8 @@
           "tracks upstream stable releases; update with the official `omp update` (the earlier temporary 18.0.6 pin was removed by user decision on 2026-09-02)",
           "no OMP-specific global rules file exists, to avoid duplicate injection. OMP reads the shared user-global ruleset from %USERPROFILE%\\.codex\\AGENTS.md, but ONLY once the codex context-source provider is opted in — see the RESOLVED note below; it is enabled on this machine as of 2026-09-16 via `enabledProviders: [codex]`.",
           "2026-09-16: 18.1.21 -> 18.2.1 via `omp update`, verified in-place at D:\\OMP\\omp.exe (sha256 FEE52652C7B0B90EB7716B3C6DA50AB4D90442505EEF1C5349C9428E8D966679, matching the updater-reported hash); the previous 18.1.21 binary was kept by the updater as omp.exe.1789534362039.11444.0.bak (sha256 61856ACAC3845C3CB8F12C8F6BFB7ECF30E10543AC0EBD69F6FDB404D23C45DA). Binary size 161.7 MB -> 211.7 MB, matching the 18.2.0 change to ship precompiled bytecode. Update requires closing running omp sessions first (Windows cannot replace a locked exe); no duplicate install was created outside D:\\OMP and no npm-global omp.cmd shim exists.",
-          "RESOLVED 2026-09-16 — root cause found and fixed. The 2026-09-15 claim that OMP reads the user-global rules from %USERPROFILE%\\.codex\\AGENTS.md was recorded as \"verified via omp -p, reproduced the six section headings\", but that run happened from inside E:\\MachineContext and therefore observed the PROJECT file, not the user-global one. Re-tested properly from a scratch directory containing .git but no AGENTS.md, `omp -p` injected nothing, on 18.2.1 AND on 18.1.21 (controlled A/B swap of the saved .bak) — so it was never a regression from the upgrade. ROOT CAUSE (from the bundled source in omp.exe): the loader is `function Mll(e){ const o = g3(e); if (!o) return {items:[],warnings:[]}; ... }` and `function g3(e, t=false){ if (!t && !dl(\"codex\", e)) return null; return path.join(e.home, d8.codex.userBase); }`. The gate `dl(\"codex\", e)` is a per-provider opt-in check: it fails when the provider is in `disabledProviders`, passes when the provider registry marks it default-on (`X4s[s] !== true`), and otherwise passes only when the provider is in `enabledProviders` (or the registry set contains \"*\"/\"all\", or the call passes `explicitProviders`/`includeOptOutUserSources`). `codex` is a default-off (opt-in) context-source provider, and `omp config get enabledProviders` returned `[]`, so `g3` returned null and the whole Codex user-global source short-circuited — silently, with no warning. FIX APPLIED: `omp config set enabledProviders '[\"codex\"]'` (note the JSON-array argument form; a bare `codex` is rejected with \"Invalid array JSON\"). That persists a top-level `enabledProviders: [codex]` to %USERPROFILE%\\.omp\\agent\\config.yml (1046 -> 1074 bytes; pre-change copy saved at .local/backup-omp-config-2026-09-16.yml). VERIFIED after the fix with no overlay: from a scratch project with only .git, `omp -p` reports COUNT=6 LANG=chinese, i.e. the shared global ruleset (6 Chinese headings) — previously NONE. CORRECTED (2026-09-16, later the same session): an earlier version of this note claimed OMP surfaces the project-level AGENTS.md *instead of* the user-global one. That was WRONG and is retracted here. The claim came from a COUNT=6/LANG= test whose answer was careless; the verbatim-heading probe shows OMP loads BOTH additively - from E:\\MachineContext the visible headings are the 6 Chinese ones (global) AND the 6 English ones (project), while from a scratch directory with no AGENTS.md only the 6 Chinese ones appear. So OMP has the same semantics as Codex here: user-global personal rules plus project rules, both in context. METHOD LESSON: do not decide this class of question from a model's own count/summary; require verbatim enumeration, because a summary answer can be wrong in a way that looks like a clean A/B result. Enabling the `codex` provider also turns on the other Codex-compat sources (~/.codex/skills, extensions, commands, prompts, hooks, tools); those directories do not exist here (only the global AGENTS.md is present), so this had no other effect. NOTE: `provider` here means a context-source provider id, not an LLM provider - and such a provider being default-off means it must be opted into via enabledProviders, which is not the same as an opt-out provider."
+          "RESOLVED 2026-09-16 — root cause found and fixed. The 2026-09-15 claim that OMP reads the user-global rules from %USERPROFILE%\\.codex\\AGENTS.md was recorded as \"verified via omp -p, reproduced the six section headings\", but that run happened from inside E:\\MachineContext and therefore observed the PROJECT file, not the user-global one. Re-tested properly from a scratch directory containing .git but no AGENTS.md, `omp -p` injected nothing, on 18.2.1 AND on 18.1.21 (controlled A/B swap of the saved .bak) — so it was never a regression from the upgrade. ROOT CAUSE (from the bundled source in omp.exe): the loader is `function Mll(e){ const o = g3(e); if (!o) return {items:[],warnings:[]}; ... }` and `function g3(e, t=false){ if (!t && !dl(\"codex\", e)) return null; return path.join(e.home, d8.codex.userBase); }`. The gate `dl(\"codex\", e)` is a per-provider opt-in check: it fails when the provider is in `disabledProviders`, passes when the provider registry marks it default-on (`X4s[s] !== true`), and otherwise passes only when the provider is in `enabledProviders` (or the registry set contains \"*\"/\"all\", or the call passes `explicitProviders`/`includeOptOutUserSources`). `codex` is a default-off (opt-in) context-source provider, and `omp config get enabledProviders` returned `[]`, so `g3` returned null and the whole Codex user-global source short-circuited — silently, with no warning. FIX APPLIED: `omp config set enabledProviders '[\"codex\"]'` (note the JSON-array argument form; a bare `codex` is rejected with \"Invalid array JSON\"). That persists a top-level `enabledProviders: [codex]` to %USERPROFILE%\\.omp\\agent\\config.yml (1046 -> 1074 bytes; pre-change copy saved at .local/backup-omp-config-2026-09-16.yml). VERIFIED after the fix with no overlay: from a scratch project with only .git, `omp -p` reports COUNT=6 LANG=chinese, i.e. the shared global ruleset (6 Chinese headings) — previously NONE. CORRECTED (2026-09-16, later the same session): an earlier version of this note claimed OMP surfaces the project-level AGENTS.md *instead of* the user-global one. That was WRONG and is retracted here. The claim came from a COUNT=6/LANG= test whose answer was careless; the verbatim-heading probe shows OMP loads BOTH additively - from E:\\MachineContext the visible headings are the 6 Chinese ones (global) AND the 6 English ones (project), while from a scratch directory with no AGENTS.md only the 6 Chinese ones appear. So OMP has the same semantics as Codex here: user-global personal rules plus project rules, both in context. METHOD LESSON: do not decide this class of question from a model's own count/summary; require verbatim enumeration, because a summary answer can be wrong in a way that looks like a clean A/B result. Enabling the `codex` provider also turns on the other Codex-compat sources (~/.codex/skills, extensions, commands, prompts, hooks, tools); those directories do not exist here (only the global AGENTS.md is present), so this had no other effect. NOTE: `provider` here means a context-source provider id, not an LLM provider - and such a provider being default-off means it must be opted into via enabledProviders, which is not the same as an opt-out provider.",
+          "2026-09-25: 18.2.1 -> 18.3.0 via the official `omp update` (`omp update --check` reported 18.3.0 as the stable latest; the canary channel was not used). Updated in place at D:\\OMP\\omp.exe, sha256 9BE13F13E3C11DCBA25DFCCFAD0F8C508F66FD8BC2F95A0F06F2964BE8D8F527 — matching the hash the updater itself verified and reported — 211,734,016 -> 233,652,736 bytes. Descriptive evidence for the upgrade mechanism itself: the run printed \"Verified sha256:...\" then \"Installing update...\", then \"Updated to 18.3.0 at D:\\OMP\\omp.exe\", i.e. it installs to the path derived from the running executable, which is why the standalone D:\\OMP layout is preserved. The updater kept the previous binary as omp.exe.1790270148771.31792.0.bak (updater-managed backup, left in place per the standing rule; the older omp.exe.1789534362039.11444.0.bak is also still there). No duplicate install outside D:\\OMP and no npm-global omp shim. %USERPROFILE%\\.omp\\agent\\config.yml and models.yml were byte-identical before and after the upgrade (so modelRoles.default is still google-antigravity/gemini-3.8-flash and the TokenRhythm provider is intact), and the Antigravity OAuth credentials were deliberately left untouched: no logout, no re-login, no agent.db deletion, no projectId change."
         ]
       }
     },
@@ -698,7 +701,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.42.0",
+        "version": "2.64.0",
         "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
         "command_resolution": [
           {
@@ -723,7 +726,7 @@
       "curated": {
         "status": "inactive",
         "notes": [
-          "no longer used by the user (decision 2026-09-15); still installed at E:\\Dev\\npm-global (2.42.0) — not uninstalled, and absence of use must not be recorded as absent"
+          "no longer used by the user (decision 2026-09-15); still installed at E:\\Dev\\npm-global (2.64.0) — not uninstalled, and absence of use must not be recorded as absent. 2026-09-25 routine upgrade 2.42.0 -> 2.64.0 through the existing global npm install, not a dedicated root: `npm install -g @bitkyc08/opencodex@2.64.0` with the npm prefix already set to E:\\Dev\\npm-global (package @bitkyc08/opencodex, dist-tag latest; the preview dist-tag 2.64.0-preview.20260923 was deliberately not used). Executable unchanged at E:\\Dev\\npm-global\\opencodex.cmd; the ocx alias shim ships from the same package. npm reported \"changed 100 packages\" because it reified the whole global tree, so the other globals were re-checked afterwards and all still resolve: opencli 1.8.4, lark-cli 1.0.64, mcporter 0.9.0, agently-cli 1.0.5, agent-browser 0.27.0, codex-threadripper 0.3.4. The inactive state is unchanged from before this round and was not \"fixed\": the proxy is still not running (routing=native, service=absent, shim=absent) and no attempt was made to revive the abandoned Astra experimental context management. `opencodex doctor` reports ok on all path, temp-file and routing checks, and still detects the Codex runtime at E:\\Codex\\codex-cli\\codex.cmd (0.156.1) — which independently corroborates the Codex CLI upgrade recorded in the same round."
         ],
         "purpose": "Open-source Codex protocol CLI and multi-agent harness."
       }

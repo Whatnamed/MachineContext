@@ -18,7 +18,7 @@
       }
     ],
     "projection": {
-      "model": "gpt-6-astra",
+      "model": "gpt-6-sol",
       "model_auto_compact_token_limit": 330000,
       "model_context_window": 372000,
       "model_reasoning_effort": "high",

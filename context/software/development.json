@@ -1122,7 +1122,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.29.290",
+        "version": "1.29.380",
         "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\winget.exe",
         "command_resolution": [
           {

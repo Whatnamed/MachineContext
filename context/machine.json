@@ -147,13 +147,13 @@
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 7784628224,
+      "free_bytes": 62008590336,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 109521666048,
+      "free_bytes": 118111600640,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 41,
+    "entry_count": 44,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -449,7 +449,10 @@
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-c\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\package\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
     ],
     "user_path": [
       "E:\\Dev\\uv",
@@ -474,7 +477,10 @@
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-c\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\package\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
     ]
   },
   "environment": {
@@ -520,7 +526,10 @@
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-c\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\package\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
     ],
     "shell_profiles": [
       {

@@ -67,14 +67,14 @@
       {
         "name": "node_repl",
         "scope": "user",
-        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\df473e5367fa2b42\\bin\\node_repl.exe",
+        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\13827bafdc0b5422\\bin\\node_repl.exe",
         "tool": "codex-cli",
         "transport": "stdio"
       },
       {
         "name": "cua_repl",
         "scope": "user",
-        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
         "tool": "codex-cli",
         "transport": "stdio"
       },
