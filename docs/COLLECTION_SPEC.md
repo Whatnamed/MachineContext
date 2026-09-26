@@ -414,6 +414,8 @@ Canonical module：`context/configs/`（index + 每工具一个 profile 文件 +
 
 无文件级 MCP 配置的工具在 `unresolved` 中说明（OMP 的状态数据库永远不被读取）。源文件存在但未声明任何 server 属正常观察：记 0 个 server、不进 `unresolved`（如 agy 的 `~/.gemini/config/mcp_config.json`——它与 Gemini CLI 的 `~/.gemini/settings.json` 是两个不同文件）；只有确认源文件缺失才记 unresolved。
 
+DSH 的 MCP 声明位于 Cordis loader patch 层：`%USERPROFILE%\.dsh\cordis.patch.yml` 与每个 `%USERPROFILE%\.dsh\profiles\<profile>\cordis.patch.yml`。只有 `insert` 列表中 `name` 为 `@deepseek-ai/dsh-mcp-client` 的行是 MCP server，profile 目录名作为 scope，transport 取自 DSH 自己的 `transport` 键（不是 Claude/Gemini 风格的 `type`）。`headers`（可能携带 `Authorization` bearer）与 env 值一律不读取。DSH profile 模板会把空的 patch 层写成 `[]`，这属于“未声明任何 server”的正常观察。
+
 ### 刷新与删除
 
 - config profile 随 routine core scan 刷新（读取小文件，成本低）；
