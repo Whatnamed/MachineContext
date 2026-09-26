@@ -1,8 +1,8 @@
 # Devlog — 2026-09-26 DSH Parallel Search MCP over the existing MCP client
 
-Scope: attach the official Parallel Search MCP (`https://search.parallel.ai/mcp`) to the live DSH `web` profile as a configuration-only change, verify it end to end, then make MachineContext actually collect DSH profile MCP declarations.
+Scope: attach the official Parallel Search MCP (`https://search.parallel.ai/mcp`) to the live DSH `web` profile as a configuration-only change, verify it end to end, make MachineContext actually collect DSH profile MCP declarations, and route web access to it.
 
-DSH was **not** upgraded and stays `0.1.5-rc.2`. Desktop was not installed. No model, provider, plugin or OMP configuration was changed, no package was installed, and no historical profile/plugin state was cleaned up.
+DSH was **not** upgraded and stays `0.1.5-rc.2`. Desktop was not installed. No model, provider, plugin or OMP configuration was changed, no package was installed, and no historical profile/plugin state was cleaned up. The only credential work was adding a newly created Parallel key to the Harness-home `.env`; its value is not recorded anywhere.
 
 ## Confirmed machine state before the change
 
@@ -30,15 +30,18 @@ Because the client ships with the harness, the whole integration is configuratio
         serverName: parallel
         transport: streamable-http
         url: https://search.parallel.ai/mcp
+        headers: !!js 'process.env.PARALLEL_API_KEY ? { Authorization: `Bearer ${process.env.PARALLEL_API_KEY}` } : undefined'
 ```
 
-One backup was taken first (`cordis.patch.yml.bak-20260926-mcp-parallel`). The file went from 2216 to 3231 bytes; `dsh --profile web --dump-config` then showed exactly six added lines — the new row — and nothing else, 174 → 175 entries.
+The row was first inserted without the `headers` line and the header was added later, once the credential existed (see the credential section below for why the ternary is written the way it is).
 
-**No restart was needed.** The `web` profile template carries `patchReload: "live"`, and `runProfile` registers the profile patch file with Cordis HMR, so the edit hot-swapped the plugin in place. Corroboration: the host process (PID 13480, started 11:02:06) never changed, while the profile root `cordis.yml` was rewritten at 16:03:04 — one second after the 16:02:59 edit — which is the reload path's own behaviour.
+One backup was taken before the first edit (`cordis.patch.yml.bak-20260926-mcp-parallel`). The insert itself was a pure addition — `dsh --profile web --dump-config` showed exactly six added lines and nothing else, 174 → 175 entries, 2216 → 3231 bytes. The file now stands at 3813 bytes after the header and comment updates.
 
-## Credential handling: anonymous mode, and a premise that the machine does not support
+**The insert itself needed no restart.** The `web` profile template carries `patchReload: "live"`, and `runProfile` registers the profile patch file with Cordis HMR, so the edit hot-swapped the plugin in place. Corroboration: the host process (PID 13480, started 11:02:06) never changed across the edit, while the profile root `cordis.yml` was rewritten at 16:03:04 — one second after the 16:02:59 edit — which is the reload path's own behaviour. A restart *was* required later, but for a different reason: `%USERPROFILE%\.dsh\.env` is read once at launch, so the credential could not reach the already-running process.
 
-The round asked to reuse an existing local Parallel credential if one could be referenced safely. **It cannot, because none exists in any form DSH can reach:**
+## Credential handling: no reusable key existed, then a new one was configured
+
+The round asked to reuse an existing local Parallel credential if one could be referenced safely. **It could not, because none existed in any form DSH can reach:**
 
 | Location checked | Result |
 | --- | --- |
@@ -50,11 +53,34 @@ The round asked to reuse an existing local Parallel credential if one could be r
 | OMP `%USERPROFILE%\.omp\agent\.env` | only `TOKENRHYTHM_API_KEY` |
 | OMP `agent.db` / `models.db` / `history.db`, searched for the **name** `PARALLEL_API_KEY` only | no occurrence |
 
-So the Parallel MCP was configured **without any `Authorization` header**, exactly as the round's fallback instructs. No credential was parsed, dumped or copied, and no OMP state database content was read.
-
 **Conflict with the stated premise, recorded as required.** The task described OMP as already configured with, and having used, a Parallel API credential. The machine shows only `providers.webSearchOrder: [parallel, perplexity, …]` in `%USERPROFILE%\.omp\agent\config.yml` — a *preference ordering*, which is not evidence that a key was ever stored. No Parallel key was found anywhere. Nothing was changed to "fix" that; OMP was left untouched.
 
-Auth mode is therefore anonymous, and that was confirmed by construction plus a control probe rather than by trusting the config text: with no header the endpoint answers `initialize` / `tools/list` / `tools/call` with HTTP 200, while the same `initialize` carrying a deliberately bogus `Bearer` returns **401**. The server validates bearer tokens, so a request that succeeds without one is genuinely anonymous.
+### Where the credential lives, and why that file
+
+A new key was created by the user and placed in `%USERPROFILE%\.dsh\.env`. That is the only one of three candidate channels that reaches an MCP header:
+
+| Channel | Works? | Exposure |
+| --- | --- | --- |
+| `%USERPROFILE%\.dsh\.env` | **yes** | only the DSH process reads it |
+| Windows User environment variable (`setx`) | yes | every process under the account, permanently |
+| `.credentials.yaml` refs | **no** | smallest, but unreachable from an MCP header |
+
+`loadLayeredEnv` in `@deepseek-ai/dsh-app-boot` calls `process.loadEnvFile` on the Harness-home `.env` and materializes each value into `process.env` (`if (process.env[name] === void 0) process.env[name] = value`). The MCP client's header is produced by a `!!js` expression that the Cordis loader evaluates **synchronously** (`interpolate` → `with (ctx) { eval(expr) }`, no await anywhere in the chain), while `ctx.credentials.resolve()` is asynchronous — so a `.credentials.yaml` reference can feed an LLM adapter's `apiKeyEnv` (which is how TokenRhythm works: `TOKENRHYTHM_API_KEY` is absent from process, User and Machine scopes) but can never feed an MCP header.
+
+The `.env` file was loaded at the 16:41:30 restart, which is what made the connection authenticated. The credential is recorded here as **source + state only**; the value never entered the repository, a log, or a terminal, and the probe scripts that read it printed status codes and lengths only.
+
+**The key does not leak to child processes.** `dsh-subprocess`'s `scrubbedParentEnv` drops ambient names matching `/KEY|PASSWORD|SECRET|TOKEN/i` before every harness spawn, and `PARALLEL_API_KEY` matches. This is now a positive result rather than an ambiguous one: authentication proves the key is present in the host environment, and the harness's own shell tool still cannot see it.
+
+### Auth mode is authenticated
+
+Confirmed by a behavioural discriminator rather than by trusting the config text. The Parallel `session_id` argument is documented as "ignored on paid-tier keys", and that is observable:
+
+| Probe | `session_id` returned |
+| --- | --- |
+| anonymous connection, client passes a known id | echoed back verbatim |
+| authenticated connection, same known id | server-generated `session_<hex>` |
+
+The live DSH connection returned `session_8ed71879…` for a client-supplied `deadbeef…`, so it is authenticated. Two independent calibrations ran against the endpoint first (anonymous echoes, authenticated ignores) to prove the discriminator before it was used.
 
 ## Verification
 
@@ -62,7 +88,7 @@ Auth mode is therefore anonymous, and that was confirmed by construction plus a 
 - **Search smoke test.** `mcp__parallel__web_search` (objective "DeepSeek Harness latest release", three queries) returned `search_id` `search_82b57b065f926d7685dc08b9bfba297c` with nine results carrying URL, title, publish date and excerpts. This is the MCP path, not the harness's built-in DeepSeek search.
 - **Fetch smoke test.** `mcp__parallel__web_fetch` on `https://github.com/deepseek-ai/deepseek-harness` returned `extract_id` `extract_e92045a7da6eb46fe7efc45d763eda17` with usable README markdown (project description, run instructions, licence, top-level file list) — not a bare link.
 - **No fallback, no interference.** The harness's native `web_search` and `web_fetch` are still registered and were exercised separately during the same session; the MCP tools are additional, namespaced tools.
-- **Regression.** DSH version still `0.1.5-rc.2`; `%USERPROFILE%\.dsh\settings.yaml` byte-identical (sha256 `4034CE6B…`, mtime 2026-09-19) so the default model stays `tokenrhythm` / `deepseek-flash`; TokenRhythm provider unchanged; shell tooling used throughout; the composed entry list keeps all 43 `disabled: true` quarantine rows and contains exactly one `dsh-mcp-client` row; the host process never restarted.
+- **Regression.** DSH version still `0.1.5-rc.2`; `%USERPROFILE%\.dsh\settings.yaml` byte-identical (sha256 `4034CE6B…`, mtime 2026-09-19) so the default model stays `tokenrhythm` / `deepseek-flash`; TokenRhythm provider unchanged; shell tooling used throughout; the composed entry list keeps all 43 `disabled: true` quarantine rows and contains exactly one `dsh-mcp-client` row.
 
 ## MachineContext: the MCP inventory now covers DSH
 
@@ -76,6 +102,18 @@ Two defects surfaced in the same function and were fixed in a separate commit:
 - **`[]` was a parse failure.** The YAML subset reader threw on a document that is exactly `[]`. That is a complete YAML document meaning "no entries" and it is precisely what DSH's profile template writes into a fresh `cordis.patch.yml`, so the reader now returns an empty list.
 
 Both are covered by the new fixture `tests/fixtures/config-profiles/mcp/dsh/` (a home-level `[]` layer and a profile layer with a remote server, a stdio server, a non-MCP-client decoy row and a `headers` block) and by the new test *"DSH patch-layer MCP servers are projected per profile without headers"*.
+
+## Tool routing, and what actually forces Parallel to be used
+
+DSH 0.1.5-rc.2 has **no "default search tool"**. Two independent tool families are registered side by side — the harness's native `web_search` / `web_fetch` (backed by the `deepseek-official` and `http` providers) and `mcp__parallel__web_search` / `mcp__parallel__web_fetch` — and the model picks per call. `dsh-web` does have a deterministic provider-selection policy (`searchProvider` / `fetchProvider`, configured in the `web` entry), but that policy only chooses **among registered `dsh-web` providers**, and the MCP client registers *tools*, not a `dsh-web` provider. Parallel therefore cannot enter that pool without a purpose-written provider plugin, which is out of scope here.
+
+The lever used instead is instruction-level: a `## 联网检索` section was added to `%USERPROFILE%\.dsh\AGENTS.md`, which the harness injects into every session's system prompt. It makes the Parallel tools the default, requires a stated reason when falling back to the native ones, and forbids substituting a shell call to the endpoint for a missing tool. This is a preference, not enforcement — it is recorded as such rather than as a guarantee.
+
+## Operational notes learned the hard way
+
+- **A failed initial connection is permanent for the session.** The MCP client's Streamable HTTP transport does not respawn after a failed *initial* connection: the harness still starts, but the server's tools never register, and only a config reload or a restart retries. "The endpoint answers" and "the tools exist" are therefore two different facts and must be checked separately.
+- **Comment-only edits do not reload the entry.** The loader compares the resolved config; comments are not part of it. Forcing a reload requires a real config delta.
+- **`Object.assign` with an undefined target throws.** A first attempt at the header used `Object.assign(cond ? {…} : undefined, {…})`, which raises `TypeError: Cannot convert undefined or null to object` — only *sources* may be null/undefined. With no key present that would have failed the whole entry activation instead of degrading to anonymous. The shipped form is a spread, which is safe: `({ ...(cond ? {…} : {}), … })`. The wrapping parentheses are mandatory, or the leading `{` parses as a block.
 
 ## Canonical changes from this round
 
@@ -91,5 +129,6 @@ Both are covered by the new fixture `tests/fixtures/config-profiles/mcp/dsh/` (a
 
 ## Known limitations left in place
 
-- **Anonymous tier.** The MCP is fully usable but runs on Parallel's free tier. Moving to the paid quota needs `PARALLEL_API_KEY` made visible to the DSH process first; the patch file carries the exact one-line header to add at that point, commented out, and no literal secret is ever to be written there.
-- **`reasoning`-style provider-specific fields are out of scope for the inventory.** The collector records endpoint, transport and tool-relevant shape only.
+- **Tool routing is a prompt-level preference.** Nothing in 0.1.5-rc.2 enforces that the model calls the Parallel tools; the `AGENTS.md` rule biases it and requires a visible reason on fallback.
+- **The credential is a machine-local environment value.** `%USERPROFILE%\.dsh\.env` is not tracked by any collector and its contents are never read for inventory purposes; the repository records only that the MCP is authenticated and where the reference comes from.
+- **`headers` is deliberately outside the MCP inventory.** The DSH collector projects serverName/transport/url/command/args/env names only, so the credential-bearing header cannot reach canonical context even by accident.
