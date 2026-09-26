@@ -1552,6 +1552,7 @@ providers:
     Assert-McEqual -Actual $modelArray.Count -Expected 1 -Message 'single-item YAML sequence must stay an array'
     Assert-McEqual -Actual $modelArray[0].id -Expected 'model-a' -Message 'YAML sequence-of-mapping item'
     Assert-McEqual -Actual (@($modelArray[0].thinking.efforts).Count) -Expected 2 -Message 'YAML nested sequence inside sequence item'
+    Assert-McEqual -Actual (@(Read-McConfigYamlText -Text '[]').Count) -Expected 0 -Message 'empty flow sequence is an empty document, not a parse failure'
 }
 
 Invoke-McTest -Name 'credential key denylist and env-name shapes' -Body {
@@ -1757,6 +1758,8 @@ Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing 
     Assert-McTrue -Condition ($qoderText -notmatch 'mcp-router.fixture.example.com') -Message 'Qoder router-only qoder_url must never reach the MCP inventory'
     $http = $servers | Where-Object name -eq 'fixture-http'
     Assert-McEqual -Actual ([string]$http.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'safe MCP URL kept'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $http -Name 'args')) -Message 'a server declaring no args must project no args field'
+    Assert-McTrue -Condition (@($mcp.observed.redactions | Where-Object { $_.path -like 'mcp.claude-code.fixture-http*' }).Count -eq 0) -Message 'absent args must not be reported as an unsafe argument'
     $safe = $servers | Where-Object name -eq 'fixture-safe-stdio'
     Assert-McEqual -Actual (@($safe.args) -join ' ') -Expected '--app cursor --agent cli' -Message 'safe MCP args kept'
     $secret = $servers | Where-Object name -eq 'fixture-secret-stdio'
@@ -1839,11 +1842,14 @@ Invoke-McTest -Name 'DSH patch-layer MCP servers are projected per profile witho
 
     # A DSH profile patch layer declares MCP servers as loader `insert` rows
     # naming @deepseek-ai/dsh-mcp-client; the profile directory is the scope.
+    # The home-level layer is the template's empty `[]` document, which is a
+    # valid "no patches" source rather than an unparseable one.
     $dsh = Get-McMcpInventoryRecord @baseArgs -DshConfigRoot (Join-Path $configFixtureRoot 'mcp\dsh')
     $dshServers = @($dsh.observed.servers) | Where-Object { $_.tool -eq 'dsh' }
     Assert-McEqual -Actual @($dshServers).Count -Expected 2 -Message 'DSH patch layer yields only dsh-mcp-client rows'
-    Assert-McTrue -Condition (@($dsh.source.files | Where-Object { $_.path -like '*cordis.patch.yml' }).Count -eq 1) -Message 'DSH patch layer must be recorded as an MCP source file'
+    Assert-McTrue -Condition (@($dsh.source.files | Where-Object { $_.path -like '*cordis.patch.yml' }).Count -eq 2) -Message 'both DSH patch layers must be recorded as MCP source files'
     Assert-McTrue -Condition (@($dsh.observed.unresolved | Where-Object { $_ -like 'dsh:*' }).Count -eq 0) -Message 'an existing DSH patch layer must not be unresolved'
+    Assert-McTrue -Condition (@($dsh.observed.redactions | Where-Object { $_.path -like 'mcp.dsh*' }).Count -eq 0) -Message 'an empty DSH home patch layer must not be treated as unparseable'
 
     $dshRemote = $dshServers | Where-Object { $_.name -eq 'fixture-dsh-remote' }
     Assert-McEqual -Actual ([string]$dshRemote.transport) -Expected 'streamable-http' -Message 'DSH transport property must drive the transport field'

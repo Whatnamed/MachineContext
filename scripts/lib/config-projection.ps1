@@ -35,6 +35,10 @@ function Read-McConfigYamlText {
     }
 
     if ($lines.Count -eq 0) { return $null }
+    # An empty flow sequence is a complete YAML document meaning "no entries",
+    # and it is what the DSH profile template writes into a fresh
+    # cordis.patch.yml. Treat it as an empty list rather than a parse failure.
+    if ($lines.Count -eq 1 -and $lines[0].content -eq '[]') { return @() }
     $position = 0
     return (ConvertFrom-McYamlBlock -Lines @($lines) -Position ([ref]$position) -Indent $lines[0].indent -Source $Source)
 }

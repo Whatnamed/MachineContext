@@ -630,9 +630,13 @@ function Get-McMcpInventoryRecord {
         if (-not [string]::IsNullOrWhiteSpace([string]$command)) { $server['command'] = (ConvertTo-McNormalizedPath -Path ([string]$command)) }
         $url = ConvertTo-McProjectionSafeUrl -Url ([string](Get-McCollectionProperty -InputObject $Definition -Name 'url')) -Redactions $Redactions -Path ("mcp.{0}.{1}.url" -f $Tool, $Name)
         if (-not [string]::IsNullOrWhiteSpace($url)) { $server['url'] = $url }
-        $args = @(Get-McCollectionProperty -InputObject $Definition -Name 'args')
-        if ($args.Count -gt 0) {
-            $safeArgs = Get-McSafeMcpArguments -Arguments $args -Redactions $Redactions -Path ("mcp.{0}.{1}.args" -f $Tool, $Name)
+        # A source that declares no `args` key resolves to a null here, and
+        # PowerShell wraps that into a one-element array holding null - which
+        # would otherwise be reported as one unsafe argument. Absent arguments
+        # are absent, so drop nulls before the sequence-aware filter runs.
+        $args = @(Get-McCollectionProperty -InputObject $Definition -Name 'args') | Where-Object { $null -ne $_ }
+        if (@($args).Count -gt 0) {
+            $safeArgs = Get-McSafeMcpArguments -Arguments @($args) -Redactions $Redactions -Path ("mcp.{0}.{1}.args" -f $Tool, $Name)
             if (@($safeArgs).Count -gt 0) { $server['args'] = @($safeArgs) }
         }
         $env = Get-McCollectionProperty -InputObject $Definition -Name 'env'
