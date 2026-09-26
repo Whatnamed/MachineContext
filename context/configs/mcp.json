@@ -3,20 +3,7 @@
   "id": "mcp-inventory",
   "kind": "mcp-inventory",
   "observed": {
-    "redactions": [
-      {
-        "path": "mcp.claude-code.figma.args[0]",
-        "reason": "unsafe-argument"
-      },
-      {
-        "path": "mcp.codex-cli.cua_repl.args[0]",
-        "reason": "unsafe-argument"
-      },
-      {
-        "path": "mcp.qoder.GitHub.args[0]",
-        "reason": "unsafe-argument"
-      }
-    ],
+    "redactions": [],
     "servers": [
       {
         "name": "figma",
@@ -97,11 +84,17 @@
         "tool": "qoder",
         "transport": "http",
         "url": "https://api.githubcopilot.com/mcp"
+      },
+      {
+        "name": "parallel",
+        "scope": "web",
+        "tool": "dsh",
+        "transport": "streamable-http",
+        "url": "https://search.parallel.ai/mcp"
       }
     ],
     "unresolved": [
       "omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext",
-      "dsh: no file-based MCP configuration discovered",
       "zcode: no file-based MCP configuration discovered"
     ],
     "value_basis": "configured-local"
@@ -147,6 +140,18 @@
         "path": "%USERPROFILE%\\.gemini\\config\\mcp_config.json",
         "exists": true,
         "format": "json",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\cordis.patch.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\profiles\\web\\cordis.patch.yml",
+        "exists": true,
+        "format": "yaml",
         "role": "mcp-config"
       }
     ]

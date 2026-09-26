@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-26T05:41:13.3335396Z
+- Verified at: 2026-09-26T08:16:10.9711405Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,7 +38,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
   - `C:\` NTFS (21.5/195.9 GiB free/total)
-  - `D:\` NTFS (57.0/279.3 GiB free/total)
+  - `D:\` NTFS (56.8/279.3 GiB free/total)
   - `E:\` NTFS (109.8/953.9 GiB free/total)
 
 ## Development environment
@@ -75,7 +75,7 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.2.10 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.2.11 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.281 — `D:\Claude\cli\claude.cmd`
@@ -104,7 +104,7 @@
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
 - `qoder` — %USERPROFILE%\.qoder-cn — `context/configs/ai/qoder.json`
 - `zcode` — D:\ZCode\appdata\.zcode\v2 — `context/configs/ai/zcode.json`
-- MCP servers: claude-code (3), codex-cli (3), gemini-cli (1), qoder (1)
+- MCP servers: claude-code (3), codex-cli (3), dsh (1), gemini-cli (1), qoder (1)
   - Full inventory: `context/configs/mcp.json`
 
 ## Additional software inventory
