@@ -608,16 +608,17 @@ function Get-McMcpInventoryRecord {
         [string]$CodexConfigPath = (Join-Path $env:USERPROFILE '.codex\config.toml'),
         [string]$CursorMcpPath = (Join-Path $env:USERPROFILE '.cursor\mcp.json'),
         [string]$QoderSettingsPath = (Join-Path $env:USERPROFILE '.qoder-cn\settings.json'),
-        [string]$AgyMcpConfigPath = (Join-Path $env:USERPROFILE '.gemini\config\mcp_config.json')
+        [string]$AgyMcpConfigPath = (Join-Path $env:USERPROFILE '.gemini\config\mcp_config.json'),
+        [string]$DshConfigRoot = (Join-Path $env:USERPROFILE '.dsh')
     )
 
     $redactions = [System.Collections.Generic.List[object]]::new()
     $servers = [System.Collections.Generic.List[object]]::new()
 
     function Add-McMcpServer {
-        param([string]$Tool, [string]$Scope, [string]$Name, [object]$Definition)
+        param([string]$Tool, [string]$Scope, [string]$Name, [object]$Definition, [string]$TransportProperty = 'type')
 
-        $transport = [string](Get-McCollectionProperty -InputObject $Definition -Name 'type')
+        $transport = [string](Get-McCollectionProperty -InputObject $Definition -Name $TransportProperty)
         if ([string]::IsNullOrWhiteSpace($transport)) { $transport = 'stdio' }
         $server = [ordered]@{
             tool      = $Tool
@@ -730,10 +731,55 @@ function Get-McMcpInventoryRecord {
         }
     }
 
+    # DSH declares MCP servers in its Cordis loader patch layers: an `insert`
+    # list whose rows name @deepseek-ai/dsh-mcp-client. Both the home-level
+    # patch file and each profile's own patch file are official sources; the
+    # profile directory name is the scope. Only serverName/transport/url/
+    # command/args/env names are read - `headers` may carry an Authorization
+    # bearer and is never touched, matching the Agy rule.
+    $dshPatchFiles = [System.Collections.Generic.List[object]]::new()
+    if (-not [string]::IsNullOrWhiteSpace($DshConfigRoot)) {
+        $dshHomePatch = Join-Path $DshConfigRoot 'cordis.patch.yml'
+        if (Test-Path -LiteralPath $dshHomePatch -PathType Leaf) {
+            [void]$dshPatchFiles.Add([pscustomobject]@{ path = $dshHomePatch; scope = 'home' })
+        }
+        $dshProfilesRoot = Join-Path $DshConfigRoot 'profiles'
+        if (Test-Path -LiteralPath $dshProfilesRoot -PathType Container) {
+            foreach ($dshProfileDir in @(Get-ChildItem -LiteralPath $dshProfilesRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name)) {
+                $dshProfilePatch = Join-Path $dshProfileDir.FullName 'cordis.patch.yml'
+                if (Test-Path -LiteralPath $dshProfilePatch -PathType Leaf) {
+                    [void]$dshPatchFiles.Add([pscustomobject]@{ path = $dshProfilePatch; scope = $dshProfileDir.Name })
+                }
+            }
+        }
+    }
+    foreach ($dshPatch in $dshPatchFiles) {
+        [void]$files.Add((New-McConfigSourceFileRecord -Path $dshPatch.path -Format yaml -Role mcp-config))
+        try {
+            foreach ($patchEntry in @(Read-McConfigYaml -Path $dshPatch.path)) {
+                foreach ($row in @(Get-McCollectionProperty -InputObject $patchEntry -Name 'insert')) {
+                    if ([string](Get-McCollectionProperty -InputObject $row -Name 'name') -ne '@deepseek-ai/dsh-mcp-client') { continue }
+                    $definition = Get-McCollectionProperty -InputObject $row -Name 'config'
+                    $serverName = [string](Get-McCollectionProperty -InputObject $definition -Name 'serverName')
+                    if ([string]::IsNullOrWhiteSpace($serverName)) { continue }
+                    Add-McMcpServer -Tool 'dsh' -Scope ([string]$dshPatch.scope) -Name $serverName -Definition $definition -TransportProperty 'transport'
+                }
+            }
+        }
+        catch {
+            Add-McProjectionRedaction -Redactions $Redactions -Path 'mcp.dsh' -Reason 'unparseable-source'
+        }
+    }
+
     $unresolved = [System.Collections.Generic.List[string]]::new()
     $unresolved.Add('omp: no file-based MCP configuration discovered; OMP state databases are never read by MachineContext')
-    $unresolved.Add('dsh: no file-based MCP configuration discovered')
     $unresolved.Add('zcode: no file-based MCP configuration discovered')
+    # Like Agy, an existing DSH patch layer is an official source: its servers
+    # are authoritative even when it declares none, so only the total absence
+    # of patch layers stays unresolved.
+    if ($dshPatchFiles.Count -eq 0) {
+        $unresolved.Add('dsh: no file-based MCP configuration discovered')
+    }
     # Agy's global MCP file is an official source: when it exists the servers
     # above are authoritative even if empty, so only a missing file stays
     # unresolved.
@@ -821,7 +867,7 @@ function Get-McConfigProfileObservations {
         }
     }
 
-    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath -QoderSettingsPath $QoderSettingsPath -AgyMcpConfigPath $AgyMcpConfigPath
+    $mcp = Get-McMcpInventoryRecord -ClaudeConfigPath $ClaudeConfigPath -GeminiSettingsPath $GeminiSettingsPath -CodexConfigPath $CodexConfigPath -CursorMcpPath $CursorMcpPath -QoderSettingsPath $QoderSettingsPath -AgyMcpConfigPath $AgyMcpConfigPath -DshConfigRoot $DshConfigRoot
 
     $health = if ($warnings.Count -gt 0) { 'partial' } else { 'success' }
     return New-McProviderPayload -Value ([pscustomobject][ordered]@{

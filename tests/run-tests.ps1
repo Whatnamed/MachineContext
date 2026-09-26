@@ -1743,9 +1743,10 @@ Invoke-McTest -Name 'MCP inventory keeps safe args and drops credential-bearing 
         -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
         -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json') `
         -QoderSettingsPath (Join-Path $configFixtureRoot 'qoder\settings.json') `
-        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json') `
+        -DshConfigRoot (Join-Path $configFixtureRoot 'mcp\dsh')
     $servers = @($mcp.observed.servers)
-    Assert-McEqual -Actual $servers.Count -Expected 6 -Message 'MCP servers collected from all six sources (Agy source currently empty)'
+    Assert-McEqual -Actual $servers.Count -Expected 8 -Message 'MCP servers collected from all seven sources (Agy source currently empty)'
     Assert-McTrue -Condition (@($mcp.source.files | Where-Object { $_.path -like '*mcp_config.empty.json' }).Count -eq 1) -Message 'Agy MCP source file must be recorded when it exists'
     Assert-McTrue -Condition (@($mcp.observed.unresolved | Where-Object { $_ -like 'agy:*' }).Count -eq 0) -Message 'an existing (even empty) Agy MCP source must not be unresolved'
     $qoderServer = $servers | Where-Object { $_.tool -eq 'qoder' }
@@ -1783,6 +1784,7 @@ Invoke-McTest -Name 'Agy MCP source projects servers and filters credentials' -B
         CodexConfigPath    = (Join-Path $configFixtureRoot 'mcp\codex-config.toml')
         CursorMcpPath      = (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
         QoderSettingsPath  = (Join-Path $configFixtureRoot 'qoder\settings.json')
+        DshConfigRoot      = (Join-Path $configFixtureRoot 'mcp\dsh-none')
     }
 
     # stdio server flows through the shared safe projection path
@@ -1823,6 +1825,45 @@ Invoke-McTest -Name 'Agy MCP source projects servers and filters credentials' -B
     Assert-McTrue -Condition (@($zeroByte.observed.redactions | Where-Object { $_.path -like 'mcp.agy*' }).Count -eq 0) -Message 'empty Agy MCP source must not be treated as unparseable'
     $emptyRecord = Get-McMcpInventoryRecord @baseArgs -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
     Assert-McTrue -Condition (@($emptyRecord.observed.redactions | Where-Object { $_.path -like 'mcp.agy*' }).Count -eq 0) -Message 'empty-object Agy MCP source must not be treated as unparseable'
+}
+
+Invoke-McTest -Name 'DSH patch-layer MCP servers are projected per profile without headers' -Body {
+    $baseArgs = @{
+        ClaudeConfigPath   = (Join-Path $configFixtureRoot 'mcp\claude.json')
+        GeminiSettingsPath = (Join-Path $configFixtureRoot 'mcp\gemini-settings.json')
+        CodexConfigPath    = (Join-Path $configFixtureRoot 'mcp\codex-config.toml')
+        CursorMcpPath      = (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json')
+        QoderSettingsPath  = (Join-Path $configFixtureRoot 'qoder\settings.json')
+        AgyMcpConfigPath   = (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
+    }
+
+    # A DSH profile patch layer declares MCP servers as loader `insert` rows
+    # naming @deepseek-ai/dsh-mcp-client; the profile directory is the scope.
+    $dsh = Get-McMcpInventoryRecord @baseArgs -DshConfigRoot (Join-Path $configFixtureRoot 'mcp\dsh')
+    $dshServers = @($dsh.observed.servers) | Where-Object { $_.tool -eq 'dsh' }
+    Assert-McEqual -Actual @($dshServers).Count -Expected 2 -Message 'DSH patch layer yields only dsh-mcp-client rows'
+    Assert-McTrue -Condition (@($dsh.source.files | Where-Object { $_.path -like '*cordis.patch.yml' }).Count -eq 1) -Message 'DSH patch layer must be recorded as an MCP source file'
+    Assert-McTrue -Condition (@($dsh.observed.unresolved | Where-Object { $_ -like 'dsh:*' }).Count -eq 0) -Message 'an existing DSH patch layer must not be unresolved'
+
+    $dshRemote = $dshServers | Where-Object { $_.name -eq 'fixture-dsh-remote' }
+    Assert-McEqual -Actual ([string]$dshRemote.transport) -Expected 'streamable-http' -Message 'DSH transport property must drive the transport field'
+    Assert-McEqual -Actual ([string]$dshRemote.url) -Expected 'https://mcp.fixture.example.com/mcp' -Message 'DSH MCP url kept (sanitized)'
+    Assert-McEqual -Actual ([string]$dshRemote.scope) -Expected 'web' -Message 'DSH MCP scope is the profile directory name'
+
+    $dshStdio = $dshServers | Where-Object { $_.name -eq 'fixture-dsh-stdio' }
+    Assert-McEqual -Actual ([string]$dshStdio.transport) -Expected 'stdio' -Message 'DSH stdio transport projected'
+    Assert-McEqual -Actual (@($dshStdio.args) -join ' ') -Expected '--app cursor --agent dsh' -Message 'DSH MCP safe args kept'
+    Assert-McEqual -Actual (@($dshStdio.env_names) -join ' ') -Expected 'FIXTURE_MCP_TOKEN' -Message 'DSH MCP env names kept as names only'
+
+    $dshText = ConvertTo-McJsonText -InputObject $dsh
+    Assert-McTrue -Condition ($dshText -notmatch 'Authorization') -Message 'DSH MCP headers must never be read'
+    Assert-McTrue -Condition ($dshText -notmatch 'opaque-secret-value') -Message 'DSH MCP env values must never be read'
+    Assert-McTrue -Condition ($dshText -notmatch 'fixture-dsh-decoy') -Message 'non-mcp-client insert rows must be ignored'
+
+    # No patch layer at all: dsh stays an unresolved source.
+    $missing = Get-McMcpInventoryRecord @baseArgs -DshConfigRoot (Join-Path $configFixtureRoot 'mcp\dsh-none')
+    Assert-McTrue -Condition (@($missing.source.files | Where-Object { $_.path -like '*cordis.patch.yml' }).Count -eq 0) -Message 'absent DSH patch layer must not be recorded as a file'
+    Assert-McTrue -Condition (@($missing.observed.unresolved | Where-Object { $_ -like 'dsh:*' }).Count -eq 1) -Message 'absent DSH patch layer must stay unresolved'
 }
 
 Invoke-McTest -Name 'config profile validation rejects sensitive keys and accepts good records' -Body {
@@ -1871,7 +1912,8 @@ Invoke-McTest -Name 'config profile reconciliation writes index and preserves cu
         -GeminiSettingsPath (Join-Path $configFixtureRoot 'mcp\gemini-settings.json') `
         -CodexConfigPath (Join-Path $configFixtureRoot 'mcp\codex-config.toml') `
         -CursorMcpPath (Join-Path $configFixtureRoot 'mcp\cursor-mcp.json') `
-        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json')
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'mcp\agy\mcp_config.empty.json') `
+        -DshConfigRoot (Join-Path $configFixtureRoot 'mcp\dsh-none')
     Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @($profile) -McpInventory $mcp
 
     $written = Read-McJson -Path (Join-Path $aiRoot 'omp.json')

@@ -1,0 +1,35 @@
+# Fixture: a DSH profile Cordis patch layer, in the real file's dialect.
+# Comment lines, `disabled` rows and the `!!js` tag are all part of the
+# format; only `insert` rows naming @deepseek-ai/dsh-mcp-client are MCP
+# server declarations.
+- id: web-ui-pet
+  disabled: true
+
+- insert:
+    - id: mcp-fixture-remote
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: fixture-dsh-remote
+        transport: streamable-http
+        url: https://mcp.fixture.example.com/mcp
+        headers:
+          Authorization: !!js '`Bearer ${process.env.FIXTURE_MCP_TOKEN}`'
+    - id: mcp-fixture-stdio
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: fixture-dsh-stdio
+        transport: stdio
+        command: fixture-mcp-server.exe
+        args:
+          - --app
+          - cursor
+          - --agent
+          - dsh
+        env:
+          FIXTURE_MCP_TOKEN: opaque-secret-value
+    - id: fixture-not-an-mcp-client
+      name: '@example/fixture-not-an-mcp-client'
+      config:
+        serverName: fixture-dsh-decoy
+        transport: streamable-http
+        url: https://decoy.fixture.example.com/mcp
