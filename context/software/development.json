@@ -4,6 +4,7 @@
     "state": "observed",
     "supplemental_inventory": {
       "entity_ids": [
+        "agent-reach",
         "agently-cli",
         "codex-threadripper",
         "lark-cli",
@@ -18,6 +19,51 @@
     }
   },
   "software": [
+    {
+      "schema_version": 1,
+      "id": "agent-reach",
+      "kind": "cli",
+      "name": "Agent Reach",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.5.0",
+        "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\agent-reach.exe",
+        "command_resolution": [
+          {
+            "executable": "%USERPROFILE%\\.agent-reach-venv\\Scripts\\agent-reach.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%USERPROFILE%\\.agent-reach-venv"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "agent-reach",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "notes": [
+          "2026-09-26: added as a supplementary entity. Until now the install was only observable indirectly, through the %USERPROFILE%\\.agent-reach-venv\\Scripts entries in the pip/python command_resolution; no routine provider covers it (same class as mcporter/opencli), so version refreshes need the OPERATIONS section 6 route. Provenance: upstream is Panniantong/agent-reach installed from the GitHub main archive (https://github.com/Panniantong/agent-reach/archive/main.zip, direct_url.json records that URL), NOT the same-named PyPI package — do not \"upgrade\" it from PyPI. The package lives in the dedicated venv %USERPROFILE%\\.agent-reach-venv (pip/python inside it are that venv's, 3.12.10) and the update must run through that venv's own interpreter: %USERPROFILE%\\.agent-reach-venv\\Scripts\\python.exe -m pip install --upgrade --force-reinstall --no-deps https://github.com/Panniantong/agent-reach/archive/main.zip. Do not create a second global copy.",
+          "2026-09-26 update round: reinstalled from main so the on-disk tree matches upstream main HEAD a19a171f (2026-09-15, \"feat: 新增 Boss直聘 channel\"). The previous tree was stale even though it already reported v1.5.0: upstream has not bumped __version__ since 2026-06-11, so `agent-reach check-update` answers \"已是最新版本\" for any 1.5.0 build and cannot be used to decide whether an update is needed — compare the package contents (or just reinstall from main) instead. Content equality with main was verified file-by-file (excluding __pycache__) after the install. The new tree brought the facebook/instagram/boss channels, references/finance.md and the 16-platform skill.",
+          "2026-09-26: yt-dlp is bundled inside the same venv and was upgraded with the package — 2026.6.9 -> 2026.8.19 — because upstream main now declares yt-dlp[default]>=2026.07.04 as a dependency. That extra pulled in brotli, mutagen, pycryptodomex, websockets and yt-dlp-ejs. It is the YouTube channel backend (doctor active_backend \"yt-dlp\") and is documented here rather than promoted to its own entity: its lifecycle belongs to this venv, not to a user-managed PATH tool.",
+          "2026-09-26: `agent-reach skill --install` refreshed the bundled skill into %USERPROFILE%\\.agents\\skills\\agent-reach and %USERPROFILE%\\.claude\\skills\\agent-reach (13-platform version -> 16-platform version, adds references/finance.md; SKILL_en.md stays in the package and is not copied into the agent skill directories). Safe to overwrite: the on-disk files were byte-identical to the bundled skill of the previous install apart from CRLF line endings, i.e. there were no user customizations. `agent-reach doctor` also maintains these directories on its own.",
+          "2026-09-26 doctor semantics, so a future reading of doctor output is not mistaken for a regression: upstream commits 6d67d705 (2026-07-24, \"make health checks truthful and read-only\") and b3367260 (2026-07-24, \"make diagnostics provably read-only\") deliberately stopped proving things doctor cannot prove without side effects. GitHub is no longer probed with `gh auth status` (it writes a device-id), exa_search no longer starts the remote service, and OpenCLI is judged from its loopback /status endpoint instead of `opencli daemon status` (which mutates %USERPROFILE%\\.opencli). Consequence: with Chrome running but the OpenCLI daemon not started, doctor now reports [!] and active_backend null for the OpenCLI-backed channels (Twitter/Reddit/小红书, and B站 falls back to the B站搜索 API) where the older build reported a disk-file-based ✅. Channel count therefore reads 5/16 instead of 10/13. Nothing was reconfigured to force it green.",
+          "2026-09-26 scope note: the optional channels that need credentials or extra software (Boss直聘, LinkedIn, 小宇宙, 雪球, Facebook/Instagram) were deliberately left unconfigured during this round — no logins, no cookie reads, no optional backend installs. twitter-cli / bilibili-cli / rdt-cli / xiaohongshu-cli were already absent before the update and were NOT installed; retired backends that exist are kept as fallbacks."
+        ],
+        "purpose": "Agent-facing search/read CLI for web and social platforms with pluggable backends (OpenCLI, per-platform CLIs, public APIs)."
+      }
+    },
     {
       "schema_version": 1,
       "id": "agently-cli",
@@ -567,6 +613,9 @@
         ]
       },
       "curated": {
+        "notes": [
+          "2026-09-26: version deliberately left at 0.9.0 — NOT an oversight and not a failure of the update round. `npm update -g mcporter` (the Agent Reach update guide step) was run and correctly moved nothing, because every release from 0.10.0 on declares engines.node \">=24\" while this machine runs Node 22.23.2 (D:\\Node.js\\Node.js, recorded on the node entity). Forcing 0.14.1 would install an unsupported package, and upgrading the Node runtime is a separate, much larger migration that this round explicitly did not take on. To move mcporter past 0.9.0, upgrade Node to >=24 first, then npm install -g mcporter@latest. Agent Reach is unaffected either way: its exa_search/linkedin/xiaohongshu channels read %USERPROFILE%\\.mcporter\\mcporter.json directly instead of pinning a mcporter CLI version."
+        ],
         "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
       }
     },
@@ -650,7 +699,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.8.4",
+        "version": "1.8.8",
         "executable": "E:\\Dev\\npm-global\\opencli.cmd",
         "command_resolution": [
           {
@@ -673,6 +722,9 @@
         ]
       },
       "curated": {
+        "notes": [
+          "2026-09-26: 1.8.4 -> 1.8.8 in the existing global npm install (E:\\Dev\\npm-global, package @jackwener/opencli, npm update -g). No duplicate install and the executable path is unchanged. This is the preferred Agent Reach backend for 小红书/Reddit/Twitter/B站 on desktop; the Chrome extension (ildkmabpimmkaediidaifkhjpohdnifk, 1.0.24_0 in the Default profile) is unchanged, since it updates from the Web Store rather than with the npm package."
+        ],
         "purpose": "OpenAI protocol CLI runner."
       }
     },

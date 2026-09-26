@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-26T08:16:10.9711405Z
+- Verified at: 2026-09-26T08:36:37.6632261Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,19 +37,20 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (21.5/195.9 GiB free/total)
+  - `C:\` NTFS (21.2/195.9 GiB free/total)
   - `D:\` NTFS (56.8/279.3 GiB free/total)
   - `E:\` NTFS (109.8/953.9 GiB free/total)
 
 ## Development environment
 
+- **Agent Reach** `agent-reach` — 1.5.0 — `%USERPROFILE%\.agent-reach-venv\Scripts\agent-reach.exe`
 - **Agently CLI** `agently-cli` — 1.0.5 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.4 — `E:\Dev\npm-global\codex-threadripper.cmd`
 - **Git** `git` — 2.55.0.windows.5 — `D:\Git\Git\cmd\git.exe`
 - **Git LFS** `git-lfs` — 3.7.1 — `D:\Git\Git\cmd\git-lfs.exe`
 - **Lark CLI** `lark-cli` — 1.0.64 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
-- **OpenCLI** `opencli` — 1.8.4 — `E:\Dev\npm-global\opencli.cmd`
+- **OpenCLI** `opencli` — 1.8.8 — `E:\Dev\npm-global\opencli.cmd`
 - **Supabase CLI** `supabase` — 2.116.0 — `D:\Tools\SupabaseCLI\2.116.0\node_modules\.bin\supabase.cmd`
 - **GitHub CLI** `gh` — 2.99.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.98.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
