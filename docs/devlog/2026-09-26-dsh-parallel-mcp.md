@@ -123,6 +123,39 @@ The lever used instead is instruction-level: a `## 联网检索` section was add
 - `context/status.json` / `CURRENT.md` — heartbeat, plus the rendered MCP line now reading `dsh (1)`.
 - `context/configs/ai/dsh.json` — unchanged, and correctly so: it projects `settings.yaml`, which was not modified, and DSH's MCP declarations belong to the MCP inventory rather than to that profile.
 
+## Functional verification across site types
+
+Both MCP tools were exercised against a deliberately varied target set rather than one happy path.
+
+`web_fetch`, twelve targets, all through the MCP tool:
+
+| Target | Result |
+| --- | --- |
+| GitHub repository page (JS-heavy) | ok, real README body |
+| `raw.githubusercontent.com` raw file | ok |
+| official documentation site | ok |
+| `react.dev/learn` (JS-heavy docs) | ok |
+| Chinese-language blog (`ruanyifeng.com`) | ok, Chinese body intact |
+| arXiv abstract page | ok |
+| **arXiv PDF** | ok — server-side PDF parsing returned the abstract, section headings, training hyperparameters and the BLEU result |
+| Reddit `r/LocalLLaMA` | ok — real community content, despite Reddit's usual scraper defences |
+| Hacker News | ok |
+| non-existent path on a live host | typed `http_error`, `http_status_code: 404` |
+| non-existent domain | typed `connect_error`, `http_status_code: null` |
+| X (`x.com`) | **soft block** |
+| LinkedIn | **soft block** |
+
+Batch behaviour: four URLs in one call (the API accepts up to 20), and partial failure is handled correctly — reachable URLs land in `results`, the rest in `errors`, and a failure is never reported as a success. `web_search` was run with multiple queries per call, with Chinese queries, and with recency-sensitive queries; each returned ten results carrying URL, title, publish date and excerpts, mixed across English and Chinese sources.
+
+### The finding that matters: soft blocks are silent
+
+A **hard block** — 403/429/404, or a refused connection — surfaces correctly as a typed entry in `errors`. A **soft block** does not. A login wall, an anti-bot interstitial, a JavaScript-only shell, or a User-Agent-specific SEO fallback returns **HTTP 200, with no error and no warning**, and lands in `results` looking exactly like a success. Two observed cases:
+
+- `https://x.com/` returned `title: "X. It's what's happening / X"` and a body of `See what's happening / Scan to get the app` — the logged-out shell, not the site.
+- `https://www.linkedin.com/` returned `title: "linkedin.com"` and a fragment of unrelated NAICS industry codes — a fallback page, not the home page.
+
+Site type does not predict it: Reddit, which normally defends against scrapers, returned real content in the same session. A caller must therefore judge the **content**, not the status — an implausibly short body, a bare call to action, a title degraded to the bare domain, or content that does not answer the objective all mean *not fetched*, and the fallback is `web_search` excerpts or another source. The `AGENTS.md` routing rule now carries this instruction so the judgement does not depend on an agent remembering it.
+
 ## Gates
 
 `tests/run-tests.ps1` → all tests pass, including the new DSH MCP test. `sync.ps1` → overall health `success`, all 10 providers `success`, validation `ok`, 0 warnings. `validate.ps1` → `{ok: true, errors: [], warnings: [], findings: []}`. A second sync was idempotent: of 29 canonical files only `context/status.json` and the `CURRENT.md` it renders changed, both heartbeat-only.
@@ -130,5 +163,7 @@ The lever used instead is instruction-level: a `## 联网检索` section was add
 ## Known limitations left in place
 
 - **Tool routing is a prompt-level preference.** Nothing in 0.1.5-rc.2 enforces that the model calls the Parallel tools; the `AGENTS.md` rule biases it and requires a visible reason on fallback.
+- **Soft blocks are indistinguishable from successes at the protocol level.** See above — this is a property of the extracting backend, not of this configuration, and the only defence is content-level judgement.
+- **Login-gated, paywalled, interaction-only and geo-restricted pages were not tested** and are expected to be out of reach: Parallel's extract performs a real fetch and parse, not an authenticated interactive browsing session.
 - **The credential is a machine-local environment value.** `%USERPROFILE%\.dsh\.env` is not tracked by any collector and its contents are never read for inventory purposes; the repository records only that the MCP is authenticated and where the reference comes from.
 - **`headers` is deliberately outside the MCP inventory.** The DSH collector projects serverName/transport/url/command/args/env names only, so the credential-bearing header cannot reach canonical context even by accident.
