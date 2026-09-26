@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-24T17:33:09.5058896Z
+- Verified at: 2026-09-26T05:41:13.3335396Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (21.0/195.9 GiB free/total)
-  - `D:\` NTFS (57.8/279.3 GiB free/total)
-  - `E:\` NTFS (110.0/953.9 GiB free/total)
+  - `C:\` NTFS (21.5/195.9 GiB free/total)
+  - `D:\` NTFS (57.0/279.3 GiB free/total)
+  - `E:\` NTFS (109.8/953.9 GiB free/total)
 
 ## Development environment
 
@@ -76,7 +76,7 @@
 ## AI and agent tooling
 
 - **Agy** `agy` — 1.2.10 — `%LOCALAPPDATA%\agy\bin\agy.exe`
-- **Antigravity Desktop** `antigravity-desktop` — 2.11.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
+- **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.281 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
@@ -84,17 +84,17 @@
 - **Codex Desktop** `codex-desktop` — 26.917.9434.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
-- **Doubao Work** `doubao-work` — 2.25.18 — `D:\DoubaoWork\DoubaoWork.exe`
+- **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.1.5-rc.2 — `D:\DSH\dsh.cmd`
 - **Grok Build CLI** `grok` — 1.0.41 — `D:\GrokBuild\home\bin\grok.exe`
 - **Oh My Pi** `omp` — 18.3.0 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.64.0 — `E:\Dev\npm-global\opencodex.cmd`
-- **Qoder CN** `qoder` — 0.3.4 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
+- **Qoder CN** `qoder` — 0.4.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
-- **WorkBuddy** `workbuddy` — 5.3.14 — `E:\WorkBuddy\WorkBuddy.exe`
-- **ZCode** `zcode` — 3.14.0.7681 — `D:\ZCode\ZCode\ZCode.exe`
+- **WorkBuddy** `workbuddy` — 5.5.6 — `E:\WorkBuddy\WorkBuddy.exe`
+- **ZCode** `zcode` — 3.14.3.7762 — `D:\ZCode\ZCode\ZCode.exe`
 
 ## AI configuration profiles
 
