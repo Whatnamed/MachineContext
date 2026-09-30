@@ -147,13 +147,13 @@
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 42144366592,
+      "free_bytes": 41339060224,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 140928614400,
+      "free_bytes": 140660178944,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -443,7 +443,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.118.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -472,7 +472,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.118.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -522,7 +522,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.118.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",

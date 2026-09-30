@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-30T16:13:59.9865896Z
+- Verified at: 2026-09-30T17:50:20.6339800Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,8 +38,8 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
   - `C:\` NTFS (17.5/195.9 GiB free/total)
-  - `D:\` NTFS (39.2/279.3 GiB free/total)
-  - `E:\` NTFS (131.2/953.9 GiB free/total)
+  - `D:\` NTFS (38.5/279.3 GiB free/total)
+  - `E:\` NTFS (131.0/953.9 GiB free/total)
 
 ## Development environment
 
@@ -51,20 +51,20 @@
 - **Lark CLI** `lark-cli` — 1.0.64 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
 - **OpenCLI** `opencli` — 1.8.8 — `E:\Dev\npm-global\opencli.cmd`
-- **Supabase CLI** `supabase` — 2.116.0 — `D:\Tools\SupabaseCLI\2.116.0\node_modules\.bin\supabase.cmd`
-- **GitHub CLI** `gh` — 2.99.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
-- **Rust compiler** `rustc` — 1.98.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
+- **Supabase CLI** `supabase` — 2.118.0 — `D:\Tools\SupabaseCLI\2.118.0\node_modules\.bin\supabase.cmd`
+- **GitHub CLI** `gh` — 2.102.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
+- **Rust compiler** `rustc` — 1.98.1 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Unity Hub** `unity-hub` — 3.3.3-c3 — `D:\Unity\Unity Hub\Unity Hub.exe`
 - **Visual Studio** `visual-studio` — 17.13.35919.96 — `D:\Visual Studio\product`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
-- **Cargo** `cargo` — 1.98.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
+- **Cargo** `cargo` — 1.98.1 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
 - **pip** `pip` — 26.2.1 — `D:\Python\3.12.10\Scripts\pip.exe`
-- **uv** `uv` — 0.12.9 — `E:\Dev\uv\uv.exe`
-- **uvx** `uvx` — 0.12.9 — `E:\Dev\uv\uvx.exe`
+- **uv** `uv` — 0.12.21 — `E:\Dev\uv\uv.exe`
+- **uvx** `uvx` — 0.12.21 — `E:\Dev\uv\uvx.exe`
 - **winget** `winget` — 1.29.380 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
-- **Bun** `bun` — 1.4.0 — `%USERPROFILE%\.bun\bin\bun.exe`
+- **Bun** `bun` — 1.4.2 — `%USERPROFILE%\.bun\bin\bun.exe`
 - **Dart** `dart` — 3.11.5 — `E:\dev\flutter\bin\dart.bat`
 - **Go** `go` — 1.26.7 — `D:\Go\bin\go.exe`
 - **Node.js** `node` — 22.23.2 — `D:\Node.js\Node.js\node.exe`
@@ -72,7 +72,7 @@
 - **Python Launcher** `python-launcher` — 3.12.10 — `%SYSTEMROOT%\py.exe`
 - **Flutter** `flutter` — 3.41.9 — `E:\dev\flutter\bin\flutter.bat`
 - **Tera Term 5** `tera-term` — 5.5.0 — `E:\teraterm\teraterm5\ttermpro.exe`
-- **rustup** `rustup` — 1.29.0 — `%USERPROFILE%\.cargo\bin\rustup.exe`
+- **rustup** `rustup` — 1.29.1 — `%USERPROFILE%\.cargo\bin\rustup.exe`
 
 ## AI and agent tooling
 
