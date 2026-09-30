@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-30T13:53:37.0858137Z
+- Verified at: 2026-09-30T15:19:28.9251810Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -38,7 +38,7 @@
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
   - `C:\` NTFS (17.8/195.9 GiB free/total)
-  - `D:\` NTFS (39.2/279.3 GiB free/total)
+  - `D:\` NTFS (39.8/279.3 GiB free/total)
   - `E:\` NTFS (131.2/953.9 GiB free/total)
 
 ## Development environment
@@ -102,7 +102,7 @@
 ## AI configuration profiles
 
 - `codex-cli` — %USERPROFILE%\.codex — `context/configs/ai/codex-cli.json`
-- `dsh` — %USERPROFILE%\.dsh (stale: config source missing) — `context/configs/ai/dsh.json`
+- `dsh` — %USERPROFILE%\.dsh — `context/configs/ai/dsh.json`
 - `omp` — %USERPROFILE%\.omp\agent — `context/configs/ai/omp.json`
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
 - `qoder` — %USERPROFILE%\.qoder-cn — `context/configs/ai/qoder.json`

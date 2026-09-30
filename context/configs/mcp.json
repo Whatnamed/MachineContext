@@ -143,12 +143,6 @@
         "role": "mcp-config"
       },
       {
-        "path": "%USERPROFILE%\\.dsh\\cordis.patch.yml",
-        "exists": true,
-        "format": "yaml",
-        "role": "mcp-config"
-      },
-      {
         "path": "%USERPROFILE%\\.dsh\\profiles\\desktop\\cordis.patch.yml",
         "exists": true,
         "format": "yaml",
@@ -156,6 +150,12 @@
       },
       {
         "path": "%USERPROFILE%\\.dsh\\profiles\\web\\cordis.patch.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "mcp-config"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\cordis.patch.yml",
         "exists": true,
         "format": "yaml",
         "role": "mcp-config"

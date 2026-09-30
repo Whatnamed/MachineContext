@@ -11,7 +11,7 @@
           "llm-pi-ai",
           "llm-deepseek"
         ],
-        "source_path": "%USERPROFILE%\\.dsh\\settings.yaml"
+        "source_path": "%USERPROFILE%\\.dsh\\profiles\\desktop\\cordis.patch.yml"
       }
     ],
     "credential_env_names": [
@@ -20,147 +20,214 @@
       "TOKENRHYTHM_API_KEY"
     ],
     "projection": {
-      "agent-default-model": {
-        "provider": "tokenrhythm",
-        "model": "deepseek-flash"
-      },
-      "llm-deepseek": {
-        "baseURL": "https://api.deepseek.com/v1",
-        "models": [
-          {
-            "id": "deepseek-flash",
-            "name": "DeepSeek-V4.1-Flash",
-            "contextWindow": 1000000
-          },
-          {
-            "id": "deepseek-v4-pro",
-            "name": "DeepSeek-V4-Pro-0813",
-            "contextWindow": 1000000
-          }
-        ]
-      },
-      "llm-pi-ai": {
-        "providers": {
-          "aijws": {
-            "api": "openai-responses",
-            "baseURL": "https://api.aijws.com/v1",
-            "credentialEnvName": "AIJWS_API_KEY",
-            "defaultInput": [
-              "text",
-              "image"
-            ],
-            "defaultMaxTokens": 128000,
-            "displayName": "我的贾维斯",
-            "models": [
-              {
-                "id": "gpt-5.6-terra",
-                "name": "GPT-5.6-Terra",
-                "contextWindow": 272000,
-                "reasoningEfforts": {
-                  "high": "high",
-                  "low": "low",
-                  "max": "max",
-                  "medium": "medium",
-                  "xhigh": "xhigh"
+      "layer_order": [
+        "bundle",
+        "profile",
+        "home",
+        "argv"
+      ],
+      "layers": [
+        {
+          "path": "%USERPROFILE%\\.dsh\\profiles\\desktop\\cordis.patch.yml",
+          "scope": "desktop",
+          "entries": {
+            "agent-default-model": {
+              "provider": "tokenrhythm",
+              "model": "deepseek-flash",
+              "reasoningEffort": "max"
+            },
+            "llm-deepseek": {
+              "baseURL": "https://api.deepseek.com/v1",
+              "models": [
+                {
+                  "id": "deepseek-flash",
+                  "name": "DeepSeek-V4.1-Flash",
+                  "contextWindow": 1000000
+                },
+                {
+                  "id": "deepseek-v4-pro",
+                  "name": "DeepSeek-V4-Pro-0813",
+                  "contextWindow": 1000000
+                }
+              ]
+            },
+            "llm-pi-ai": {
+              "providers": {
+                "aijws": {
+                  "api": "openai-responses",
+                  "baseURL": "https://api.aijws.com/v1",
+                  "credentialEnvName": "AIJWS_API_KEY",
+                  "defaultInput": [
+                    "text",
+                    "image"
+                  ],
+                  "defaultMaxTokens": 128000,
+                  "displayName": "我的贾维斯",
+                  "models": [
+                    {
+                      "id": "gpt-5.6-terra",
+                      "name": "GPT-5.6-Terra",
+                      "contextWindow": 272000,
+                      "reasoningEfforts": {
+                        "high": "high",
+                        "low": "low",
+                        "max": "max",
+                        "medium": "medium",
+                        "xhigh": "xhigh"
+                      }
+                    }
+                  ]
+                },
+                "openai": {
+                  "api": "openai-responses",
+                  "baseURL": "https://api.aijws.com/v1",
+                  "credentialEnvName": "OPENAI_API_KEY",
+                  "defaultInput": [
+                    "text",
+                    "image"
+                  ],
+                  "models": [
+                    {
+                      "id": "gpt-5.6-sol",
+                      "name": "GPT-5.6 Sol",
+                      "contextWindow": 272000,
+                      "maxTokens": 128000,
+                      "reasoningEfforts": {
+                        "high": "high",
+                        "low": "low",
+                        "max": "max",
+                        "medium": "medium",
+                        "xhigh": "xhigh"
+                      }
+                    },
+                    {
+                      "id": "gpt-5.6-terra",
+                      "name": "GPT-5.6 Terra",
+                      "contextWindow": 272000,
+                      "maxTokens": 128000,
+                      "reasoningEfforts": {
+                        "high": "high",
+                        "low": "low",
+                        "max": "max",
+                        "medium": "medium",
+                        "xhigh": "xhigh"
+                      }
+                    }
+                  ]
+                },
+                "tokenrhythm": {
+                  "api": "openai-completions",
+                  "baseURL": "https://tokenrhythm.studio/v1",
+                  "credentialEnvName": "TOKENRHYTHM_API_KEY",
+                  "displayName": "基元律动",
+                  "models": [
+                    {
+                      "id": "deepseek-v4-pro",
+                      "name": "DeepSeek V4 Pro",
+                      "contextWindow": 1000000,
+                      "input": [
+                        "text"
+                      ],
+                      "maxTokens": 384000
+                    },
+                    {
+                      "id": "deepseek-flash",
+                      "name": "DeepSeek V4.1 Flash",
+                      "contextWindow": 1000000,
+                      "input": [
+                        "text",
+                        "image"
+                      ],
+                      "maxTokens": 384000,
+                      "reasoningEfforts": {
+                        "high": "high",
+                        "low": "low",
+                        "max": "max"
+                      }
+                    }
+                  ]
                 }
               }
-            ]
+            }
           },
-          "openai": {
-            "api": "openai-responses",
-            "baseURL": "https://api.aijws.com/v1",
-            "credentialEnvName": "OPENAI_API_KEY",
-            "defaultInput": [
-              "text",
-              "image"
-            ],
-            "models": [
-              {
-                "id": "gpt-5.6-sol",
-                "name": "GPT-5.6 Sol",
-                "contextWindow": 272000,
-                "maxTokens": 128000,
-                "reasoningEfforts": {
-                  "high": "high",
-                  "low": "low",
-                  "max": "max",
-                  "medium": "medium",
-                  "xhigh": "xhigh"
-                }
-              },
-              {
-                "id": "gpt-5.6-terra",
-                "name": "GPT-5.6 Terra",
-                "contextWindow": 272000,
-                "maxTokens": 128000,
-                "reasoningEfforts": {
-                  "high": "high",
-                  "low": "low",
-                  "max": "max",
-                  "medium": "medium",
-                  "xhigh": "xhigh"
-                }
-              }
-            ]
-          },
-          "tokenrhythm": {
-            "api": "openai-completions",
-            "baseURL": "https://tokenrhythm.studio/v1",
-            "credentialEnvName": "TOKENRHYTHM_API_KEY",
-            "displayName": "基元律动",
-            "models": [
-              {
-                "id": "deepseek-v4-pro",
-                "name": "DeepSeek V4 Pro",
-                "contextWindow": 1000000,
-                "input": [
-                  "text"
-                ],
-                "maxTokens": 384000
-              },
-              {
-                "id": "deepseek-flash",
-                "name": "DeepSeek V4.1 Flash",
-                "contextWindow": 1000000,
-                "input": [
-                  "text",
-                  "image"
-                ],
-                "maxTokens": 384000,
-                "reasoningEfforts": {
-                  "high": "high",
-                  "low": "low",
-                  "max": "max"
-                }
-              }
-            ]
-          }
+          "layer": "profile",
+          "unprojected_entry_ids": [
+            "permission",
+            "ui-chat",
+            "ui-conversation",
+            "ui-settings",
+            "ui-settings-account",
+            "ui-settings-general",
+            "ui-theme"
+          ]
+        },
+        {
+          "path": "%USERPROFILE%\\.dsh\\profiles\\web\\cordis.patch.yml",
+          "scope": "web",
+          "layer": "profile",
+          "unprojected_entry_ids": [
+            "live-stats",
+            "mcp-parallel",
+            "web-ui-better-sidebar",
+            "web-ui-describe-image",
+            "web-ui-desktop-launcher",
+            "web-ui-doctor",
+            "web-ui-dsh-aionui-panel",
+            "web-ui-dsh-perf",
+            "web-ui-git-graph",
+            "web-ui-liangshen",
+            "web-ui-market",
+            "web-ui-pet",
+            "web-ui-plugin-manager",
+            "web-ui-remote-web-ui",
+            "web-ui-settings",
+            "web-ui-skin-center",
+            "web-ui-ssh",
+            "web-ui-task-board"
+          ]
+        },
+        {
+          "path": "%USERPROFILE%\\.dsh\\cordis.patch.yml",
+          "scope": "home",
+          "layer": "home"
         }
-      },
+      ],
       "unprojected_keys": [
-        "dsh.llm-pi-ai.providers.tokenrhythm.models[1].compat"
+        "dsh.desktop.llm-pi-ai.providers.tokenrhythm.models[1].compat"
       ]
     },
     "redactions": [],
-    "source_state": "stale",
-    "source_state_reason": "config source confirmed absent during scan",
+    "source_state": "current",
     "value_basis": "configured-local",
     "wire_verification": "not-wire-verified"
   },
   "curated": {
     "notes": [
-      "source_state=stale is correct and expected, not a collector fault: DSH 0.2.0-rc.2 imports the legacy %USERPROFILE%\\.dsh\\settings.yaml once into the Cordis entry configs and renames it to settings.yaml.imported, so the recorded source file is confirmed absent. The projection below is the last-known settings.yaml content and must not be read as current configuration.",
-      "FOLLOW-UP (not done in the 2026-09-30 round, whose DSH scope was command ownership only): re-point this profile at the Cordis patch layers where these sections now live (%USERPROFILE%\\.dsh\\cordis.patch.yml and profiles\\<name>\\cordis.patch.yml). Note that the MCP collector already reads those patch layers, so mcp.json is current even while this profile is stale. A new allowlist plus fixture and leak test are required before collecting the new shape (OPERATIONS section 7)."
+      "Cordis layer model (DSH 0.2.0-rc.2): the effective config is composed from patch layers in bundle -> profile -> home -> --patch order, a later layer overriding entries with the same id. observed.projection.layers keeps each on-disk layer separate and in that order because the product selects a profile per invocation and persists no active profile, so no single composed view exists to publish; the desktop profile is the one DSH Desktop uses on this machine, and the home layer is present but empty ([]).",
+      "Legacy settings.yaml is not a source any more: the product folds it into the Cordis entries once and renames it settings.yaml.imported (recorded with role imported-legacy-config and never parsed). Consequently the old settings.yaml-only semantics are gone - the agent-presets section and the .agent-presets preset list have no entries on this machine, so projection.agent_presets is absent instead of a fabricated mapping. reasoningEffort on agent-default-model is new in the Cordis shape and is projected.",
+      "MCP entry ids in these layers (for example the web profile's mcp-parallel) are owned by context/configs/mcp.json, which reads the same patch layers; this profile records only the ids so nothing is silently lost. UI, permission and live-stats entry ids are deliberately unprojected: they are product behaviour, not machine facts. Only projection.layers[].entries subtrees are read, and headers/env values are never touched."
     ]
   },
   "source": {
     "config_root": "%USERPROFILE%\\.dsh",
     "files": [
       {
-        "path": "%USERPROFILE%\\.dsh\\settings.yaml",
+        "path": "%USERPROFILE%\\.dsh\\profiles\\desktop\\cordis.patch.yml",
         "exists": true,
         "format": "yaml",
-        "role": "config"
+        "role": "cordis-patch-layer"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\profiles\\web\\cordis.patch.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "cordis-patch-layer"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\cordis.patch.yml",
+        "exists": true,
+        "format": "yaml",
+        "role": "cordis-patch-layer"
       },
       {
         "path": "%USERPROFILE%\\.dsh\\.credentials.yaml",
@@ -173,6 +240,12 @@
         "exists": true,
         "format": "other",
         "role": "agent-preset-directory"
+      },
+      {
+        "path": "%USERPROFILE%\\.dsh\\settings.yaml.imported",
+        "exists": true,
+        "format": "yaml",
+        "role": "imported-legacy-config"
       }
     ]
   },
