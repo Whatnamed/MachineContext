@@ -482,7 +482,7 @@
       },
       "curated": {
         "notes": [
-          "2026-10-01 update method: Inno Setup install (HKLM DisplayVersion 2.55.0.5, unins001.exe) at D:\\Git\\Git, so updates run the official vendor installer /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /DIR=D:\\Git\\Git. It is machine-scope: the shell is a split-token admin, so the installer has to run inside one elevated batch, and every live D:\\Git\\Git process locks msys-2.0.dll, which is why a Git upgrade cannot be performed from inside a Git Bash session."
+          "2026-10-01 update method (verified, not folklore): this is an Inno Setup install (HKLM Git_is1 DisplayVersion 2.55.0.5, unins001.exe) at D:\\Git\\Git, so an update runs the official vendor installer as /VERYSILENT /NORESTART /SUPPRESSMSGBOXES /DIR=D:\\Git\\Git. It is machine-scope and the shell is a split-token admin, so it has to run inside an elevated process. The blocker is the pre-check built into the installer: it enumerates the live processes that use Git for Windows through the Restart Manager and offers only Retry/Cancel, which under /SUPPRESSMSGBOXES defaults to Cancel, so setup aborts with exit code 1 and changes nothing - the 2.56.0 attempt left every file size, mtime and the registry entry byte-identical. There is no silent override flag, so a Git upgrade needs a window in which no Git-for-Windows process is alive; an agent session that keeps a persistent Git Bash shell cannot do it from inside. Consequence: Git stays at 2.55.0.windows.5 and so does the bundled Git LFS 3.7.1 (see the git-lfs note), because that copy is only replaced by this installer."
         ]
       }
     },
