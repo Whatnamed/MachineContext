@@ -142,11 +142,17 @@
       ]
     },
     "redactions": [],
-    "source_state": "current",
+    "source_state": "stale",
+    "source_state_reason": "config source confirmed absent during scan",
     "value_basis": "configured-local",
     "wire_verification": "not-wire-verified"
   },
-  "curated": {},
+  "curated": {
+    "notes": [
+      "source_state=stale is correct and expected, not a collector fault: DSH 0.2.0-rc.2 imports the legacy %USERPROFILE%\\.dsh\\settings.yaml once into the Cordis entry configs and renames it to settings.yaml.imported, so the recorded source file is confirmed absent. The projection below is the last-known settings.yaml content and must not be read as current configuration.",
+      "FOLLOW-UP (not done in the 2026-09-30 round, whose DSH scope was command ownership only): re-point this profile at the Cordis patch layers where these sections now live (%USERPROFILE%\\.dsh\\cordis.patch.yml and profiles\\<name>\\cordis.patch.yml). Note that the MCP collector already reads those patch layers, so mcp.json is current even while this profile is stale. A new allowlist plus fixture and leak test are required before collecting the new shape (OPERATIONS section 7)."
+    ]
+  },
   "source": {
     "config_root": "%USERPROFILE%\\.dsh",
     "files": [

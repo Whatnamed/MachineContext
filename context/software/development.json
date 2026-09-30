@@ -186,7 +186,7 @@
             "scope": "windows-host",
             "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 29,
+            "path_index": 30,
             "source": "persistent-path"
           }
         ],

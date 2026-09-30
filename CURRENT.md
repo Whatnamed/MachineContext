@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-09-26T08:57:47.4304900Z
+- Verified at: 2026-09-30T13:53:37.0858137Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (21.2/195.9 GiB free/total)
-  - `D:\` NTFS (56.8/279.3 GiB free/total)
-  - `E:\` NTFS (109.8/953.9 GiB free/total)
+  - `C:\` NTFS (17.8/195.9 GiB free/total)
+  - `D:\` NTFS (39.2/279.3 GiB free/total)
+  - `E:\` NTFS (131.2/953.9 GiB free/total)
 
 ## Development environment
 
@@ -76,19 +76,21 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.2.11 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.2.14 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
-- **Claude Code** `claude-code` — 2.1.281 — `D:\Claude\cli\claude.cmd`
+- **Claude Code** `claude-code` — 2.1.285 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
-- **Codex CLI** `codex-cli` — 0.156.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.917.9434.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0`
+- **Codex CLI** `codex-cli` — 0.159.2 — `E:\Codex\codex-cli\codex.cmd`
+- **Codex Desktop** `codex-desktop` — 26.928.2636.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.928.2636.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
-- **DSH** `dsh` — 0.1.5-rc.2 — `D:\DSH\dsh.cmd`
-- **Grok Build CLI** `grok` — 1.0.41 — `D:\GrokBuild\home\bin\grok.exe`
-- **Oh My Pi** `omp` — 18.3.0 — `D:\OMP\omp.exe`
+- **DSH** `dsh` — 0.2.0-rc.2 — `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`
+- **DSH Desktop** `dsh-desktop` — 0.2.0-rc.2 — `D:\DSH-desktop\DeepSeek Harness.exe`
+- **Grok Build CLI** `grok` — 1.0.44 — `D:\GrokBuild\home\bin\grok.exe`
+- **Kimi Code** `kimi-code-desktop` — 1.0.4 — `D:\KimiCode\Kimi Code\Kimi Code.exe`
+- **Oh My Pi** `omp` — 18.4.4 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.64.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.4.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
@@ -100,7 +102,7 @@
 ## AI configuration profiles
 
 - `codex-cli` — %USERPROFILE%\.codex — `context/configs/ai/codex-cli.json`
-- `dsh` — %USERPROFILE%\.dsh — `context/configs/ai/dsh.json`
+- `dsh` — %USERPROFILE%\.dsh (stale: config source missing) — `context/configs/ai/dsh.json`
 - `omp` — %USERPROFILE%\.omp\agent — `context/configs/ai/omp.json`
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
 - `qoder` — %USERPROFILE%\.qoder-cn — `context/configs/ai/qoder.json`

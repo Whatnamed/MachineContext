@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 22817013760,
+      "free_bytes": 19058917376,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 60934848512,
+      "free_bytes": 42144366592,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 117843165184,
+      "free_bytes": 140928614400,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -272,7 +272,7 @@
             "scope": "windows-host",
             "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
             "command_type": "PersistentApplication",
-            "path_index": 27,
+            "path_index": 28,
             "source": "persistent-path"
           }
         ],
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 44,
+    "entry_count": 45,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -428,6 +428,7 @@
       "D:\\Go\\bin",
       "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\GitHub CLI",
+      "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
       "D:\\GrokBuild\\home\\bin",
@@ -442,7 +443,6 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
@@ -452,9 +452,11 @@
       "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
     ],
     "user_path": [
+      "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
       "D:\\GrokBuild\\home\\bin",
@@ -470,7 +472,6 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
@@ -480,7 +481,8 @@
       "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
     ]
   },
   "environment": {
@@ -505,6 +507,7 @@
       "D:\\Go\\bin",
       "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\GitHub CLI",
+      "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
       "D:\\GrokBuild\\home\\bin",
@@ -519,7 +522,6 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\DSH",
       "D:\\Tools\\SupabaseCLI\\2.116.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
@@ -529,7 +531,8 @@
       "E:\\CS2MOD\\wt-agent-a\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
     ],
     "shell_profiles": [
       {

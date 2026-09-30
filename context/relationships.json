@@ -42,6 +42,33 @@
       "evidence": [
         {
           "provider": "command",
+          "provider_key": "dsh",
+          "fields": [
+            "executable",
+            "command_resolution"
+          ],
+          "paths": [
+            "D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd"
+          ]
+        },
+        {
+          "provider": "user-confirmed",
+          "provider_key": "dsh-desktop-command-ownership-2026-09-30",
+          "fields": [
+            "directory",
+            "registry_owner_key"
+          ]
+        }
+      ],
+      "origin": "curated",
+      "from": "dsh",
+      "relation": "provided_by",
+      "to": "dsh-desktop"
+    },
+    {
+      "evidence": [
+        {
+          "provider": "command",
           "fields": [
             "executable"
           ]

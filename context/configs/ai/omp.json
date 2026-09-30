@@ -8,7 +8,6 @@
         "provider": "config-profiles",
         "fields": [
           "shellPath",
-          "providers",
           "modelRoles",
           "defaultThinkingLevel",
           "enabledProviders"
@@ -35,34 +34,8 @@
           "codex"
         ],
         "modelRoles": {
-          "default": "google-antigravity/gemini-3.8-flash"
-        },
-        "providers": {
-          "webSearchOrder": [
-            "parallel",
-            "perplexity",
-            "gemini",
-            "anthropic",
-            "codex",
-            "xai",
-            "zai",
-            "exa",
-            "tinyfish",
-            "jina",
-            "kagi",
-            "tavily",
-            "firecrawl",
-            "brave",
-            "kimi",
-            "synthetic",
-            "searxng",
-            "startpage",
-            "duckduckgo",
-            "ecosia",
-            "google",
-            "mojeek",
-            "public"
-          ]
+          "default": "google-antigravity/gemini-3.8-flash",
+          "web": "web/parallel"
         },
         "shellPath": "D:\\Git\\Git\\bin\\bash.exe"
       },
@@ -140,9 +113,11 @@
         }
       },
       "unprojected_keys": [
+        "omp.config.compaction",
         "omp.config.composer",
         "omp.config.display",
         "omp.config.hideThinkingBlock",
+        "omp.config.retry",
         "omp.config.setupVersion",
         "omp.config.statusLine",
         "omp.config.symbolPreset",

@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.2.11",
+        "version": "1.2.14",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -93,7 +93,9 @@
           "config ownership (2026-09-05 audit): %USERPROFILE%\\.gemini\\settings.json belongs to Gemini CLI; Agy settings live in %USERPROFILE%\\.gemini\\antigravity-cli\\settings.json, and %USERPROFILE%\\.gemini\\config\\mcp_config.json exists but contains no MCP servers",
           "global customization root is %USERPROFILE%\\.gemini\\config (per agy embedded docs); global rules deployed at config\\GEMINI.md (2026-09-15) — not %USERPROFILE%\\.gemini\\GEMINI.md. Load re-verified 2026-09-19 on 1.2.7, because that release changed customization token budgeting (user/workspace rules now get a dedicated 20,000-token budget): from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered LANG=简体中文 INDEX=E:\\MachineContext\\CURRENT.md DESTRUCTIVE=YES, exactly matching %USERPROFILE%\\.gemini\\config\\GEMINI.md lines 5/22/34, while a negative control asking for a never-provided secret answered NONE. The global ruleset still reaches the model on 1.2.7.",
           "2026-09-19: 1.2.3 -> 1.2.7 via the native self-updater `agy update` (in-place at %LOCALAPPDATA%\\agy\\bin\\agy.exe; no duplicate install created and no npm-global shim). The updater reported \"Found new version 1.2.7\" and its own \"Verification successful\"; the installed binary was then independently re-verified: sha512 3b2008ed40276e125e5960ae30c1a376d33bd8637fa941742f287aa244a3d609f11d1bb2694947db170ed7452561ba0b721be3f6fa03a955e2737bed043377bd matches the official windows_amd64 release manifest (version 1.2.7, build 6731160148115456), sha256 162607893eaacaf7b4a34bcd0bc3978342c6707b0340f96040f0139ac904dd22, size 195,186,840 -> 203,523,736 bytes. The updater parked the previous 1.2.3 binary as agy.exe.1789831711622230000.old and then removed it itself; no .old remains in the bin directory.",
-          "2026-09-25 canonical catch-up — this was NOT an upgrade performed in this session. The machine was already on 1.2.10 while canonical still recorded 1.2.7, so the 1.2.7 -> 1.2.10 upgrade happened outside this session (E:\\AGY\\cli\\agy.exe mtime 2026-09-24T17:30:28+08:00; the official GitHub release 1.2.10 is dated 2026-09-24T06:26:54Z). `agy update` on 2026-09-25 printed \"Checking for updates... (current version 1.2.10)\" then \"You are already on the latest version.\" and exited 0. Executable resolution is unchanged and is one level of indirection deeper than the recorded path suggests: %LOCALAPPDATA%\\agy\\bin is a DIRECTORY JUNCTION to E:\\AGY\\cli, so where.exe and Get-Command legitimately report %LOCALAPPDATA%\\agy\\bin\\agy.exe while the real file is E:\\AGY\\cli\\agy.exe (sha256 9EBAE3CFAF6D7FF7A17ECBE7870350018A30A7790364792A873917693E744A05, 198,761,112 bytes). Global-rules load re-verified on 1.2.10: from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered E:\\MachineContext\\CURRENT.md — a path that appears only in %USERPROFILE%\\.gemini\\config\\GEMINI.md — so the user-global ruleset still reaches the model."
+          "2026-09-25 canonical catch-up — this was NOT an upgrade performed in this session. The machine was already on 1.2.10 while canonical still recorded 1.2.7, so the 1.2.7 -> 1.2.10 upgrade happened outside this session (E:\\AGY\\cli\\agy.exe mtime 2026-09-24T17:30:28+08:00; the official GitHub release 1.2.10 is dated 2026-09-24T06:26:54Z). `agy update` on 2026-09-25 printed \"Checking for updates... (current version 1.2.10)\" then \"You are already on the latest version.\" and exited 0. Executable resolution is unchanged and is one level of indirection deeper than the recorded path suggests: %LOCALAPPDATA%\\agy\\bin is a DIRECTORY JUNCTION to E:\\AGY\\cli, so where.exe and Get-Command legitimately report %LOCALAPPDATA%\\agy\\bin\\agy.exe while the real file is E:\\AGY\\cli\\agy.exe (sha256 9EBAE3CFAF6D7FF7A17ECBE7870350018A30A7790364792A873917693E744A05, 198,761,112 bytes). Global-rules load re-verified on 1.2.10: from a scratch git repository containing no AGENTS.md/GEMINI.md, `agy -p` answered E:\\MachineContext\\CURRENT.md — a path that appears only in %USERPROFILE%\\.gemini\\config\\GEMINI.md — so the user-global ruleset still reaches the model.",
+          "2026-09-30 canonical catch-up - this was NOT an upgrade performed in this session. The machine was already on 1.2.14 while canonical recorded 1.2.11. Evidence: E:\\AGY\\cli\\agy.exe mtime 2026-09-30T19:42+08:00 (sha256 07F7ED55654B7066...), with the updater-parked predecessor agy.exe.1790768416625916700.old (mtime 2026-09-28T13:34) still present, so the replacement happened outside this session. `agy update` on 2026-09-30 printed \"Checking for updates... (current version 1.2.14)\" then \"You are already on the latest version.\" and exited 0; the official GitHub latest release is 1.2.14 (published 2026-09-30T04:03:27Z). Executable resolution is unchanged (%LOCALAPPDATA%\\agy\\bin is still a directory junction to E:\\AGY\\cli). Unlike the 2026-09-19 run, the .old file was left in place rather than deleted by the updater - updater housekeeping is not stable, so its presence is not evidence of a manual copy.",
+          "2026-09-30 global-rules live-load re-verified on 1.2.14: from a scratch git repository containing only .git (no AGENTS.md/GEMINI.md), `agy -p` answered E:\\MachineContext\\CURRENT.md - a path that appears only in %USERPROFILE%\\.gemini\\config\\GEMINI.md - and exited 0. Still no %USERPROFILE%\\.gemini\\GEMINI.md was created."
         ],
         "purpose": "Google Antigravity CLI coding assistant."
       }
@@ -165,7 +167,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.1.281",
+        "version": "2.1.285",
         "executable": "D:\\Claude\\cli\\claude.cmd",
         "command_resolution": [
           {
@@ -216,7 +218,8 @@
       },
       "curated": {
         "notes": [
-          "user-level global rules deployed at %USERPROFILE%\\.claude\\CLAUDE.md (2026-09-15, shared personal ruleset; also feeds Grok via its Claude compatibility)"
+          "user-level global rules deployed at %USERPROFILE%\\.claude\\CLAUDE.md (2026-09-15, shared personal ruleset; also feeds Grok via its Claude compatibility)",
+          "2026-09-30: 2.1.281 -> 2.1.285 with `npm install --prefix D:\\Claude\\cli @anthropic-ai/claude-code@2.1.285`, matching the existing provenance (dedicated prefix install, default dist-tag lineage). npm dist-tags at execution time were latest=2.1.285, stable=2.1.280, next=2.1.285 - `stable` is again OLDER than `latest`, confirming the 2026-09-25 caveat that \"stable latest\" must be disambiguated rather than assumed. Installation model, command resolution and D:\\Claude\\cli\\claude.cmd are unchanged."
         ],
         "purpose": "Anthropic Claude Code CLI assistant."
       }
@@ -263,14 +266,14 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.156.1",
+        "version": "0.159.2",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
             "scope": "windows-host",
             "executable": "E:\\Codex\\codex-cli\\codex.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 20,
+            "path_index": 21,
             "source": "persistent-path"
           }
         ],
@@ -325,7 +328,10 @@
       },
       "curated": {
         "notes": [
-          "user-level global rules deployed at %USERPROFILE%\\.codex\\AGENTS.md (2026-09-15, shared personal ruleset; Codex verified via codex exec)"
+          "user-level global rules deployed at %USERPROFILE%\\.codex\\AGENTS.md (2026-09-15, shared personal ruleset; Codex verified via codex exec)",
+          "2026-09-30: 0.156.1 -> 0.159.2 with `npm install --prefix E:\\Codex\\codex-cli @openai/codex@0.159.2` (npm latest; alpha 0.161.0-alpha.4 deliberately not used). Dedicated root, command resolution and the codex.cmd shim are unchanged; %USERPROFILE%\\.codex was not reset and auth/sessions/plugins/rules/config were not touched.",
+          "2026-09-30 CLI/Desktop ownership re-verified before upgrading, because the historical CODEX_CLI_PATH claim needed re-testing: CODEX_CLI_PATH is NOT a process or user environment variable (the only CODEX* env var set is CODEXOMETER_LANG). It appears once inside %USERPROFILE%\\.codex\\config.toml, under [mcp_servers.node_repl.env], pointing at the Desktop-provisioned versioned binary %LOCALAPPDATA%\\OpenAI\\Codex\\bin\\c6fe824d725f02d7\\codex.exe (mtime 2026-09-30T17:17, i.e. written by the Desktop itself). config.toml contains no reference to E:\\Codex\\codex-cli at all. So the standalone CLI and the Desktop runtime are fully independent, and upgrading the standalone install cannot redirect the Desktop.",
+          "2026-09-30 preservation and smoke: during the upgrade window config.toml was byte-identical before the install, after the install and after `codex exec` (sha256 7B86469DE506E438E58E7896CDA7B91914E84E106E3378C135B01D11CCDA7298 at that time - the updater changed nothing; that hash is a window fingerprint, not a current one, because the user/Desktop edited the file again later the same evening, and it now reads sha256 2229453F24E020C5F79CC775022CA2156C9AB80D62D8973B7ED62343A3F62D3A); %USERPROFILE%\\.codex\\AGENTS.md unchanged (sha256 A9829D5C32A0BBE4...). `codex --version` = codex-cli 0.159.2, `codex --help` ok, and `codex exec --skip-git-repo-check \"Reply exactly: OK\"` returned OK with exit 0. Codex Desktop 26.928.2636.0 was already running (12 ChatGPT.exe processes plus its own bundled codex.exe) and stayed healthy across the upgrade: its window rendered, the pinned/project session list was intact, and a user task was actively running - so no new-session creation was forced, to avoid disturbing in-flight work. The Desktop runtime path was still the bundled binary afterwards. Two pre-existing warnings were left alone: the unrecognized `disable_response_storage` key, and a cloudflare-api MCP OAuth refresh failure unrelated to this round."
         ],
         "purpose": "OpenAI Codex CLI coding assistant."
       }
@@ -341,7 +347,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.917.9434.0",
+        "version": "26.928.2636.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -355,8 +361,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.917.9434.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.928.2636.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.928.2636.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -494,11 +500,11 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.1.5-rc.2",
-        "executable": "D:\\DSH\\dsh.cmd",
+        "version": "0.2.0-rc.2",
+        "executable": "D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd",
         "command_resolution": [
           {
-            "executable": "D:\\DSH\\dsh.cmd",
+            "executable": "D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd",
             "command_type": "PersistentApplication"
           }
         ],
@@ -546,9 +552,66 @@
       "curated": {
         "notes": [
           "user-level global rules deployed at %USERPROFILE%\\.dsh\\AGENTS.md (2026-09-16); this is the fixed user-global instruction path of @deepseek-ai/dsh-agent-instructions (USER_GLOBAL_FILE, joined onto $DSH_HOME), not a config subdirectory",
-          "load verified 2026-09-16 by live injection into a running DSH 0.1.5-rc.2 session: the file arrived as a sourced \"Instructions from: ~/.dsh/AGENTS.md\" block scoped user-global, alongside the project chain from E:\\MachineContext\\AGENTS.md"
+          "load verified 2026-09-16 by live injection into a running DSH 0.1.5-rc.2 session: the file arrived as a sourced \"Instructions from: ~/.dsh/AGENTS.md\" block scoped user-global, alongside the project chain from E:\\MachineContext\\AGENTS.md",
+          "2026-09-30 COMMAND OWNERSHIP MOVED: the `dsh` command is now provided by the official DSH Desktop payload (see the dsh-desktop entity and the dsh provided_by dsh-desktop relationship). It was registered through the product own command manager (resources\\runtime\\cli\\command-manager.js -> command-path.ps1, install with the inspect fingerprint), which prepended D:\\DSH-desktop\\resources\\runtime\\cli\\bin to the persistent user PATH and recorded ownership under HKCU\\Software\\DeepSeekHarness\\Command. No shim was copied and the Machine PATH was not touched.",
+          "2026-09-30 the retired standalone install D:\\DSH (npm-style, @deepseek-ai/dsh 0.1.5-rc.2) was removed from the persistent user PATH so exactly one `dsh` resolves; `where.exe dsh` and Get-Command dsh -All now return only the Desktop launcher. The directory itself was deliberately NOT deleted or renamed: besides the old node_modules it still holds user files the Desktop payload does not contain (dsh-launcher.exe, dsh-tray.ps1, backup\\, community-presets\\, logs\\, and the downloaded DSH-Desktop-2.0.0-x64-Setup.exe). The exact pre-change user PATH is saved in .local\\user-path-before-dsh-switch.txt and .local\\user-path-before-dsh-entry-removal.txt for restoration.",
+          "2026-09-30 DSH_HOME is unchanged and shared: %USERPROFILE%\\.dsh remains the single data/config home. The Desktop bootstrapped its own profile inside it (profiles\\desktop, 2026-09-29T22:18) and touched .credentials.yaml at the same moment, without disturbing .agent-presets, storages, sessions or AGENTS.md. No data migration was performed or needed.",
+          "2026-09-30 user-global rules path still valid on 0.2.0-rc.2, verified from the shipped bundle rather than assumed: @deepseek-ai/dsh-agent-instructions 0.2.0-rc.2 keeps USER_GLOBAL_FILE = \"AGENTS.md\" joined onto dshHome ($DSH_HOME or ~/.dsh), loaded before the project chain, and the file itself is byte-unchanged (sha256 6994D9067E87A9E018514EBA3358B23756DE6E1A64B236032D3BD303A600DF9D, 5133 B). HONEST LIMIT: the live injection proof in the note above was made on 0.1.5-rc.2; it has NOT been re-run inside a 0.2.0-rc.2 session.",
+          "2026-09-30 settings.yaml is deprecated by 0.2.0-rc.2, which is why context/configs/ai/dsh.json now reads source_state=stale. From the shipped docs and code: once Cordis configuration settles, a settings.yaml left in the harness home by earlier releases is imported once, each section written into the Cordis entry of the same id (ui-developer-tools -> ui-settings, ui-onboarding -> ui-settings-general, shell -> the platform shell executor entry), and the file is renamed to settings.yaml.imported BEFORE the first write. The old settings.yaml is therefore gone for good, not moved elsewhere by MachineContext."
         ],
         "purpose": "DeepSeek Harness interactive terminal agent."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dsh-desktop",
+      "kind": "ai-tool",
+      "name": "DSH Desktop",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "0.2.0-rc.2",
+        "executable": "D:\\DSH-desktop\\DeepSeek Harness.exe",
+        "evidence": [
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKCU/default/1bf39983-50d0-5fe0-9ef4-cece76f67c5e",
+            "fields": [
+              "present",
+              "version"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "filesystem",
+            "provider_key": "dsh-desktop",
+            "fields": [
+              "executable",
+              "install_location"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "dsh-desktop",
+            "fields": [
+              "present"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "D:\\DSH-desktop"
+      },
+      "curated": {
+        "notes": [
+          "Installed by the user on 2026-09-29. Registry evidence: HKCU uninstall entry \"DeepSeek Harness 0.2.0-rc.2\" (key 1bf39983-50d0-5fe0-9ef4-cece76f67c5e). Version cross-checked against the executable FileVersion 0.2.0-rc.2 (ProductVersion 0.2.0.0, mtime 2026-09-29T18:34+08:00).",
+          "TRAP (OPERATIONS section 8 class): D:\\DSH-desktop\\version contains \"44.0.0\", which is the bundled Electron shell version, not the product version. Do not refresh observed.version from that file.",
+          "Current against its own update feed: https://download.deepseek.com/dsh-desk/feeds/win-x64/ channel nightly reports version 0.2.0-rc.2 (releaseDate 2026-09-29T10:35:27Z). No routine provider covers this entity, so it will go stale silently until refreshed by hand.",
+          "Bundles its own dsh CLI launcher at D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd, which runs @deepseek-ai/dsh-desktop-host\\lib\\cli.js from app.asar inside the app process with ELECTRON_RUN_AS_NODE=1. Verified: it prints 0.2.0-rc.2 and the same profile-launcher help surface as the retired standalone CLI.",
+          "The \"Manage dsh command\" feature is implemented by resources\\runtime\\cli\\command-manager.js, which on win32 spawns command-path.ps1 with an inspect/install/remove request. It prepends the launcher directory to the persistent USER PATH and records ownership in HKCU\\Software\\DeepSeekHarness\\Command (Directory, PathWasAbsent, RetainedEntries); it copies no shim and touches no Machine PATH. install requires the fingerprint returned by inspect, and remove reverses it.",
+          "Private toolchain payload (resources\\runtime\\primary-runtime\\runtime.json): node 24.21.0, pnpm 11.7.0, python 3.12.14, plus office-skills. These are internal to the Desktop and do not change the machine Node.js 22 or Git installs."
+        ],
+        "purpose": "DeepSeek Harness official desktop application; owns the dsh command on this machine."
       }
     },
     {
@@ -559,7 +622,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.41",
+        "version": "1.0.44",
         "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
         "command_resolution": [
           {
@@ -600,9 +663,99 @@
           "2026-09-25: root cause of the long-standing `grok update` \"program not found\" failure, and its fix. D:\\GrokBuild\\home\\config.toml (the grok home) carried `[cli] installer = \"npm\"`. The updater honours that value and takes the npm install path, which fails on this machine. Verified by A/B on the same binary: with installer=\"npm\", `grok update --check` prints \"Update check failed: program not found\" (exit 1); with any other value it takes the native path and prints \"A new version of Grok Build is available: 1.0.30 -> 1.0.41 [stable]\". The value the official installer (x.ai/cli/install.sh) persists for native installs is `installer = \"internal\"`, which is what this layout actually is (native grok.exe/agent.exe under %GROK_HOME%\\bin), so that value was written. Likely but NOT proven mechanism for the npm-path failure: the updater spawns `npm`, which on Windows is npm.cmd and is not found by a bare process spawn. The earlier install.ps1 + GROK_BIN_DIR=D:\\GrokBuild\\home\\bin workaround is retired; the npm-reinstall hint remains wrong for this layout.",
           "global rules come from %USERPROFILE%\\.claude\\CLAUDE.md via Grok Claude Code compatibility (verified with grok inspect 2026-09-15); no AGENTS.md in the grok home because Grok would inject both copies",
           "2026-09-15: 1.0.13 -> 1.0.30 by copying the official stable-channel artifact (storage.googleapis.com/grok-build-public-artifacts/cli) over grok.exe in place. SUPERSEDED 2026-09-25: the justification recorded then — that `grok update` reports \"program not found\" and its npm-reinstall hint would create a second install — was a fixable config-provenance bug, not a property of the layout; see the 2026-09-25 root-cause note. Prefer `grok update` from now on.",
-          "2026-09-25: 1.0.30 -> 1.0.41 via the native in-place self-updater `grok update`, stable channel (x.ai/cli/stable reported 1.0.41; the alpha channel reported the same 1.0.41, so 1.0.41 is stable latest). It installed grok.exe and agent.exe into D:\\GrokBuild\\home\\bin and rewrote config.toml as a TOML round-trip. That rewrite was verified value-preserving: the ONLY semantic delta is the `[cli] installer` line, everything else is formatting (digit separators 500_000 -> 500000, array line-wrapping, and trailing commas inside arrays, which TOML 1.0 permits). Confirmed by masking the installer value, normalizing whitespace/digit-separators/trailing-commas and comparing byte-for-byte (equal), plus an independent TOML parse of the result: 17 [model.*] tables, 5 [mcp_servers.*] tables, 16 inline api_key values, 7 skill paths and models.default grok-4.5 all unchanged. grok.exe sha256 AB5D2A424F08281798ACBDBB06076166FE000D7995EDE94A673417B805210A25, 150,036,808 -> 154,082,120 bytes. Smoke: `grok -p \"Reply exactly: OK\"` -> OK. `grok inspect` still resolves the global personal ruleset from %USERPROFILE%\\.claude\\CLAUDE.md through Grok Claude Code compatibility, and 52 user-scope skills still load."
+          "2026-09-25: 1.0.30 -> 1.0.41 via the native in-place self-updater `grok update`, stable channel (x.ai/cli/stable reported 1.0.41; the alpha channel reported the same 1.0.41, so 1.0.41 is stable latest). It installed grok.exe and agent.exe into D:\\GrokBuild\\home\\bin and rewrote config.toml as a TOML round-trip. That rewrite was verified value-preserving: the ONLY semantic delta is the `[cli] installer` line, everything else is formatting (digit separators 500_000 -> 500000, array line-wrapping, and trailing commas inside arrays, which TOML 1.0 permits). Confirmed by masking the installer value, normalizing whitespace/digit-separators/trailing-commas and comparing byte-for-byte (equal), plus an independent TOML parse of the result: 17 [model.*] tables, 5 [mcp_servers.*] tables, 16 inline api_key values, 7 skill paths and models.default grok-4.5 all unchanged. grok.exe sha256 AB5D2A424F08281798ACBDBB06076166FE000D7995EDE94A673417B805210A25, 150,036,808 -> 154,082,120 bytes. Smoke: `grok -p \"Reply exactly: OK\"` -> OK. `grok inspect` still resolves the global personal ruleset from %USERPROFILE%\\.claude\\CLAUDE.md through Grok Claude Code compatibility, and 52 user-scope skills still load.",
+          "2026-09-30: 1.0.41 -> 1.0.44 via the native in-place self-updater `grok update` (x.ai/cli/stable reports 1.0.44; x.ai/cli/alpha reports 1.0.45, deliberately not used). Installed at D:\\GrokBuild\\home\\bin, sha256 0F2AB84FB066D60F99B861F1030984CD190754DE28E7982A859B25D82FA52FAC (156,476,232 B).",
+          "2026-09-30 config preservation was stronger than in the 1.0.41 round: D:\\GrokBuild\\home\\config.toml was NOT rewritten at all this time - byte-identical before and after (sha256 6681C2D9289919817BE47A337389684589D2C3FFE1B066F49584BC9D59506D03, 6639 B), so no TOML round-trip diff analysis was needed. `[cli] installer = \"internal\"` is unchanged, which is what keeps `grok update` on the native path.",
+          "2026-09-30 observation: grok.exe and agent.exe are byte-identical to each other (same sha256 and size) - one binary installed under two names, not two components. The bin directory also still holds the updater-parked grok.exe.old (1.0.41) and grok.exe.bak-1.0.13 plus older grok-0.2.112.exe / grok-1.0.4.exe copies; left in place.",
+          "2026-09-30 smoke result, and it is NOT an upgrade regression: `grok -p` on the default model grok-4.5 fails with HTTP 403 \"GROUP_DELETED: API Key 所属分组已删除\" from the https://api.aijws.com gateway configured in [model.\"grok-4.5\"]. A/B control on the same unchanged config: the updater-parked 1.0.41 binary fails identically, while `grok -m dasu -p \"Reply exactly: OK\"` on 1.0.44 returns OK with exit 0. So the defect is the gateway-side deletion of that API key group, not the new binary; no credential was read or modified. `grok inspect` still resolves the global personal ruleset from %USERPROFILE%\\.claude\\CLAUDE.md through Claude Code compatibility, with 52 user-scope skills loading."
         ],
         "purpose": "Grok build tool and agent runner."
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "kimi-code-desktop",
+      "kind": "ai-tool",
+      "name": "Kimi Code",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "1.0.4",
+        "executable": "D:\\KimiCode\\Kimi Code\\Kimi Code.exe",
+        "config_paths": [
+          {
+            "kind": "config-file",
+            "path": "%USERPROFILE%\\.kimi-code\\AGENTS.md",
+            "exists": true
+          }
+        ],
+        "data_paths": [
+          {
+            "kind": "kimi-code-home",
+            "path": "%USERPROFILE%\\.kimi-code",
+            "exists": true
+          },
+          {
+            "kind": "electron-user-data",
+            "path": "%APPDATA%\\kimi-code-app",
+            "exists": true
+          },
+          {
+            "kind": "updater-cache",
+            "path": "%LOCALAPPDATA%\\kimi-code-app-updater",
+            "exists": true
+          }
+        ],
+        "evidence": [
+          {
+            "provider": "registry-uninstall",
+            "provider_key": "HKCU/default/8e1a5331-d39b-57b9-8da5-3dc7219b2990",
+            "fields": [
+              "present",
+              "version"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "filesystem",
+            "provider_key": "kimi-code-desktop",
+            "fields": [
+              "executable",
+              "install_location",
+              "data_paths"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "kimi-code-desktop",
+            "fields": [
+              "present"
+            ],
+            "confidence": "high"
+          },
+          {
+            "provider": "user-confirmed",
+            "provider_key": "global-rules-deployment-2026-09-30",
+            "fields": [
+              "config_paths"
+            ],
+            "confidence": "high"
+          }
+        ],
+        "install_location": "D:\\KimiCode\\Kimi Code"
+      },
+      "curated": {
+        "notes": [
+          "Installed by the user on 2026-09-26. HKCU uninstall entry \"Kimi Code 1.0.4\" (key 8e1a5331-d39b-57b9-8da5-3dc7219b2990, publisher Moonshot AI); executable FileVersion/ProductVersion 1.0.4. Current against its own feed: https://code.kimi.com/kimi-code/desktop/ channel latest reports 1.0.4 (releaseDate 2026-09-24T07:47:09Z, payload binaries/1.0.4/KimiCode-1.0.4-win-x64.exe). The installer D:\\KimiCode\\KimiCode-win-x64.exe is the downloaded copy of that same 1.0.4 build.",
+          "NO kimi COMMAND EXISTS ON THIS MACHINE. where.exe kimi and Get-Command kimi -All return nothing; no kimi.exe/kimi.cmd/kimi.ps1 exists anywhere under D:\\, E:\\, %USERPROFILE%, %LOCALAPPDATA% or %APPDATA%; the npm-global tree has no Kimi package; and the shipped app.asar contains no CLI-install code path (no installCli/kimi.cmd, and no --print/headless entry). This is the desktop app only - it is not the Kimi Code terminal CLI, and its version line (1.0.x) is unrelated to that CLI.",
+          "The desktop app embeds the kimi-code agent core, so the CLI config semantics still apply: kimiHome() = KIMI_CODE_HOME or %USERPROFILE%\\.kimi-code. Read from shipped code, not observed on disk: config.toml, tui.toml, mcp.json and credentials\\ (OAuth tokens, file mode 0600) are all ABSENT here, i.e. the app is installed but not yet configured or logged in (workspaces.json is empty, server\\instances is empty). There is therefore nothing safe to project yet - no config profile is registered for this tool, and adding one is only worthwhile once config.toml exists.",
+          "user-global rules deployed 2026-09-30 at %USERPROFILE%\\.kimi-code\\AGENTS.md, byte-identical (sha256 A9829D5C32A0BBE4C15A6A20F0398C5FEA9A21455C1656CD129F877697BB9229, 3851B) to the shared personal ruleset already used at %USERPROFILE%\\.codex\\AGENTS.md and %USERPROFILE%\\.zcode\\AGENTS.md. No Kimi-specific rules were invented.",
+          "Rules path verified from the shipped loader, not guessed: loadAgentsMdForRoots collects join(brandHome ?? join(homeDir, \".kimi-code\"), \"AGENTS.md\") first, then %USERPROFILE%\\.agents\\AGENTS.md / agents.md, then per-directory project candidates (dir\\.kimi-code\\AGENTS.md, dir\\AGENTS.md), deduped by normalized path. %USERPROFILE%\\.agents\\AGENTS.md does not exist here (only .agents\\skills), so exactly one user-global copy is injected and there is no duplicate. A separate Claude-compatibility import (~/.claude/AGENTS.md, ~/.claude/CLAUDE.md) exists in the bundle but is a user-invoked import flow, not an automatic load path, and was not triggered.",
+          "NOT verified by a live turn: the app is not logged in and exposes no headless mode, so the rules load above is runtime-code-level evidence only. Re-probe after the user signs in to Kimi Code.",
+          "Windows shell dependency is Git Bash, and automatic discovery succeeds without configuration: locateWindowsGitBash probes KIMI_SHELL_PATH, then derives <gitRoot>\\bin\\bash.exe and <gitRoot>\\usr\\bin\\bash.exe from the git.exe found on PATH (D:\\Git\\Git\\mingw64\\bin\\git.exe -> D:\\Git\\Git\\bin\\bash.exe, which exists), then falls back to Program Files and %LOCALAPPDATA%\\Programs\\Git. It does not read the HKLM GitForWindows registry key. No KIMI_SHELL_PATH was set, because nothing indicated discovery failure and setting one would be dead configuration."
+        ],
+        "purpose": "Moonshot AI Kimi Code desktop agent."
       }
     },
     {
@@ -613,7 +766,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.3.0",
+        "version": "18.4.4",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {
@@ -665,7 +818,11 @@
           "no OMP-specific global rules file exists, to avoid duplicate injection. OMP reads the shared user-global ruleset from %USERPROFILE%\\.codex\\AGENTS.md, but ONLY once the codex context-source provider is opted in — see the RESOLVED note below; it is enabled on this machine as of 2026-09-16 via `enabledProviders: [codex]`.",
           "2026-09-16: 18.1.21 -> 18.2.1 via `omp update`, verified in-place at D:\\OMP\\omp.exe (sha256 FEE52652C7B0B90EB7716B3C6DA50AB4D90442505EEF1C5349C9428E8D966679, matching the updater-reported hash); the previous 18.1.21 binary was kept by the updater as omp.exe.1789534362039.11444.0.bak (sha256 61856ACAC3845C3CB8F12C8F6BFB7ECF30E10543AC0EBD69F6FDB404D23C45DA). Binary size 161.7 MB -> 211.7 MB, matching the 18.2.0 change to ship precompiled bytecode. Update requires closing running omp sessions first (Windows cannot replace a locked exe); no duplicate install was created outside D:\\OMP and no npm-global omp.cmd shim exists.",
           "RESOLVED 2026-09-16 — root cause found and fixed. The 2026-09-15 claim that OMP reads the user-global rules from %USERPROFILE%\\.codex\\AGENTS.md was recorded as \"verified via omp -p, reproduced the six section headings\", but that run happened from inside E:\\MachineContext and therefore observed the PROJECT file, not the user-global one. Re-tested properly from a scratch directory containing .git but no AGENTS.md, `omp -p` injected nothing, on 18.2.1 AND on 18.1.21 (controlled A/B swap of the saved .bak) — so it was never a regression from the upgrade. ROOT CAUSE (from the bundled source in omp.exe): the loader is `function Mll(e){ const o = g3(e); if (!o) return {items:[],warnings:[]}; ... }` and `function g3(e, t=false){ if (!t && !dl(\"codex\", e)) return null; return path.join(e.home, d8.codex.userBase); }`. The gate `dl(\"codex\", e)` is a per-provider opt-in check: it fails when the provider is in `disabledProviders`, passes when the provider registry marks it default-on (`X4s[s] !== true`), and otherwise passes only when the provider is in `enabledProviders` (or the registry set contains \"*\"/\"all\", or the call passes `explicitProviders`/`includeOptOutUserSources`). `codex` is a default-off (opt-in) context-source provider, and `omp config get enabledProviders` returned `[]`, so `g3` returned null and the whole Codex user-global source short-circuited — silently, with no warning. FIX APPLIED: `omp config set enabledProviders '[\"codex\"]'` (note the JSON-array argument form; a bare `codex` is rejected with \"Invalid array JSON\"). That persists a top-level `enabledProviders: [codex]` to %USERPROFILE%\\.omp\\agent\\config.yml (1046 -> 1074 bytes; pre-change copy saved at .local/backup-omp-config-2026-09-16.yml). VERIFIED after the fix with no overlay: from a scratch project with only .git, `omp -p` reports COUNT=6 LANG=chinese, i.e. the shared global ruleset (6 Chinese headings) — previously NONE. CORRECTED (2026-09-16, later the same session): an earlier version of this note claimed OMP surfaces the project-level AGENTS.md *instead of* the user-global one. That was WRONG and is retracted here. The claim came from a COUNT=6/LANG= test whose answer was careless; the verbatim-heading probe shows OMP loads BOTH additively - from E:\\MachineContext the visible headings are the 6 Chinese ones (global) AND the 6 English ones (project), while from a scratch directory with no AGENTS.md only the 6 Chinese ones appear. So OMP has the same semantics as Codex here: user-global personal rules plus project rules, both in context. METHOD LESSON: do not decide this class of question from a model's own count/summary; require verbatim enumeration, because a summary answer can be wrong in a way that looks like a clean A/B result. Enabling the `codex` provider also turns on the other Codex-compat sources (~/.codex/skills, extensions, commands, prompts, hooks, tools); those directories do not exist here (only the global AGENTS.md is present), so this had no other effect. NOTE: `provider` here means a context-source provider id, not an LLM provider - and such a provider being default-off means it must be opted into via enabledProviders, which is not the same as an opt-out provider.",
-          "2026-09-25: 18.2.1 -> 18.3.0 via the official `omp update` (`omp update --check` reported 18.3.0 as the stable latest; the canary channel was not used). Updated in place at D:\\OMP\\omp.exe, sha256 9BE13F13E3C11DCBA25DFCCFAD0F8C508F66FD8BC2F95A0F06F2964BE8D8F527 — matching the hash the updater itself verified and reported — 211,734,016 -> 233,652,736 bytes. Descriptive evidence for the upgrade mechanism itself: the run printed \"Verified sha256:...\" then \"Installing update...\", then \"Updated to 18.3.0 at D:\\OMP\\omp.exe\", i.e. it installs to the path derived from the running executable, which is why the standalone D:\\OMP layout is preserved. The updater kept the previous binary as omp.exe.1790270148771.31792.0.bak (updater-managed backup, left in place per the standing rule; the older omp.exe.1789534362039.11444.0.bak is also still there). No duplicate install outside D:\\OMP and no npm-global omp shim. %USERPROFILE%\\.omp\\agent\\config.yml and models.yml were byte-identical before and after the upgrade (so modelRoles.default is still google-antigravity/gemini-3.8-flash and the TokenRhythm provider is intact), and the Antigravity OAuth credentials were deliberately left untouched: no logout, no re-login, no agent.db deletion, no projectId change."
+          "2026-09-25: 18.2.1 -> 18.3.0 via the official `omp update` (`omp update --check` reported 18.3.0 as the stable latest; the canary channel was not used). Updated in place at D:\\OMP\\omp.exe, sha256 9BE13F13E3C11DCBA25DFCCFAD0F8C508F66FD8BC2F95A0F06F2964BE8D8F527 — matching the hash the updater itself verified and reported — 211,734,016 -> 233,652,736 bytes. Descriptive evidence for the upgrade mechanism itself: the run printed \"Verified sha256:...\" then \"Installing update...\", then \"Updated to 18.3.0 at D:\\OMP\\omp.exe\", i.e. it installs to the path derived from the running executable, which is why the standalone D:\\OMP layout is preserved. The updater kept the previous binary as omp.exe.1790270148771.31792.0.bak (updater-managed backup, left in place per the standing rule; the older omp.exe.1789534362039.11444.0.bak is also still there). No duplicate install outside D:\\OMP and no npm-global omp shim. %USERPROFILE%\\.omp\\agent\\config.yml and models.yml were byte-identical before and after the upgrade (so modelRoles.default is still google-antigravity/gemini-3.8-flash and the TokenRhythm provider is intact), and the Antigravity OAuth credentials were deliberately left untouched: no logout, no re-login, no agent.db deletion, no projectId change.",
+          "2026-09-30: 18.3.0 -> 18.4.4 via the official `omp update` (`omp update --check` reported 18.4.4 and the upstream GitHub latest non-prerelease release is v18.4.4, published 2026-09-29T19:35:17Z; canary not used). Installed in place at D:\\OMP\\omp.exe, sha256 5644E5D7C7CDDD851D79999DBC3B98363817178B33426B355A20FDCAD41A3F54 (232.1 MB) - matching the hash the updater itself verified. No running OMP session existed, so no lock had to be released. No duplicate install outside D:\\OMP.",
+          "CORRECTION to the 2026-09-25 note: the updater does NOT keep every previous binary. It retained only the immediately preceding one (omp.exe.1790773154535.34280.0.bak = the 18.3.0 build) and the older 18.2.1 backup omp.exe.1790270148771.31792.0.bak is gone. So D:\\OMP holds exactly one .bak after an update; treat that as updater behaviour, not as something to clean up.",
+          "2026-09-30 config preservation: %USERPROFILE%\\.omp\\agent\\config.yml (sha256 3C10B7BA075454D32BD0D10E8D2832A390E9281C42C5882599377DB8AABDC785, 1439B) and models.yml (sha256 2EF618342E8A3DCDCF1AD8A91C2DDBB614A02BC7104A6EB2469F4A88A229C092, 1202B) were byte-identical before and after the upgrade. `omp config get enabledProviders` still returns [\"codex\"] and modelRoles.default is still google-antigravity/gemini-3.8-flash; the TokenRhythm provider is intact; agent.db/.env/history.db were never read.",
+          "2026-09-30 global-rules live-load re-verified on 18.4.4 through the codex context-source provider: from a scratch repository containing only .git, `omp -p` enumerated the six user-global Chinese headings verbatim (沟通 / 任务执行 / 仓库与本机环境 / 测试与验证 / Git / 完成与汇报), i.e. %USERPROFILE%\\.codex\\AGENTS.md still reaches the model. Method per the 2026-09-16 lesson: verbatim enumeration, not a model-reported count."
         ]
       }
     },

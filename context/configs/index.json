@@ -13,7 +13,7 @@
     {
       "kind": "ai-config-profile",
       "path": "ai/dsh.json",
-      "source_state": "current",
+      "source_state": "stale",
       "tool": "dsh"
     },
     {
