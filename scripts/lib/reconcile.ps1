@@ -734,6 +734,43 @@ function Update-McPublishedStatus {
     return $Status
 }
 
+function Update-McStaleProfileMissingSource {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object]$Record,
+
+        [AllowNull()]
+        [object[]]$MissingSources
+    )
+
+    # A retained last-known profile must not keep claiming a source the collector
+    # just proved absent still exists. Only paths listed by the collector are
+    # demoted, so a source that was never probed (or that the collector could not
+    # confirm) keeps its recorded existence.
+    $sources = @($MissingSources | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_) } | ForEach-Object { [string]$_ })
+    if ($sources.Count -eq 0) { return $false }
+
+    $source = Get-McObjectPropertyOrNull -InputObject $Record -Name 'source'
+    if (-not (Test-McMapping -InputObject $source)) { return $false }
+    $files = @(Get-McObjectPropertyOrNull -InputObject $source -Name 'files')
+    if ($files.Count -eq 0) { return $false }
+
+    $changed = $false
+    foreach ($file in $files) {
+        if (-not (Test-McMapping -InputObject $file)) { continue }
+        $path = [string](Get-McObjectPropertyOrNull -InputObject $file -Name 'path')
+        if ([string]::IsNullOrWhiteSpace($path)) { continue }
+        if (-not ($sources -contains $path)) { continue }
+        if ($null -eq (Get-McObjectPropertyOrNull -InputObject $file -Name 'exists')) { continue }
+        if ([bool](Get-McObjectPropertyOrNull -InputObject $file -Name 'exists')) {
+            Set-McObjectProperty -InputObject $file -Name 'exists' -Value $false
+            $changed = $true
+        }
+    }
+    return $changed
+}
+
 function Merge-McConfigProfiles {
     [CmdletBinding()]
     param(
@@ -789,6 +826,7 @@ function Merge-McConfigProfiles {
         if (-not (Test-McMapping -InputObject $observed)) { continue }
         Set-McObjectProperty -InputObject $observed -Name 'source_state' -Value 'stale'
         Set-McObjectProperty -InputObject $observed -Name 'source_state_reason' -Value 'config source confirmed absent during scan'
+        [void](Update-McStaleProfileMissingSource -Record $existing -MissingSources @(Get-McObjectPropertyOrNull -InputObject $state -Name 'missing_sources'))
         Write-McJson -Path $path -InputObject $existing
     }
 

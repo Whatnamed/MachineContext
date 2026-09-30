@@ -1,0 +1,16 @@
+# Fixture: a second profile layer that declares no LLM config: entries are
+# either disabled or MCP servers, which MachineContext already owns in
+# configs/mcp.json. The MCP insert row carries an Authorization header whose
+# value must never be read by any collector.
+- id: web-fixture-ui
+  disabled: true
+
+- insert:
+    - id: mcp-fixture-remote
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: fixture-dsh-remote
+        transport: streamable-http
+        url: https://mcp.fixture.example.com/mcp
+        headers:
+          Authorization: !!js '`Bearer ${process.env.FIXTURE_MCP_TOKEN}`'

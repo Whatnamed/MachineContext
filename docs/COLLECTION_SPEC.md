@@ -378,6 +378,8 @@ Allowlist 条目按预期形状声明：标量/标量序列字段使用 `scalar-
 
 codex-cli 的 profile 只投影 `%USERPROFILE%\.codex\config.toml` 的顶层标量键（model、sandbox_mode、model_reasoning_effort、model_context_window、model_auto_compact_token_limit）。该文件由 Codex CLI 与 Codex desktop 共用（`CODEX_HOME` 指向同一目录），桌面端设置界面的修改会落在这里；`[mcp_servers.*]` 表只进 MCP inventory，`auth.json` 只登记存在性。AI 工具实体以**实际使用的组件**为准：qoder 实体代表桌面端 agent（HKCU 卸载项 + 安装目录验证，`curated` 记录使用语义）；安装器附带、用户不使用的捆绑组件（如 `qoderclicn` CLI）只以路径观察与 curated 说明记录，不作为独立实体。
 
+DSH 的 profile 源是 Cordis patch 层（与 MCP inventory 同一组文件、同一个层发现函数）：`%USERPROFILE%\.dsh\profiles\<profile>\cordis.patch.yml` 与 home 层 `%USERPROFILE%\.dsh\cordis.patch.yml`，按 bundle → profile → home → `--patch` 顺序合成。产品每次调用才选择 profile、不持久化 active profile，所以投影**按层分别保存**（`projection.layer_order` + 每层 `entries` / `unprojected_entry_ids`），不把它们合成为一个虚构的“当前配置”。`profiles\<profile>\cordis.yml` 只是被 patch 覆盖的空根，不是采集源；`settings.yaml` 已被产品废弃并改名 `settings.yaml.imported`，只登记 path/exists、永不重新解析。投影的 entry 白名单只有 `agent-default-model`（含 Cordis 新增的 `reasoningEffort`）与 `llm-*`；UI / 权限 / 统计类 entry 与 `insert` 块里的 MCP 行（`headers` 可能携带 Authorization）只记 id，值一律不读。
+
 Canonical module：`context/configs/`（index + 每工具一个 profile 文件 + `mcp.json`）。
 
 ### 值得投影的字段（按工具真实 schema 保存，不改造成抽象统一模型）
@@ -419,7 +421,7 @@ DSH 的 MCP 声明位于 Cordis loader patch 层：`%USERPROFILE%\.dsh\cordis.pa
 ### 刷新与删除
 
 - config profile 随 routine core scan 刷新（读取小文件，成本低）；
-- 解析失败 ≠ 源消失：projector/provider 失败时旧 profile 原样保留；只有**确认源文件不存在**时，reconciliation 将 last-known profile 标为 `observed.source_state: stale`（附 `source_state_reason`），不再静默充当“当前配置”；
+- 解析失败 ≠ 源消失：projector/provider 失败时旧 profile 原样保留；只有**确认源文件不存在**时，reconciliation 将 last-known profile 标为 `observed.source_state: stale`（附 `source_state_reason`），不再静默充当“当前配置”；同时按 collector 上报的 `missing_sources`（collector 实际探测并确认缺失的 normalized path）把这些条目在保留的 `source.files[]` 里降级为 `exists: false`，未探测到的文件保持原记录，`failed` 永不改动存在性；
 - 删除 profile 需要显式清理；fresh 投影写 `source_state: current`，index 登记每个模块的 `source_state`。
 
 ## Refresh policy

@@ -1,0 +1,4 @@
+# Fixture: the deprecated primary config with no Cordis patch layer at all.
+agent-default-model:
+  provider: stale-legacy-provider
+  model: stale-legacy-model

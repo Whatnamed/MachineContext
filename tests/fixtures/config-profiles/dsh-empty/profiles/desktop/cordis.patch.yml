@@ -1,0 +1,4 @@
+# Fixture: an empty profile layer. An existing patch layer is an official
+# source even when it declares nothing, so this must project a profile whose
+# layer contributes no entries instead of failing or reporting absence.
+[]

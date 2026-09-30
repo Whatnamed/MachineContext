@@ -1,0 +1,5 @@
+# Fixture: a well-formed profile layer alongside the malformed home layer.
+- id: agent-default-model
+  config:
+    provider: testrhythm
+    model: test-glm

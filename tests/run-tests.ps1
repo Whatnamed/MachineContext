@@ -1609,29 +1609,122 @@ Invoke-McTest -Name 'OMP fixture projection keeps source-native fields and env-n
     Assert-McEqual -Actual $first -Expected $second -Message 'OMP profile serialization must be deterministic'
 }
 
-Invoke-McTest -Name 'DSH fixture projection sanitizes URLs and credential env references' -Body {
-    $profile = Get-McDshConfigProfile -ConfigRoot (Join-Path $configFixtureRoot 'dsh')
+Invoke-McTest -Name 'DSH Cordis fixture projection composes patch layers without credentials' -Body {
+    $fixtureDsh = Join-Path $configFixtureRoot 'dsh'
+    $profile = Get-McDshConfigProfile -ConfigRoot $fixtureDsh
     Assert-McEqual -Actual $profile.id -Expected 'dsh-config' -Message 'DSH profile id'
-    Assert-McEqual -Actual ([string]$profile.observed.projection.'agent-default-model'.provider) -Expected 'testrhythm' -Message 'DSH default model provider projected'
-    $testrhythm = $profile.observed.projection.'llm-pi-ai'.providers.testrhythm
-    Assert-McEqual -Actual ([string]$testrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'DSH apiKeyEnv projected as env name'
-    Assert-McEqual -Actual ([string]$testrhythm.baseURL) -Expected 'https://tokenrhythm.example.com/v1' -Message 'DSH baseURL kept when clean'
-    Assert-McEqual -Actual (@($testrhythm.models).Count) -Expected 2 -Message 'DSH model sequence projected'
-    $firstDshModel = @($testrhythm.models)[0]
-    Assert-McEqual -Actual ([string]$firstDshModel.reasoningEfforts.max) -Expected 'max' -Message 'DSH reasoning effort mapping projected as strict scalars'
-    Assert-McEqual -Actual ([string]$firstDshModel.input[0]) -Expected 'text' -Message 'DSH model input sequence projected'
-    Assert-McEqual -Actual ([string](@($testrhythm.models)[1].input)) -Expected 'text' -Message 'DSH scalar model leaf projected'
-    $badholder = $profile.observed.projection.'llm-pi-ai'.providers.badholder
+    Assert-McEqual -Actual ([string]$profile.observed.source_state) -Expected 'current' -Message 'an existing Cordis patch layer is a current source'
+
+    $projection = $profile.observed.projection
+    Assert-McEqual -Actual (@($projection.layer_order) -join ',') -Expected 'bundle,profile,home,argv' -Message 'Cordis composition order recorded'
+    $layers = @($projection.layers)
+    Assert-McEqual -Actual $layers.Count -Expected 3 -Message 'desktop, web and home patch layers projected'
+    Assert-McEqual -Actual ([string]$layers[0].scope) -Expected 'desktop' -Message 'profile layers come before the home layer'
+    Assert-McEqual -Actual ([string]$layers[1].scope) -Expected 'web' -Message 'profile layers keep their own scope'
+    Assert-McEqual -Actual ([string]$layers[2].scope) -Expected 'home' -Message 'the home layer is the last on-disk source'
+    Assert-McEqual -Actual ([string]$layers[2].layer) -Expected 'home' -Message 'layer kind recorded'
+
+    $desktop = $layers[0]
+    $homeLayer = $layers[2]
+    Assert-McEqual -Actual ([string]$desktop.entries.'agent-default-model'.provider) -Expected 'testrhythm' -Message 'profile layer default provider projected'
+    Assert-McEqual -Actual ([string]$desktop.entries.'agent-default-model'.model) -Expected 'test-glm' -Message 'profile layer default model projected'
+    Assert-McEqual -Actual ([string]$desktop.entries.'agent-default-model'.reasoningEffort) -Expected 'max' -Message 'Cordis reasoningEffort default projected'
+    Assert-McEqual -Actual ([string]$homeLayer.entries.'agent-default-model'.model) -Expected 'test-mini' -Message 'the overriding home layer keeps its own value'
+    Assert-McEqual -Actual ([string]$homeLayer.entries.'agent-default-model'.provider) -Expected 'testrhythm' -Message 'the home override is projected with the same allowlist'
+    Assert-McTrue -Condition (@($homeLayer.unprojected_entry_ids) -contains 'ui-home-noise') -Message 'a home-layer UI entry is recorded by id only'
+
+    $testrhythm = $desktop.entries.'llm-pi-ai'.providers.testrhythm
+    Assert-McEqual -Actual ([string]$testrhythm.credentialEnvName) -Expected 'TESTFIXTURE_API_KEY' -Message 'apiKeyEnv projected as env name only'
+    Assert-McEqual -Actual ([string]$testrhythm.baseURL) -Expected 'https://tokenrhythm.example.com/v1' -Message 'clean baseURL kept'
+    Assert-McEqual -Actual ([string]$testrhythm.api) -Expected 'openai-completions' -Message 'provider api kind projected'
+    Assert-McEqual -Actual ([string]$testrhythm.defaultInput[1]) -Expected 'image' -Message 'provider defaultInput projected'
+    Assert-McEqual -Actual ([int]$testrhythm.defaultMaxTokens) -Expected 131072 -Message 'provider defaultMaxTokens projected'
+    $models = @($testrhythm.models)
+    Assert-McEqual -Actual $models.Count -Expected 2 -Message 'model sequence projected'
+    Assert-McEqual -Actual ([string]$models[0].reasoningEfforts.max) -Expected 'max' -Message 'reasoning efforts projected as strict scalars'
+    Assert-McEqual -Actual ([string]$models[0].input[0]) -Expected 'text' -Message 'model input modality sequence projected'
+    Assert-McEqual -Actual ([int]$models[0].contextWindow) -Expected 1050000 -Message 'model context window projected'
+    Assert-McEqual -Actual ([string](@($models[1].input))) -Expected 'text' -Message 'scalar model input leaf projected'
+    Assert-McEqual -Actual ([string]$desktop.entries.'llm-deepseek'.baseURL) -Expected 'https://deepseek-mirror.example.com/v1' -Message 'provider-shaped llm entry projected'
+    Assert-McEqual -Actual ([string](@($desktop.entries.'llm-deepseek'.models)[0].id)) -Expected 'test-deepseek' -Message 'provider-shaped llm model list projected'
+    Assert-McEqual -Actual ([bool]$desktop.entries.'llm-retired'.disabled) -Expected $true -Message 'a disabled llm entry stays recorded as disabled'
+
+    $badholder = $desktop.entries.'llm-pi-ai'.providers.badholder
     Assert-McEqual -Actual ([string]$badholder.baseURL) -Expected 'https://leaky.example.com/v1' -Message 'credential-bearing URL must be sanitized'
-    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $badholder -Name 'credentialEnvName')) -Message 'raw credential value must not become env name'
-    Assert-McEqual -Actual ([string]$profile.observed.projection.'llm-deepseek'.baseURL) -Expected 'https://deepseek-mirror.example.com/v1' -Message 'provider-shaped llm section projected'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $badholder -Name 'credentialEnvName')) -Message 'raw credential value must not become an env name'
+    $inlinekey = $desktop.entries.'llm-pi-ai'.providers.inlinekey
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $inlinekey -Name 'credentialEnvName')) -Message 'an inline apiKey must not be projected under any name'
+    Assert-McEqual -Actual ([string]$inlinekey.baseURL) -Expected 'https://inline.example.com/v1' -Message 'a clean baseURL survives its provider secret being dropped'
+
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testrhythm -Name 'headers')) -Message 'unknown provider fields must be dropped by the per-field allowlist'
+    Assert-McTrue -Condition (@($projection.unprojected_keys) -contains 'dsh.desktop.llm-pi-ai.providers.testrhythm.headers') -Message 'dropped unknown fields must be recorded by path'
+    Assert-McTrue -Condition (@($desktop.unprojected_entry_ids) -contains 'permission') -Message 'non-LLM entry ids are recorded instead of silently vanishing'
+    Assert-McTrue -Condition (@($desktop.unprojected_entry_ids) -contains 'ui-theme') -Message 'UI entry ids stay unprojected'
+    Assert-McTrue -Condition (@($layers[1].unprojected_entry_ids) -contains 'mcp-fixture-remote') -Message 'MCP insert rows are recorded by id only, their config is owned by mcp.json'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $layers[1] -Name 'entries')) -Message 'a layer that projects no entry records no entries'
+
+    Assert-McEqual -Actual ([string](@($projection.agent_presets)[0].name)) -Expected 'fixture-pristine' -Message 'agent preset names survive the Cordis migration'
     Assert-McTrue -Condition (@($profile.observed.credential_env_names) -contains 'TESTFIXTURE_API_KEY') -Message 'DSH credential env names collected'
+
+    $evidence = @($profile.observed.evidence)
+    Assert-McEqual -Actual $evidence.Count -Expected 2 -Message 'every contributing layer gets its own evidence row'
+    Assert-McEqual -Actual ([string]$evidence[0].source_path) -Expected (Join-Path $fixtureDsh 'profiles\desktop\cordis.patch.yml') -Message 'evidence names the profile layer'
+    Assert-McEqual -Actual ([string]$evidence[1].source_path) -Expected (Join-Path $fixtureDsh 'cordis.patch.yml') -Message 'evidence names the home layer'
+
+    $filePaths = @($profile.source.files | ForEach-Object { [string]$_.path })
+    Assert-McTrue -Condition ($filePaths -contains (Join-Path $fixtureDsh 'cordis.patch.yml')) -Message 'the home patch layer is an authoritative source'
+    Assert-McTrue -Condition ($filePaths -contains (Join-Path $fixtureDsh 'profiles\desktop\cordis.patch.yml')) -Message 'the profile patch layer is an authoritative source'
+    Assert-McTrue -Condition ($filePaths -contains (Join-Path $fixtureDsh 'profiles\web\cordis.patch.yml')) -Message 'every participating layer is listed, not only one root'
+    Assert-McTrue -Condition ($filePaths -notcontains (Join-Path $fixtureDsh 'profiles\desktop\cordis.yml')) -Message 'the empty cordis.yml root is never a config source'
+    Assert-McTrue -Condition ($filePaths -notcontains (Join-Path $fixtureDsh 'settings.yaml')) -Message 'the deprecated settings.yaml is not a source any more'
+    Assert-McEqual -Actual @($profile.source.files | Where-Object { [string]$_.path -like '*emptyprofile*' }).Count -Expected 0 -Message 'a profile root without a patch layer contributes no source'
+    $imported = @($profile.source.files | Where-Object { [string]$_.role -eq 'imported-legacy-config' })
+    Assert-McEqual -Actual $imported.Count -Expected 1 -Message 'the imported legacy snapshot is recorded as historical evidence only'
+    Assert-McEqual -Actual ([bool]$imported[0].exists) -Expected $true -Message 'the imported legacy file exists'
+    Assert-McEqual -Actual @($profile.source.files | Where-Object { [string]$_.role -eq 'credential-file' }).Count -Expected 1 -Message 'the credential file is recorded by path only'
+
     $profileText = ConvertTo-McJsonText -InputObject $profile
-    Assert-McTrue -Condition ($profileText -notmatch 'fake-refresh-token') -Message 'DSH projection must not contain the fake credential value'
-    Assert-McTrue -Condition ($profileText -notmatch 'user:pass') -Message 'DSH projection must not contain userinfo'
-    Assert-McEqual -Actual ([string]$profile.observed.projection.'agent-presets'.default) -Expected 'pristine' -Message 'DSH agent preset default projected'
-    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $testrhythm -Name 'headers')) -Message 'unknown DSH provider fields must be dropped by the per-field allowlist'
-    Assert-McTrue -Condition (@($profile.observed.projection.unprojected_keys) -contains 'dsh.llm-pi-ai.providers.testrhythm.headers') -Message 'DSH dropped unknown provider fields must be recorded by path'
+    foreach ($secret in @(
+            'fake-refresh-token', 'sk-test-do-not-publish', 'sk-legacy-import-do-not-publish', 'user:pass',
+            'fixture-credentials-file-value', 'trace-value-not-allowlisted', 'FIXTURE_MCP_TOKEN', 'Bearer',
+            'mcp.fixture.example.com', 'fixture-dsh-remote', 'legacy-import-provider', 'stale-legacy-provider',
+            'legacy-model', 'stale-legacy-model', 'home-only-ui-entry', 'workspace-write', 'sandbox'
+        )) {
+        Assert-McTrue -Condition ($profileText -notmatch [regex]::Escape($secret)) -Message ('the projection must not contain ' + $secret)
+    }
+    Assert-McEqual -Actual @(Get-McSensitiveConfigKeyFindings -InputObject $profile).Count -Expected 0 -Message 'no credential-named key may be published'
+}
+
+Invoke-McTest -Name 'DSH empty Cordis layers stay an official source instead of an absence' -Body {
+    $profile = Get-McDshConfigProfile -ConfigRoot (Join-Path $configFixtureRoot 'dsh-empty')
+    Assert-McTrue -Condition ($null -ne $profile) -Message 'an existing patch layer that declares nothing is still a source'
+    Assert-McEqual -Actual ([string]$profile.observed.source_state) -Expected 'current' -Message 'an empty official layer keeps the profile current'
+    $layers = @($profile.observed.projection.layers)
+    Assert-McEqual -Actual $layers.Count -Expected 2 -Message 'both empty layers are recorded'
+    Assert-McEqual -Actual ([string]$layers[0].scope) -Expected 'desktop' -Message 'the profile layer is recorded'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $layers[0] -Name 'entries')) -Message 'an empty layer projects no entries'
+    Assert-McEqual -Actual @($profile.observed.evidence).Count -Expected 0 -Message 'a layer that projects nothing has no evidence row'
+}
+
+Invoke-McTest -Name 'DSH legacy settings files alone never produce a current config profile' -Body {
+    $root = Join-Path $configFixtureRoot 'dsh-missing'
+    $profile = Get-McDshConfigProfile -ConfigRoot $root
+    Assert-McTrue -Condition ($null -eq $profile) -Message 'a deprecated settings.yaml must not be promoted as current configuration'
+    $layers = @(Get-McDshCordisPatchLayers -ConfigRoot $root)
+    Assert-McEqual -Actual $layers.Count -Expected 2 -Message 'the collector probes the profile layer and the home layer'
+    Assert-McEqual -Actual @($layers | Where-Object { $_.exists }).Count -Expected 0 -Message 'no patch layer exists in this fixture'
+    $missing = @($layers | Where-Object { -not $_.exists } | ForEach-Object { [string]$_.normalized_path })
+    Assert-McTrue -Condition ($missing -contains (Join-Path $root 'cordis.patch.yml')) -Message 'the missing home layer is reported by path'
+    Assert-McTrue -Condition ($missing -contains (Join-Path $root 'profiles\desktop\cordis.patch.yml')) -Message 'the missing profile layer is reported by path'
+}
+
+Invoke-McTest -Name 'DSH malformed Cordis layer fails instead of reporting source absence' -Body {
+    $root = Join-Path $configFixtureRoot 'dsh-malformed'
+    $threw = $false
+    try { [void](Get-McDshConfigProfile -ConfigRoot $root) } catch { $threw = $true }
+    Assert-McTrue -Condition $threw -Message 'a parse failure must surface as a provider failure, not as a partial profile'
+    $layers = @(Get-McDshCordisPatchLayers -ConfigRoot $root)
+    Assert-McEqual -Actual @($layers | Where-Object { $_.exists }).Count -Expected 2 -Message 'a malformed layer is still a present source, so the state is failed and not source-missing'
 }
 
 Invoke-McTest -Name 'ZCode fixture projection drops apiKey values and keeps model semantics' -Body {
@@ -1933,6 +2026,38 @@ Invoke-McTest -Name 'config profile reconciliation writes index and preserves cu
     Remove-Item -LiteralPath $tempRoot -Recurse -Force
 }
 
+Invoke-McTest -Name 'config profile observations name the sources they proved absent' -Body {
+    $observations = Get-McConfigProfileObservations -RepoRoot $RepoRoot `
+        -OmpAgentRoot (Join-Path $configFixtureRoot 'dsh-missing') `
+        -DshConfigRoot (Join-Path $configFixtureRoot 'dsh-missing') `
+        -ZcodeAppDataRoot (Join-Path $configFixtureRoot 'dsh-missing') `
+        -ZcodeUserProfileRoot $null `
+        -OpencodexConfigRoot (Join-Path $configFixtureRoot 'dsh-missing') `
+        -QoderSettingsPath (Join-Path $configFixtureRoot 'dsh-missing\settings.json') `
+        -ClaudeConfigPath (Join-Path $configFixtureRoot 'dsh-missing\claude.json') `
+        -GeminiSettingsPath (Join-Path $configFixtureRoot 'dsh-missing\gemini-settings.json') `
+        -CodexConfigPath (Join-Path $configFixtureRoot 'dsh-missing\config.toml') `
+        -CursorMcpPath (Join-Path $configFixtureRoot 'dsh-missing\cursor-mcp.json') `
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'dsh-missing\mcp_config.json')
+
+    Assert-McEqual -Actual $observations.health -Expected 'success' -Message 'a confirmed source absence is an observation, not a provider failure'
+    Assert-McEqual -Actual @($observations.value.profiles).Count -Expected 0 -Message 'no profile is projected from absent sources'
+    $states = @($observations.value.profile_states)
+    Assert-McEqual -Actual $states.Count -Expected 6 -Message 'every projector reports its source state'
+    foreach ($state in $states) {
+        Assert-McEqual -Actual ([string]$state.state) -Expected 'source-missing' -Message ('confirmed absence reported for ' + [string]$state.tool)
+        Assert-McTrue -Condition (@(Get-McObjectPropertyOrNull -InputObject $state -Name 'missing_sources').Count -gt 0) -Message ('the missing sources must be named for ' + [string]$state.tool)
+    }
+    $dshState = @($states | Where-Object { [string]$_.tool -eq 'dsh' })[0]
+    $dshMissing = @($dshState.missing_sources | ForEach-Object { [string]$_ })
+    Assert-McTrue -Condition ($dshMissing -contains (Join-Path $configFixtureRoot 'dsh-missing\cordis.patch.yml')) -Message 'the DSH home patch layer is named as confirmed absent'
+    Assert-McTrue -Condition ($dshMissing -contains (Join-Path $configFixtureRoot 'dsh-missing\profiles\desktop\cordis.patch.yml')) -Message 'the DSH profile patch layer is named as confirmed absent'
+    $ompState = @($states | Where-Object { [string]$_.tool -eq 'omp' })[0]
+    Assert-McTrue -Condition (@($ompState.missing_sources | ForEach-Object { [string]$_ }) -contains (Join-Path $configFixtureRoot 'dsh-missing\models.yml')) -Message 'OMP names every source file it probed'
+    $payloadText = ConvertTo-McJsonText -InputObject $states
+    Assert-McTrue -Condition ($payloadText -notmatch [regex]::Escape($env:USERPROFILE)) -Message 'source state reporting must never leak a real machine path'
+}
+
 Invoke-McTest -Name 'config reconciliation marks last-known profiles stale when sources are confirmed absent' -Body {
     $tempRoot = Join-Path $RepoRoot '.local\test-config-stale'
     $aiRoot = Join-Path $tempRoot 'configs\ai'
@@ -1942,23 +2067,85 @@ Invoke-McTest -Name 'config reconciliation marks last-known profiles stale when 
         id             = 'omp-config'
         kind           = 'ai-config-profile'
         tool           = 'omp'
-        observed       = [pscustomobject][ordered]@{ value_basis = 'configured-local'; source_state = 'current' }
+        source         = [pscustomobject][ordered]@{
+            config_root = '%USERPROFILE%\.omp\agent'
+            files       = @(
+                [pscustomobject][ordered]@{ path = '%USERPROFILE%\.omp\agent\config.yml'; format = 'yaml'; exists = $true; role = 'config' }
+                [pscustomobject][ordered]@{ path = '%USERPROFILE%\.omp\agent\models.yml'; format = 'yaml'; exists = $true; role = 'model-catalog' }
+                [pscustomobject][ordered]@{ path = '%USERPROFILE%\.omp\agent\agent.db'; format = 'sqlite'; exists = $true; role = 'auth-state-store' }
+            )
+        }
+        observed       = [pscustomobject][ordered]@{
+            value_basis    = 'configured-local'
+            source_state   = 'current'
+            projection     = [pscustomobject][ordered]@{ config = [pscustomobject][ordered]@{ shellPath = 'D:\Git\Git\bin\bash.exe' } }
+        }
         curated        = [pscustomobject][ordered]@{ notes = @('keep me') }
     }
     Write-McJson -Path (Join-Path $aiRoot 'omp.json') -InputObject $existing
 
-    $missingState = [pscustomobject][ordered]@{ tool = 'omp'; state = 'source-missing' }
+    $missingState = [pscustomobject][ordered]@{
+        tool            = 'omp'
+        state           = 'source-missing'
+        missing_sources = @('%USERPROFILE%\.omp\agent\config.yml', '%USERPROFILE%\.omp\agent\models.yml', '%USERPROFILE%\.omp\agent\history.db')
+    }
     Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @() -ProfileStates @($missingState) -McpInventory $null
 
     $written = Read-McJson -Path (Join-Path $aiRoot 'omp.json')
     Assert-McEqual -Actual ([string]$written.observed.source_state) -Expected 'stale' -Message 'confirmed source absence must mark the last-known profile stale'
     Assert-McEqual -Actual ([string]$written.observed.source_state_reason) -Expected 'config source confirmed absent during scan' -Message 'stale profiles must record the reason'
     Assert-McEqual -Actual ([string]$written.curated.notes[0]) -Expected 'keep me' -Message 'stale marking must preserve curated intent'
+    Assert-McEqual -Actual ([string]$written.observed.projection.config.shellPath) -Expected 'D:\Git\Git\bin\bash.exe' -Message 'stale marking must preserve the last-known projection'
+    $files = @($written.source.files)
+    Assert-McEqual -Actual ([bool](@($files | Where-Object { $_.path -eq '%USERPROFILE%\.omp\agent\config.yml' })[0].exists)) -Expected $false -Message 'a source the collector proved absent must not keep claiming existence'
+    Assert-McEqual -Actual ([bool](@($files | Where-Object { $_.path -eq '%USERPROFILE%\.omp\agent\models.yml' })[0].exists)) -Expected $false -Message 'every confirmed source is demoted'
+    Assert-McEqual -Actual ([bool](@($files | Where-Object { $_.path -eq '%USERPROFILE%\.omp\agent\agent.db' })[0].exists)) -Expected $true -Message 'a source that was not reported missing keeps its recorded existence'
+    Assert-McEqual -Actual @($files | Where-Object { $_.path -eq '%USERPROFILE%\.omp\agent\history.db' }).Count -Expected 0 -Message 'a reported missing path the record never listed must not be invented'
 
     $first = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
     Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @() -ProfileStates @($missingState) -McpInventory $null
     $second = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'omp.json'))
     Assert-McEqual -Actual $second -Expected $first -Message 'stale marking must be byte-idempotent across runs'
+
+    # A parser or provider failure must leave the last-known record untouched.
+    $failedRoot = Join-Path $RepoRoot '.local\test-config-failed'
+    $failedAiRoot = Join-Path $failedRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $failedAiRoot -Force)
+    Write-McJson -Path (Join-Path $failedAiRoot 'omp.json') -InputObject $existing
+    $beforeFailure = [System.IO.File]::ReadAllText((Join-Path $failedAiRoot 'omp.json'))
+    Merge-McConfigProfiles -ContextRoot $failedRoot -Profiles @() -ProfileStates @(
+        [pscustomobject][ordered]@{ tool = 'omp'; state = 'failed'; missing_sources = @('%USERPROFILE%\.omp\agent\config.yml') }
+    ) -McpInventory $null
+    $afterFailure = [System.IO.File]::ReadAllText((Join-Path $failedAiRoot 'omp.json'))
+    Assert-McEqual -Actual $afterFailure -Expected $beforeFailure -Message 'a failed projection must leave the last-known record byte-identical'
+    Assert-McEqual -Actual ([string]((Read-McJson -Path (Join-Path $failedAiRoot 'omp.json')).observed.source_state)) -Expected 'current' -Message 'a parser failure must stay distinguishable from a confirmed absence'
+    Assert-McEqual -Actual ([bool]((Read-McJson -Path (Join-Path $failedAiRoot 'omp.json')).source.files[0].exists)) -Expected $true -Message 'a parser failure must never demote last-known source existence'
+    Remove-Item -LiteralPath $failedRoot -Recurse -Force
+
+    # An older payload that only names the tool keeps the previous stale-only behaviour.
+    $legacyRoot = Join-Path $RepoRoot '.local\test-config-legacy-state'
+    $legacyAiRoot = Join-Path $legacyRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $legacyAiRoot -Force)
+    Write-McJson -Path (Join-Path $legacyAiRoot 'omp.json') -InputObject $existing
+    Merge-McConfigProfiles -ContextRoot $legacyRoot -Profiles @() -ProfileStates @(
+        [pscustomobject][ordered]@{ tool = 'omp'; state = 'source-missing' }
+    ) -McpInventory $null
+    $legacyWritten = Read-McJson -Path (Join-Path $legacyAiRoot 'omp.json')
+    Assert-McEqual -Actual ([string]$legacyWritten.observed.source_state) -Expected 'stale' -Message 'a source-missing state without metadata still marks the profile stale'
+    Assert-McEqual -Actual ([bool]$legacyWritten.source.files[0].exists) -Expected $true -Message 'without named sources nothing may be demoted'
+    Remove-Item -LiteralPath $legacyRoot -Recurse -Force
+
+    # A fresh record for the same tool is never demoted by a stale state.
+    $freshRoot = Join-Path $RepoRoot '.local\test-config-fresh-state'
+    $freshAiRoot = Join-Path $freshRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $freshAiRoot -Force)
+    $freshProfile = Copy-McJsonObject -InputObject $existing
+    Set-McObjectProperty -InputObject $freshProfile.observed -Name 'source_state' -Value 'current'
+    Merge-McConfigProfiles -ContextRoot $freshRoot -Profiles @($freshProfile) -ProfileStates @($missingState) -McpInventory $null
+    $freshWritten = Read-McJson -Path (Join-Path $freshAiRoot 'omp.json')
+    Assert-McEqual -Actual ([string]$freshWritten.observed.source_state) -Expected 'current' -Message 'a freshly projected profile wins over a stale state'
+    Assert-McEqual -Actual ([bool]$freshWritten.source.files[0].exists) -Expected $true -Message 'a fresh projection must not be demoted by a stale state for the same tool'
+    Remove-Item -LiteralPath $freshRoot -Recurse -Force
 
     $index = Read-McJson -Path (Join-Path $tempRoot 'configs\index.json')
     $ompModule = @($index.modules | Where-Object { $_.path -eq 'ai/omp.json' })[0]

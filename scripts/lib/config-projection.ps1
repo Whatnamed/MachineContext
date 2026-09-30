@@ -802,6 +802,32 @@ function Test-McSafeMcpArgument {
     return $true
 }
 
+function Get-McConfigSourceProbe {
+    [CmdletBinding()]
+    param(
+        [AllowNull()]
+        [object[]]$Paths
+    )
+
+    # Presence probe for the sources a projector is built on. The returned
+    # records let a collector report exactly which paths it checked and found
+    # absent, so reconciliation can demote only those and never guesses a path
+    # per tool. A candidate without a directory part can only come from an
+    # unset config root, so it is not a source and is skipped.
+    $records = [System.Collections.Generic.List[object]]::new()
+    foreach ($path in @($Paths)) {
+        $text = [string]$path
+        if ([string]::IsNullOrWhiteSpace($text)) { continue }
+        if ([string]::IsNullOrWhiteSpace([System.IO.Path]::GetDirectoryName($text))) { continue }
+        [void]$records.Add([pscustomobject][ordered]@{
+            path            = $text
+            normalized_path = (ConvertTo-McNormalizedPath -Path $text)
+            exists          = [bool](Test-Path -LiteralPath $text -ErrorAction SilentlyContinue)
+        })
+    }
+    return @($records)
+}
+
 function New-McConfigSourceFileRecord {
     [CmdletBinding()]
     param(

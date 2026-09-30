@@ -1,0 +1,5 @@
+# Fixture: a home patch layer the YAML subset parser must reject (tab
+# indentation). A parse failure must never be reported as source absence.
+- id: agent-default-model
+	config:
+		provider: malformed-fixture-provider

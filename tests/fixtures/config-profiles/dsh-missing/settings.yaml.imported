@@ -1,0 +1,4 @@
+# Fixture: the imported legacy snapshot next to it.
+agent-default-model:
+  provider: legacy-import-provider
+  model: legacy-import-model

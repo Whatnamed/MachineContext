@@ -121,34 +121,82 @@ function Get-McOmpConfigProfile {
         -WireVerification 'not-wire-verified' -Evidence $evidence)
 }
 
+function Get-McDshCordisPatchLayers {
+    [CmdletBinding()]
+    param(
+        [string]$ConfigRoot = (Join-Path $env:USERPROFILE '.dsh')
+    )
+
+    # DSH composes its Cordis entry tree from patch layers in this order: the
+    # bundled profile defaults, then the selected profile's cordis.patch.yml,
+    # then the home-level $DSH_HOME/cordis.patch.yml, then any --patch overlay;
+    # a later layer overrides entries with the same id from earlier ones. The
+    # product selects a profile per invocation and persists no active profile,
+    # so every existing layer is reported and the caller keeps them in
+    # composition order. A profile's cordis.yml is only the empty root the
+    # patches overlay ("Edit cordis.patch.yml, not this file"), so it is never a
+    # config source here. Directories under profiles/ that carry neither a Cordis
+    # root nor a patch layer (the shared profiles\node_modules install tree) are
+    # not profiles and are skipped.
+    $layers = [System.Collections.Generic.List[object]]::new()
+    if ([string]::IsNullOrWhiteSpace($ConfigRoot)) { return @($layers) }
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    $profilesRoot = Join-Path $ConfigRoot 'profiles'
+    foreach ($profileDir in @(Get-ChildItem -LiteralPath $profilesRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name)) {
+        $profilePatch = Join-Path $profileDir.FullName 'cordis.patch.yml'
+        $hasCordisRoot = Test-Path -LiteralPath (Join-Path $profileDir.FullName 'cordis.yml') -PathType Leaf
+        if (-not $hasCordisRoot -and -not (Test-Path -LiteralPath $profilePatch -PathType Leaf)) { continue }
+        [void]$candidates.Add([pscustomobject]@{ scope = [string]$profileDir.Name; layer = 'profile'; path = $profilePatch })
+    }
+    [void]$candidates.Add([pscustomobject]@{ scope = 'home'; layer = 'home'; path = (Join-Path $ConfigRoot 'cordis.patch.yml') })
+
+    foreach ($candidate in $candidates) {
+        $probe = @(Get-McConfigSourceProbe -Paths @($candidate.path))[0]
+        if ($null -eq $probe) { continue }
+        [void]$layers.Add([pscustomobject][ordered]@{
+            scope           = $candidate.scope
+            layer           = $candidate.layer
+            path            = $probe.path
+            normalized_path = $probe.normalized_path
+            exists          = $probe.exists
+        })
+    }
+    return @($layers)
+}
+
 function Get-McDshConfigProfile {
     [CmdletBinding()]
     param(
         [string]$ConfigRoot = (Join-Path $env:USERPROFILE '.dsh')
     )
 
-    $settingsYaml = Join-Path $ConfigRoot 'settings.yaml'
-    if (-not (Test-Path -LiteralPath $settingsYaml -PathType Leaf)) { return $null }
+    $layers = @(Get-McDshCordisPatchLayers -ConfigRoot $ConfigRoot | Where-Object { $_.exists })
+    if ($layers.Count -eq 0) { return $null }
 
     $redactions = [System.Collections.Generic.List[object]]::new()
     $envNames = [System.Collections.Generic.List[string]]::new()
     $unprojected = [System.Collections.Generic.List[string]]::new()
-    $presetsDir = Join-Path $ConfigRoot '.agent-presets'
-    $files = @(
-        New-McConfigSourceFileRecord -Path $settingsYaml -Format yaml -Role config
-        New-McConfigSourceFileRecord -Path (Join-Path $ConfigRoot '.credentials.yaml') -Format yaml -Role credential-file
-        New-McConfigSourceFileRecord -Path $presetsDir -Format other -Role agent-preset-directory
-    )
+    $files = [System.Collections.Generic.List[object]]::new()
+    foreach ($layer in $layers) {
+        [void]$files.Add((New-McConfigSourceFileRecord -Path $layer.path -Format yaml -Role cordis-patch-layer))
+    }
+    [void]$files.Add((New-McConfigSourceFileRecord -Path (Join-Path $ConfigRoot '.credentials.yaml') -Format yaml -Role credential-file))
+    [void]$files.Add((New-McConfigSourceFileRecord -Path (Join-Path $ConfigRoot '.agent-presets') -Format other -Role agent-preset-directory))
+    # DSH renames the legacy settings.yaml to settings.yaml.imported once it has
+    # been folded into the Cordis layers. It is recorded as historical evidence
+    # only; this projector never reads it, so an imported snapshot can never be
+    # published as current configuration.
+    [void]$files.Add((New-McConfigSourceFileRecord -Path (Join-Path $ConfigRoot 'settings.yaml.imported') -Format yaml -Role imported-legacy-config))
 
-    $settings = Read-McConfigYaml -Path $settingsYaml
-    if ($null -eq $settings) { return $null }
-    $projection = [ordered]@{}
-    $evidence = [System.Collections.Generic.List[object]]::new()
-    $projectedSections = [System.Collections.Generic.List[string]]::new()
-
+    # The migrated sections keep their settings.yaml names as Cordis entry ids,
+    # and each entry's config subtree keeps the old field shape, so the allowlists
+    # below are the settings.yaml ones plus the reasoningEffort default the Cordis
+    # agent-default-model entry now carries.
     $defaultModelAllowlist = [ordered]@{
-        provider = 'scalar-leaf'
-        model    = 'scalar-leaf'
+        provider        = 'scalar-leaf'
+        model           = 'scalar-leaf'
+        reasoningEffort = 'scalar-leaf'
     }
     $modelAllowlist = [ordered]@{
         id               = 'scalar-leaf'
@@ -170,65 +218,120 @@ function Get-McDshConfigProfile {
         models           = $modelAllowlist
     }
 
-    foreach ($section in (Get-McPropertyEntries -InputObject $settings)) {
-        $sectionName = [string]$section.Name
-        $sectionPath = "dsh.{0}" -f $sectionName
-        if ($sectionName -eq 'agent-default-model') {
-            $sectionProjection = ConvertTo-McAllowlistedProjection -Value $section.Value -Allowlist $defaultModelAllowlist -Path $sectionPath -Redactions $Redactions
-            if (@(Get-McPropertyEntries -InputObject $sectionProjection).Count -gt 0) {
-                $projection[$sectionName] = $sectionProjection
-                [void]$projectedSections.Add($sectionName)
+    $projection = [ordered]@{}
+    $layerRecords = [System.Collections.Generic.List[object]]::new()
+    $evidence = [System.Collections.Generic.List[object]]::new()
+
+    foreach ($layer in $layers) {
+        $layerPath = 'dsh.{0}' -f $layer.scope
+        $entriesProjection = [ordered]@{}
+        $projectedIds = [System.Collections.Generic.List[string]]::new()
+        $unprojectedIds = [System.Collections.Generic.List[string]]::new()
+        $entryIndex = 0
+
+        foreach ($patchEntry in @(Read-McConfigYaml -Path $layer.path)) {
+            $rows = [System.Collections.Generic.List[object]]::new()
+            if ($null -eq $patchEntry) { $entryIndex++; continue }
+            if ($null -ne (Get-McCollectionProperty -InputObject $patchEntry -Name 'insert')) {
+                # An insert block adds entries; each row carries its own id.
+                foreach ($row in @(Get-McCollectionProperty -InputObject $patchEntry -Name 'insert')) { [void]$rows.Add($row) }
             }
-            continue
-        }
-        if ($sectionName -eq 'agent-presets') {
-            # Preset roles map names to scalar values; the strict scalar
-            # collection keeps nested objects out without an empty allowlist.
-            $sectionProjection = ConvertTo-McScalarCollectionValue -Value $section.Value -Path $sectionPath -Redactions $Redactions
-            if (@(Get-McPropertyEntries -InputObject $sectionProjection).Count -gt 0) {
-                $projection[$sectionName] = $sectionProjection
-                [void]$projectedSections.Add($sectionName)
+            elseif (Test-McMapping -InputObject $patchEntry) {
+                [void]$rows.Add($patchEntry)
             }
-            continue
-        }
-        if (-not $sectionName.StartsWith('llm-')) { continue }
-        $sectionProjection = $null
-        $providers = Get-McCollectionProperty -InputObject $section.Value -Name 'providers'
-        if ($null -ne $providers) {
-            $providersProjection = [ordered]@{}
-            foreach ($providerEntry in (Get-McPropertyEntries -InputObject $providers)) {
-                $providerProjection = ConvertTo-McAllowlistedProjection -Value $providerEntry.Value -Allowlist $providerAllowlist -Path ("{0}.providers.{1}" -f $sectionPath, $providerEntry.Name) -Redactions $Redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
-                if ($null -ne $providerProjection) { $providersProjection[[string]$providerEntry.Name] = $providerProjection }
+            else {
+                Add-McProjectionRedaction -Redactions $redactions -Path ("{0}[{1}]" -f $layerPath, $entryIndex) -Reason 'unsupported-value'
+                $entryIndex++
+                continue
             }
-            if (@(Get-McPropertyEntries -InputObject $providersProjection).Count -gt 0) {
-                $sectionProjection = [ordered]@{ providers = $providersProjection }
+            $entryIndex++
+
+            foreach ($row in $rows) {
+                if (-not (Test-McMapping -InputObject $row)) {
+                    Add-McProjectionRedaction -Redactions $redactions -Path ("{0}[{1}]" -f $layerPath, $entryIndex) -Reason 'unsupported-value'
+                    continue
+                }
+                $entryId = [string](Get-McCollectionProperty -InputObject $row -Name 'id')
+                if ([string]::IsNullOrWhiteSpace($entryId)) {
+                    Add-McProjectionRedaction -Redactions $redactions -Path ("{0}[{1}]" -f $layerPath, $entryIndex) -Reason 'unsupported-value'
+                    continue
+                }
+                $rowPath = "{0}.{1}" -f $layerPath, $entryId
+                $allowlist = $null
+                if ($entryId -eq 'agent-default-model') { $allowlist = $defaultModelAllowlist }
+                elseif ($entryId.StartsWith('llm-')) { $allowlist = $providerAllowlist }
+                if ($null -eq $allowlist) {
+                    # UI, permission and MCP entry ids are DSH behaviour or are
+                    # already owned by another record (mcp.json); only the id is
+                    # kept so the layer's content is not silently lost.
+                    [void]$unprojectedIds.Add($entryId)
+                    continue
+                }
+
+                $entryProjection = [ordered]@{}
+                $disabled = Get-McCollectionProperty -InputObject $row -Name 'disabled'
+                if ($null -ne $disabled) {
+                    if ($disabled -is [bool]) { $entryProjection['disabled'] = [bool]$disabled }
+                    else { Add-McProjectionRedaction -Redactions $redactions -Path ("{0}.disabled" -f $rowPath) -Reason 'unsupported-value' }
+                }
+
+                $config = Get-McCollectionProperty -InputObject $row -Name 'config'
+                $configProjection = $null
+                if ($entryId -eq 'agent-default-model') {
+                    $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $defaultModelAllowlist -Path $rowPath -Redactions $redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+                }
+                else {
+                    $providers = Get-McCollectionProperty -InputObject $config -Name 'providers'
+                    if ($null -ne $providers) {
+                        $providersProjection = [ordered]@{}
+                        foreach ($providerEntry in @(Get-McPropertyEntries -InputObject $providers)) {
+                            $providerProjection = ConvertTo-McAllowlistedProjection -Value $providerEntry.Value -Allowlist $providerAllowlist -Path ("{0}.providers.{1}" -f $rowPath, $providerEntry.Name) -Redactions $redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+                            if ($null -ne $providerProjection) { $providersProjection[[string]$providerEntry.Name] = $providerProjection }
+                        }
+                        if (@(Get-McPropertyEntries -InputObject $providersProjection).Count -gt 0) {
+                            $configProjection = [ordered]@{ providers = $providersProjection }
+                        }
+                    }
+                    elseif ($null -ne (Get-McCollectionProperty -InputObject $config -Name 'baseURL') -or $null -ne (Get-McCollectionProperty -InputObject $config -Name 'models')) {
+                        # A provider-shaped llm section declares baseURL/models directly.
+                        $configProjection = ConvertTo-McAllowlistedProjection -Value $config -Allowlist $providerAllowlist -Path $rowPath -Redactions $redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+                    }
+                }
+                if ($null -ne $configProjection) {
+                    foreach ($key in @($configProjection.Keys)) { $entryProjection[[string]$key] = $configProjection[[string]$key] }
+                }
+
+                if (@(Get-McPropertyEntries -InputObject $entryProjection).Count -eq 0) {
+                    [void]$unprojectedIds.Add($entryId)
+                    continue
+                }
+                $entriesProjection[$entryId] = $entryProjection
+                [void]$projectedIds.Add($entryId)
             }
         }
-        elseif ($null -ne (Get-McCollectionProperty -InputObject $section.Value -Name 'baseURL') -or $null -ne (Get-McCollectionProperty -InputObject $section.Value -Name 'models')) {
-            $sectionProjection = ConvertTo-McAllowlistedProjection -Value $section.Value -Allowlist $providerAllowlist -Path $sectionPath -Redactions $Redactions -UnprojectedKeys $unprojected -RecordUnprojectedKeys
+
+        $layerRecord = [ordered]@{
+            scope = $layer.scope
+            layer = $layer.layer
+            path  = $layer.normalized_path
         }
-        if ($null -ne $sectionProjection -and @(Get-McPropertyEntries -InputObject $sectionProjection).Count -gt 0) {
-            $projection[$sectionName] = $sectionProjection
-            [void]$projectedSections.Add($sectionName)
-        }
-        else {
-            if (-not $projection.Contains('unprojected_sections')) { $projection['unprojected_sections'] = [System.Collections.Generic.List[string]]::new() }
-            [void]$projection['unprojected_sections'].Add($sectionName)
+        if (@(Get-McPropertyEntries -InputObject $entriesProjection).Count -gt 0) { $layerRecord['entries'] = $entriesProjection }
+        if ($unprojectedIds.Count -gt 0) { $layerRecord['unprojected_entry_ids'] = @($unprojectedIds | Sort-Object -Unique) }
+        [void]$layerRecords.Add([pscustomobject]$layerRecord)
+
+        if ($projectedIds.Count -gt 0) {
+            [void]$evidence.Add([pscustomobject][ordered]@{
+                provider    = 'config-profiles'
+                source_path = $layer.normalized_path
+                fields      = @($projectedIds)
+            })
         }
     }
 
-    if (@(Get-McPropertyEntries -InputObject $projection).Count -gt 0) {
-        [void]$evidence.Add([pscustomobject][ordered]@{
-            provider    = 'config-profiles'
-            source_path = (ConvertTo-McNormalizedPath -Path $settingsYaml)
-            fields      = @($projectedSections)
-        })
-    }
+    $projection['layer_order'] = @('bundle', 'profile', 'home', 'argv')
+    $projection['layers'] = @($layerRecords)
 
-    if ($projection.Contains('unprojected_sections')) {
-        $projection['unprojected_sections'] = @($projection['unprojected_sections'])
-    }
-
+    $presetsDir = Join-Path $ConfigRoot '.agent-presets'
     $presetNames = [System.Collections.Generic.List[object]]::new()
     if (Test-Path -LiteralPath $presetsDir -PathType Container) {
         foreach ($presetDir in @(Get-ChildItem -LiteralPath $presetsDir -Directory -ErrorAction SilentlyContinue | Sort-Object Name)) {
@@ -257,8 +360,8 @@ function Get-McDshConfigProfile {
     }
 
     return (New-McConfigProfileRecord -Id 'dsh-config' -Tool 'dsh' -ConfigRoot (ConvertTo-McNormalizedPath -Path $ConfigRoot) `
-        -Files $files -Projection $projection -Redactions $Redactions -CredentialEnvNames @($envNames) `
-        -WireVerification 'not-wire-verified' -Evidence $evidence)
+        -Files @($files) -Projection $projection -Redactions @($redactions) -CredentialEnvNames @($envNames) `
+        -WireVerification 'not-wire-verified' -Evidence @($evidence))
 }
 
 function Get-McZcodeConfigProfile {
@@ -741,22 +844,7 @@ function Get-McMcpInventoryRecord {
     # profile directory name is the scope. Only serverName/transport/url/
     # command/args/env names are read - `headers` may carry an Authorization
     # bearer and is never touched, matching the Agy rule.
-    $dshPatchFiles = [System.Collections.Generic.List[object]]::new()
-    if (-not [string]::IsNullOrWhiteSpace($DshConfigRoot)) {
-        $dshHomePatch = Join-Path $DshConfigRoot 'cordis.patch.yml'
-        if (Test-Path -LiteralPath $dshHomePatch -PathType Leaf) {
-            [void]$dshPatchFiles.Add([pscustomobject]@{ path = $dshHomePatch; scope = 'home' })
-        }
-        $dshProfilesRoot = Join-Path $DshConfigRoot 'profiles'
-        if (Test-Path -LiteralPath $dshProfilesRoot -PathType Container) {
-            foreach ($dshProfileDir in @(Get-ChildItem -LiteralPath $dshProfilesRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name)) {
-                $dshProfilePatch = Join-Path $dshProfileDir.FullName 'cordis.patch.yml'
-                if (Test-Path -LiteralPath $dshProfilePatch -PathType Leaf) {
-                    [void]$dshPatchFiles.Add([pscustomobject]@{ path = $dshProfilePatch; scope = $dshProfileDir.Name })
-                }
-            }
-        }
-    }
+    $dshPatchFiles = @(Get-McDshCordisPatchLayers -ConfigRoot $DshConfigRoot | Where-Object { $_.exists })
     foreach ($dshPatch in $dshPatchFiles) {
         [void]$files.Add((New-McConfigSourceFileRecord -Path $dshPatch.path -Format yaml -Role mcp-config))
         try {
@@ -831,27 +919,53 @@ function Get-McConfigProfileObservations {
     $profileStates = [System.Collections.Generic.List[object]]::new()
     $warnings = [System.Collections.Generic.List[string]]::new()
 
-    $ompPresent = (-not [string]::IsNullOrWhiteSpace($OmpAgentRoot)) -and (
-        (Test-Path -LiteralPath (Join-Path $OmpAgentRoot 'config.yml') -PathType Leaf) -or
-        (Test-Path -LiteralPath (Join-Path $OmpAgentRoot 'models.yml') -PathType Leaf))
-    $dshPresent = (-not [string]::IsNullOrWhiteSpace($DshConfigRoot)) -and (Test-Path -LiteralPath (Join-Path $DshConfigRoot 'settings.yaml') -PathType Leaf)
-    $zcodePresent = (-not [string]::IsNullOrWhiteSpace($ZcodeAppDataRoot)) -and (Test-Path -LiteralPath (Join-Path $ZcodeAppDataRoot 'config.json') -PathType Leaf)
-    $opencodexPresent = (-not [string]::IsNullOrWhiteSpace($OpencodexConfigRoot)) -and (Test-Path -LiteralPath (Join-Path $OpencodexConfigRoot 'config.json') -PathType Leaf)
-    $codexPresent = (-not [string]::IsNullOrWhiteSpace($CodexConfigPath)) -and (Test-Path -LiteralPath $CodexConfigPath -PathType Leaf)
-    $qoderPresent = (-not [string]::IsNullOrWhiteSpace($QoderSettingsPath)) -and (Test-Path -LiteralPath $QoderSettingsPath -PathType Leaf)
+    # Each projector declares the source files its projection is built on, so a
+    # confirmed absence can name the exact paths that were checked instead of
+    # leaving reconciliation to guess them per tool.
+    $dshSources = @(Get-McDshCordisPatchLayers -ConfigRoot $DshConfigRoot)
 
     foreach ($projector in @(
-            [pscustomobject]@{ name = 'omp'; present = $ompPresent; action = { Get-McOmpConfigProfile -AgentRoot $OmpAgentRoot } },
-            [pscustomobject]@{ name = 'dsh'; present = $dshPresent; action = { Get-McDshConfigProfile -ConfigRoot $DshConfigRoot } },
-            [pscustomobject]@{ name = 'zcode'; present = $zcodePresent; action = { Get-McZcodeConfigProfile -AppDataRoot $ZcodeAppDataRoot -UserProfileRoot $ZcodeUserProfileRoot } },
-            [pscustomobject]@{ name = 'opencodex'; present = $opencodexPresent; action = { Get-McOpencodexConfigProfile -ConfigRoot $OpencodexConfigRoot } },
-            [pscustomobject]@{ name = 'codex-cli'; present = $codexPresent; action = { Get-McCodexConfigProfile -ConfigPath $CodexConfigPath } },
-            [pscustomobject]@{ name = 'qoder'; present = $qoderPresent; action = { Get-McQoderConfigProfile -SettingsPath $QoderSettingsPath } }
+            [pscustomobject]@{
+                name    = 'omp'
+                sources = @(Get-McConfigSourceProbe -Paths @((Join-Path $OmpAgentRoot 'config.yml'), (Join-Path $OmpAgentRoot 'models.yml')))
+                action  = { Get-McOmpConfigProfile -AgentRoot $OmpAgentRoot }
+            },
+            [pscustomobject]@{
+                name    = 'dsh'
+                sources = $dshSources
+                action  = { Get-McDshConfigProfile -ConfigRoot $DshConfigRoot }
+            },
+            [pscustomobject]@{
+                name    = 'zcode'
+                sources = @(Get-McConfigSourceProbe -Paths @((Join-Path $ZcodeAppDataRoot 'config.json')))
+                action  = { Get-McZcodeConfigProfile -AppDataRoot $ZcodeAppDataRoot -UserProfileRoot $ZcodeUserProfileRoot }
+            },
+            [pscustomobject]@{
+                name    = 'opencodex'
+                sources = @(Get-McConfigSourceProbe -Paths @((Join-Path $OpencodexConfigRoot 'config.json')))
+                action  = { Get-McOpencodexConfigProfile -ConfigRoot $OpencodexConfigRoot }
+            },
+            [pscustomobject]@{
+                name    = 'codex-cli'
+                sources = @(Get-McConfigSourceProbe -Paths @($CodexConfigPath))
+                action  = { Get-McCodexConfigProfile -ConfigPath $CodexConfigPath }
+            },
+            [pscustomobject]@{
+                name    = 'qoder'
+                sources = @(Get-McConfigSourceProbe -Paths @($QoderSettingsPath))
+                action  = { Get-McQoderConfigProfile -SettingsPath $QoderSettingsPath }
+            }
         )) {
-        if (-not $projector.present) {
+        $missingSources = @($projector.sources | Where-Object { -not $_.exists } | ForEach-Object { [string]$_.normalized_path })
+        if ($missingSources.Count -eq @($projector.sources).Count) {
             # Confirmed absence is an observation, not a failure: reconciliation
-            # marks the last-known profile stale instead of leaving it current.
-            [void]$profileStates.Add([pscustomobject][ordered]@{ tool = $projector.name; state = 'source-missing' })
+            # marks the last-known profile stale and demotes exactly these
+            # sources, keeping every other recorded file's existence untouched.
+            [void]$profileStates.Add([pscustomobject][ordered]@{
+                tool            = $projector.name
+                state           = 'source-missing'
+                missing_sources = $missingSources
+            })
             continue
         }
         try {

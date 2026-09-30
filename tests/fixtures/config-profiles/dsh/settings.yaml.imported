@@ -1,0 +1,16 @@
+# Fixture: the legacy settings.yaml content DSH 0.2.0-rc.2 imported into the
+# Cordis layers and renamed. A projector that still read it would republish a
+# stale snapshot as current configuration, so none of these values may appear in
+# the projection.
+agent-default-model:
+  provider: legacy-import-provider
+  model: legacy-import-model
+
+llm-legacy:
+  baseURL: https://legacy-import.example.com/v1
+  models:
+    - id: legacy-model
+      name: Legacy Model
+      contextWindow: 1
+
+apiKey: sk-legacy-import-do-not-publish

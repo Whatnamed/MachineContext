@@ -248,13 +248,19 @@ observed.projection       the sanitized source-native config subtree; real field
                           names (modelOverrides, thinking.efforts, compat, ...)
                           are kept so an AI can patch the actual config;
                           fields dropped by the per-field allowlist are listed
-                          by name/path only in projection.unprojected_keys
+                          by name/path only in projection.unprojected_keys;
+                          a tool whose config is composed from layered files
+                          (DSH Cordis patch layers) groups the subtree per
+                          layer/scope and keeps unprojected entry ids instead
+                          of flattening the layers into one invented view
 observed.credential_env_names   environment-variable names referenced by the config
 observed.redactions       paths/reasons for every dropped credential or unsafe value
 observed.evidence         per-source-file provenance
 ```
 
 Ownership and refresh follow the standard rules: the collector owns `observed` and refreshes it on routine scans; `curated` is user/agent-owned and preserved. A projector/provider failure keeps the previous record untouched; only a **confirmed source absence** downgrades the last-known profile to `source_state: stale`, and `index.json` modules carry the same `source_state`. Profiles are removed only through explicit cleanup.
+
+A confirmed absence is reported as `{tool, state: 'source-missing', missing_sources: [...]}`, where `missing_sources` are the normalized paths the collector actually probed and found absent. Reconciliation demotes `source.files[].exists` to `false` **only** for those listed paths, so a retained stale profile never keeps claiming a config file exists that this scan proved missing; files that were not probed (or that the collector could not confirm) keep their recorded existence, and a `failed` state never changes existence.
 
 The projection must never contain credential-named properties or credential values; `credential` fields survive only as environment-variable names. Provider/model-level unknown fields are dropped by the per-field allowlist and surfaced as `unprojected_keys` (names only). MCP records (`kind: mcp-inventory`) hold per-server tool/scope/name/transport/command/safe-URL plus allowlisted `args` and `env_names`; credential flags (`--token`, `-H`, ...) are dropped together with the argv they consume. Validators enforce these contracts (`config_sensitive_key`, `config_invalid_env_name`, profile/MCP record shapes) before publication.
 

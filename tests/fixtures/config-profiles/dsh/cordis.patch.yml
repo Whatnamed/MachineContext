@@ -1,0 +1,12 @@
+# Fixture: the home-level Cordis patch layer. DSH applies it over every
+# profile's own layer, so it is the highest-precedence on-disk source and the
+# projector must keep it last in composition order.
+- id: agent-default-model
+  config:
+    provider: testrhythm
+    model: test-mini
+    reasoningEffort: low
+
+- id: ui-home-noise
+  config:
+    label: home-only-ui-entry
