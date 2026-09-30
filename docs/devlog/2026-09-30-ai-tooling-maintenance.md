@@ -145,3 +145,7 @@ No collector, schema or script logic changed, so the full test suite was not req
 
 - **Kimi Code**: sign in once, then re-run the rules live-load probe (see section 6). Nothing else about Kimi needs manual work — DSH's command registration did *not* need a GUI step.
 - **Grok default model**: the `grok-4.5` entry on `api.aijws.com` returns `GROUP_DELETED` from the gateway. Fixing it is an account-side action with that provider, not a local install problem; `grok -m dasu` works meanwhile.
+
+## 11. Follow-up closed in a separate devlog
+
+The two DSH config defects this round left open — the self-contradictory stale `dsh.json` (`source_state: stale` while `source.files[]` still said `settings.yaml` exists) and the profile still pointing at the deprecated `settings.yaml` — were fixed in a dedicated follow-up round. See `2026-09-30-dsh-config-cordis-layers.md` for the confirmed-absence `missing_sources` reconciliation contract, the Cordis patch-layer migration, the ten fixture/leak cases and the gate results. The `待办` in §4.3 and the two `curated` notes it quoted are superseded by that record.
