@@ -324,3 +324,11 @@ Decision:
 Reason: Avoid semantic over-engineering, unnecessary user questioning, and false equivalence between routine core provider scans and user-confirmed broad inventories.
 
 Status: accepted.
+
+## D040 — One authoritative command per CLI; ownership is expressed as a relationship
+
+Decision: when the same CLI is reachable from more than one installation, canonical state must name exactly one authoritative provider for that command. Where the vendor ships an official command-ownership mechanism, that mechanism is used instead of hand-editing PATH or copying shims, and the resulting ownership is recorded as a `provided_by` relationship between two separate entities (for example `dsh provided_by dsh-desktop`) rather than by merging the CLI and the desktop application into one record. Retiring a command owner removes only its PATH entry; the previous install root is kept on disk until its non-duplicated contents are confirmed unnecessary, and the exact pre-change PATH value is preserved under ignored `.local/`.
+
+Reason: two drifting providers for one command make version and provenance unreadable, and a merged CLI/desktop entity would misattribute an auto-updating desktop payload to a manually maintained CLI. Using the product's own registration path keeps the change reversible and avoids simulating fragile GUI flows, while keeping the retired install root preserves user helper files and rollback ability that a version bump cannot reconstruct.
+
+Status: accepted.

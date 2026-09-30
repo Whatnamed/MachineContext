@@ -120,15 +120,18 @@
   - config.yml 与 models.yml 顶层出现 allowlist 外的新键 → 记入 `unprojected_keys`(`omp.config.<key>` / `omp.models...`);**检查它是否出现意料外字段名**,既可能是源里多了东西,也可能是我们漏了承重字段(2026-09-16 的 `enabledProviders` 就是这样漏了一轮);
   - models.yml 新加 provider → sync 自动投影;
   - 新增 `compat`/`thinking` 子字段需要显式扩 allowlist(嵌套 object schema 是 mapping-only,未知形状会被拒并记 redaction);
-  - OMP 跟随上游 stable 更新(2026-09-02 用户决定取消早先的 18.0.6 临时钉版):直接执行 `omp update`,它会把 `D:\OMP\omp.exe` 原地替换并在同目录留一个 `omp.exe.*.bak` 旧版备份(更新器自身行为,无需处理);
+  - OMP 跟随上游 stable 更新(2026-09-02 用户决定取消早先的 18.0.6 临时钉版):直接执行 `omp update`,它会把 `D:\OMP\omp.exe` 原地替换并在同目录留一个 `omp.exe.*.bak` 旧版备份(更新器自身行为,无需处理)。**修正(2026-09-30)**:更新器只保留**最近一个**旧版备份 —— 升级到 18.4.4 后,18.2.1 的 `omp.exe.1790270148771.31792.0.bak` 已被自动清掉,目录里只剩 18.3.0 那一份;不要按"历次备份都在"来推断。
   - OMP 无文件级 MCP 配置,mcp.json 的 `unresolved` 说明是预期状态。
 
 ### 4.3 DSH
 
-- **采集源**:`%USERPROFILE%\.dsh\settings.yaml`。`.credentials.yaml` 只记存在;`.agent-presets` 目录记预设名与路径。
+- **两个实体,一条命令(2026-09-30 起)**:`dsh`(命令,由 ai-tooling provider 探测)与 `dsh-desktop`(官方桌面端,补充实体,无 routine provider)。二者的 ownership 用 `context/relationships.json` 的 `dsh provided_by dsh-desktop` 表达。`dsh` 现在解析到 `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`;旧的独立安装 `D:\DSH`(npm 式 `@deepseek-ai/dsh` 0.1.5-rc.2)已从持久 user PATH 移除,但目录本身保留(内含 Desktop 不带的 `dsh-launcher.exe`、`dsh-tray.ps1`、`community-presets\`、`backup\` 等用户文件)。canonical 不得再同时把 `D:\DSH\dsh.cmd` 和 Desktop launcher 写成 authoritative。
+- **command ownership 的官方注册路径**:Desktop 自带 `resources\runtime\cli\command-manager.js`,在 win32 上派生 `command-path.ps1`,支持 `inspect` / `install <fingerprint>` / `remove <fingerprint>`;install 把 launcher 目录 **prepend** 到持久 user PATH,并在 `HKCU\Software\DeepSeekHarness\Command` 记录 `Directory`/`PathWasAbsent`/`RetainedEntries`,不复制 shim、不动 Machine PATH。`install` 必须带 `inspect` 返回的指纹,否则 `ESTALE`。这是 GUI 菜单"Manage dsh command"背后的同一份代码,可直接调用而不必模拟界面。
+- **采集源**:`%USERPROFILE%\.dsh\settings.yaml`(**已被产品废弃,见下**)。`.credentials.yaml` 只记存在;`.agent-presets` 目录记预设名与路径。
 - **收集字段**:`llm-*` 段的 providers(`displayName`、`apiKeyEnv`/`apiKey`→`credentialEnvName`、`api`、`baseURL`(safe-url)、`defaultInput`、`defaultMaxTokens`、`models[]` 含 `reasoningEfforts`(effort→effort 映射));`agent-default-model`;`agent-presets`(名→标量)。
-- **记录位置**:`context/configs/ai/dsh.json`;实体在 `software/ai.json`(命令探测)。
-- **变更后易漏项**:provider 既可能是 `llm-x.providers.*` 形状也可能是 `llm-x` 直接带 `baseURL` 的形状,两种都会被投影;非 llm 段(如 `ui-theme`)不收。
+- **记录位置**:`context/configs/ai/dsh.json`;CLI 实体在 `software/ai.json`(命令探测),Desktop 实体为补充实体(registry + filesystem 证据)。
+- **settings.yaml 已废弃(2026-09-30)**:0.2.0-rc.2 在 Cordis 配置就绪后,会把早期版本遗留在 harness home 的 `settings.yaml` **一次性导入**到同 id 的 Cordis entry(`ui-developer-tools`→`ui-settings`、`ui-onboarding`→`ui-settings-general`、`shell`→平台 shell executor entry),并在首次写入前把它改名为 `settings.yaml.imported`。因此本机 `settings.yaml` 永久消失,profile 被正确标 `source_state: stale`(投影内容是 last-known,不是当前配置)。**待办**:把 profile 重指向 Cordis patch 层(`%USERPROFILE%\.dsh\cordis.patch.yml` 与 `profiles\<name>\cordis.patch.yml`),需要先设计 allowlist + fixture + 泄漏反例(§7);MCP collector 已经在读这些 patch 层,所以 `mcp.json` 是最新的。
+- **变更后易漏项**:provider 既可能是 `llm-x.providers.*` 形状也可能是 `llm-x` 直接带 `baseURL` 的形状,两种都会被投影;非 llm 段(如 `ui-theme`)不收。`%USERPROFILE%\.dsh` 是 CLI 与 Desktop **共用**的数据 home,换命令 owner 不涉及数据迁移。Desktop 安装根目录的 `version` 文件写的是 Electron 内核版本(现为 `44.0.0`),不是产品版本 —— 属 §8 那类静默过期陷阱。
 
 ### 4.4 ZCode
 
@@ -183,7 +186,7 @@
 
 ## 7. 新增采集项 / 新工具 checklist
 
-0. **定位新工具的配置位置**(用户说"装了/改了 X"但 §4 没有它时):依次检查 `%USERPROFILE%` 下的点目录(`ls -dt ~/$HOME.[a-z]*` 按修改时间排)、`%APPDATA%`/`%LOCALAPPDATA%`、安装目录、注册表卸载项(HKCU/HKLM/WOW6432Node Uninstall);参考 qoder(`.qoder-cn`)与 workbuddy(`.workbuddy`)案例;
+0. **定位新工具的配置位置**(用户说"装了/改了 X"但 §4 没有它时):依次检查 `%USERPROFILE%` 下的点目录(`ls -dt ~/$HOME.[a-z]*` 按修改时间排)、`%APPDATA%`/`%LOCALAPPDATA%`、安装目录、注册表卸载项(HKCU/HKLM/WOW6432Node Uninstall);参考 qoder(`.qoder-cn`)与 workbuddy(`.workbuddy`)案例;**当被安装的其实是桌面端而 CLI 配置语义仍适用时,直接读产品 bundle 里的 loader 代码来确定路径,不要靠目录是否存在猜**(kimi-code-desktop 案例:产品是 Electron 桌面 app,`%USERPROFILE%\.kimi-code` 是 agent home,shipped `loadAgentsMdForRoots` 证明 user-global 规则路径是 `.kimi-code\AGENTS.md`,而 `config.toml`/`tui.toml`/`mcp.json`/`credentials\` 因尚未登录而全部不存在 —— 此时**不注册 profile**,等配置真实产生);
 1. 读 `docs/COLLECTION_SPEC.md` 确认该信息的长期价值与隐私边界(`PRIVACY.md`);
 2. 加采集能力:新 collector 或 ai-tools/配置投影定义——**只读、fail-soft、有超时**;能探测到的最小安全字段集;**先看文件里有什么再定 allowlist**,发现 credential 形状内容时该文件整体降级为"只记存在";
 3. fixture + 测试:真实源文件形状的 fixture、泄漏反例(假 secret 值不得出现在投影)、序列化确定性;
@@ -194,7 +197,7 @@
 
 ## 8. 已知限制与全局易漏项
 
-- **补充桌面实体会静默过期**:qoder、trae、workbuddy、antigravity、zcode 等桌面 app 的实体由 registry/文件系统证据一次性记录,**routine scan 不刷新它们**。用户报告升级后,按注册表 `DisplayVersion` 用一次性脚本刷新 `observed.version`(trae 0.1.39→0.1.58、zcode 3.8.1.5310→3.14.0.7681 即为此修复);MSIX 商店应用(claude-desktop)同理且路径也会变:
+- **补充桌面实体会静默过期**:qoder、trae、workbuddy、antigravity、zcode、**dsh-desktop、kimi-code-desktop** 等桌面 app 的实体由 registry/文件系统证据一次性记录,**routine scan 不刷新它们**。用户报告升级后,按注册表 `DisplayVersion` 用一次性脚本刷新 `observed.version`(trae 0.1.39→0.1.58、zcode 3.8.1.5310→3.14.0.7681 即为此修复);MSIX 商店应用(claude-desktop)同理且路径也会变:
 
   ```powershell
   $package = Get-AppxPackage -Name 'Claude'
