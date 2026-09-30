@@ -19,6 +19,8 @@ The internal payload now carries the minimal metadata the collector is already a
 
 Deliberate properties, all covered by tests: a path the collector never probed keeps its recorded existence (no blanket demotion); a `failed` state leaves the last-known record byte-identical, so parser/provider failure stays distinguishable from confirmed absence; the last-known projection and `curated` notes are preserved; a state without `missing_sources` behaves exactly as before (the pre-existing tests still pass unchanged); demotion is byte-idempotent across repeat scans; and a fresh profile for the same tool still wins over a stale state.
 
+One zero-set boundary in that new contract needed a second pass: the absence test was written as `missingSources.Count -eq sources.Count`, so a projector with **no probeable source at all** (an unset config root, which `Get-McConfigSourceProbe` deliberately skips) satisfied `0 == 0` and was published as a confirmed absence — the exact inverse of what `source-missing` now means. Such a projector reports `failed` with a "no config source path could be probed" warning instead, which keeps the last-known record untouched and degrades provider health to `partial` rather than silently stamping it stale. No production default has an empty source set, so this changed no canonical record; the regression test drives the provider with a blank DSH root and asserts both the reported state and that an existing `dsh.json` survives the merge byte-identical.
+
 ## 3. Real DSH config-model audit
 
 Evidence was the shipped loader in `D:\DSH-desktop\resources\app.asar` plus the live files, read through value-class skeletons only — no config values were printed while designing the allowlist.

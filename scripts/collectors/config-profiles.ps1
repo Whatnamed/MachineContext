@@ -956,8 +956,18 @@ function Get-McConfigProfileObservations {
                 action  = { Get-McQoderConfigProfile -SettingsPath $QoderSettingsPath }
             }
         )) {
-        $missingSources = @($projector.sources | Where-Object { -not $_.exists } | ForEach-Object { [string]$_.normalized_path })
-        if ($missingSources.Count -eq @($projector.sources).Count) {
+        $declaredSources = @($projector.sources)
+        $missingSources = @($declaredSources | Where-Object { -not $_.exists } | ForEach-Object { [string]$_.normalized_path })
+        if ($declaredSources.Count -eq 0) {
+            # An unset config root means nothing could be probed at all, which is
+            # unknown rather than a confirmed absence. Reporting it as a provider
+            # failure keeps the last-known profile untouched; only paths this
+            # scan actually checked may be demoted.
+            [void]$profileStates.Add([pscustomobject][ordered]@{ tool = $projector.name; state = 'failed' })
+            [void]$warnings.Add(('{0}: no config source path could be probed' -f $projector.name))
+            continue
+        }
+        if ($missingSources.Count -eq $declaredSources.Count) {
             # Confirmed absence is an observation, not a failure: reconciliation
             # marks the last-known profile stale and demotes exactly these
             # sources, keeping every other recorded file's existence untouched.

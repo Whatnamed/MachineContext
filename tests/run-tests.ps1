@@ -2058,6 +2058,48 @@ Invoke-McTest -Name 'config profile observations name the sources they proved ab
     Assert-McTrue -Condition ($payloadText -notmatch [regex]::Escape($env:USERPROFILE)) -Message 'source state reporting must never leak a real machine path'
 }
 
+Invoke-McTest -Name 'a config root with nothing to probe is never a confirmed absence' -Body {
+    $observations = Get-McConfigProfileObservations -RepoRoot $RepoRoot `
+        -OmpAgentRoot (Join-Path $configFixtureRoot 'dsh') `
+        -DshConfigRoot '' `
+        -ZcodeAppDataRoot (Join-Path $configFixtureRoot 'dsh') `
+        -ZcodeUserProfileRoot $null `
+        -OpencodexConfigRoot (Join-Path $configFixtureRoot 'dsh') `
+        -QoderSettingsPath (Join-Path $configFixtureRoot 'dsh-missing\settings.json') `
+        -ClaudeConfigPath (Join-Path $configFixtureRoot 'dsh-missing\claude.json') `
+        -GeminiSettingsPath (Join-Path $configFixtureRoot 'dsh-missing\gemini-settings.json') `
+        -CodexConfigPath (Join-Path $configFixtureRoot 'dsh-missing\config.toml') `
+        -CursorMcpPath (Join-Path $configFixtureRoot 'dsh-missing\cursor-mcp.json') `
+        -AgyMcpConfigPath (Join-Path $configFixtureRoot 'dsh-missing\mcp_config.json')
+
+    $dshStates = @($observations.value.profile_states | Where-Object { [string]$_.tool -eq 'dsh' })
+    Assert-McEqual -Actual $dshStates.Count -Expected 1 -Message 'an unset config root still reports exactly one state'
+    Assert-McEqual -Actual ([string]$dshStates[0].state) -Expected 'failed' -Message 'zero probed sources is unknown, never a confirmed absence'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $dshStates[0] -Name 'missing_sources')) -Message 'a state that probed nothing may name no missing source'
+    Assert-McEqual -Actual $observations.health -Expected 'partial' -Message 'an unprobeable root must degrade provider health instead of passing silently'
+
+    $tempRoot = Join-Path $RepoRoot '.local\test-config-unprobed'
+    $aiRoot = Join-Path $tempRoot 'configs\ai'
+    [void](New-Item -ItemType Directory -Path $aiRoot -Force)
+    Write-McJson -Path (Join-Path $aiRoot 'dsh.json') -InputObject ([pscustomobject][ordered]@{
+        schema_version = 1
+        id             = 'dsh-config'
+        kind           = 'ai-config-profile'
+        tool           = 'dsh'
+        source         = [pscustomobject][ordered]@{
+            config_root = '%USERPROFILE%\.dsh'
+            files       = @([pscustomobject][ordered]@{ path = '%USERPROFILE%\.dsh\cordis.patch.yml'; format = 'yaml'; exists = $true; role = 'cordis-patch-layer' })
+        }
+        observed       = [pscustomobject][ordered]@{ value_basis = 'configured-local'; source_state = 'current' }
+        curated        = [pscustomobject][ordered]@{ notes = @('keep me') }
+    })
+    $before = [System.IO.File]::ReadAllText((Join-Path $aiRoot 'dsh.json'))
+    Merge-McConfigProfiles -ContextRoot $tempRoot -Profiles @() -ProfileStates @($dshStates[0]) -McpInventory $null
+    Assert-McEqual -Actual ([System.IO.File]::ReadAllText((Join-Path $aiRoot 'dsh.json'))) -Expected $before -Message 'an unprobeable root must leave the last-known profile byte-identical'
+    Assert-McEqual -Actual ([string]((Read-McJson -Path (Join-Path $aiRoot 'dsh.json')).observed.source_state)) -Expected 'current' -Message 'nothing may be marked stale without a probed absence'
+    Remove-Item -LiteralPath $tempRoot -Recurse -Force
+}
+
 Invoke-McTest -Name 'config reconciliation marks last-known profiles stale when sources are confirmed absent' -Body {
     $tempRoot = Join-Path $RepoRoot '.local\test-config-stale'
     $aiRoot = Join-Path $tempRoot 'configs\ai'
