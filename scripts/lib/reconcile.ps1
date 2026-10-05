@@ -178,6 +178,22 @@ function New-McObservedEntityRecord {
             $currentObserved = $safeCurrent
         }
         Set-McObjectProperty -InputObject $record -Name 'observed' -Value (Merge-McObservedObject -Previous $previousObserved -Current $currentObserved)
+        # Failure-round verification metadata must not survive a later success.
+        # A failed round writes verification_provider/verification_reason through
+        # the verification events; a successful observation normally carries
+        # neither field, so the last-known-value merge would retain the stale
+        # failure reason next to verification=verified-present. Host verifiers
+        # are the exception: their success observations supply their own
+        # provider/reason pair, which the merge above already applied.
+        $mergedObserved = Get-McObjectPropertyOrNull -InputObject $record -Name 'observed'
+        if (([string](Get-McObjectPropertyOrNull -InputObject $mergedObserved -Name 'verification')) -eq 'verified-present') {
+            if ($null -eq (Get-McObjectPropertyOrNull -InputObject $currentObserved -Name 'verification_reason')) {
+                Remove-McObjectProperty -InputObject $mergedObserved -Name 'verification_reason'
+            }
+            if ($null -eq (Get-McObjectPropertyOrNull -InputObject $currentObserved -Name 'verification_provider')) {
+                Remove-McObjectProperty -InputObject $mergedObserved -Name 'verification_provider'
+            }
+        }
         $name = Get-McObjectPropertyOrNull -InputObject $Observation -Name 'name'
         if (-not [string]::IsNullOrWhiteSpace([string]$name)) { Set-McObjectProperty -InputObject $record -Name 'name' -Value ([string]$name) }
         return $record

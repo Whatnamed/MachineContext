@@ -597,6 +597,82 @@ Invoke-McTest -Name 'collector process paths never become canonical host facts' 
     Assert-McTrue -Condition ((ConvertTo-McJsonText -InputObject $cleaned) -notmatch 'codex-runtimes|pnpm\.cmd') -Message 'process-only path must not remain anywhere in the canonical entity'
 }
 
+Invoke-McTest -Name 'stale failure verification metadata must not survive a later success' -Body {
+    $moduleTemplate = [pscustomobject][ordered]@{
+        schema_version = 1
+        meta = [pscustomobject][ordered]@{ state = 'observed' }
+        software = @([pscustomobject][ordered]@{
+                id = 'fixture-tool'
+                kind = 'runtime'
+                name = 'Fixture Tool'
+                observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; version = '1.0.0'; executable = 'E:\Tools\fixture.exe' }
+                curated = [pscustomobject][ordered]@{ status = 'active' }
+            })
+    }
+
+    # verified-present -> unverified/timed_out: failure metadata is recorded and last-known facts stay.
+    $timeoutEvent = [pscustomobject][ordered]@{ module = 'development'; id = 'fixture-tool'; provider = 'runtimes-package-managers-toolchain'; verification = 'unverified'; reason = 'timed_out' }
+    $unverified = Merge-McSoftwareModule -Module (Copy-McJsonObject -InputObject $moduleTemplate) -ModuleName development -Observations @() -VerificationEvents @($timeoutEvent)
+    $unverifiedObserved = $unverified.software[0].observed
+    Assert-McEqual -Actual $unverifiedObserved.verification -Expected 'unverified' -Message 'probe timeout must mark the entity unverified'
+    Assert-McEqual -Actual $unverifiedObserved.verification_provider -Expected 'runtimes-package-managers-toolchain' -Message 'probe timeout must record the verification provider'
+    Assert-McEqual -Actual $unverifiedObserved.verification_reason -Expected 'timed_out' -Message 'probe timeout must record the verification reason'
+    Assert-McEqual -Actual $unverifiedObserved.version -Expected '1.0.0' -Message 'probe timeout must keep the last-known version'
+    Assert-McEqual -Actual $unverifiedObserved.executable -Expected 'E:\Tools\fixture.exe' -Message 'probe timeout must keep the last-known executable'
+    Assert-McEqual -Actual $unverifiedObserved.present -Expected $true -Message 'probe timeout must not erase presence'
+
+    # unverified/timed_out -> verified-present: stale failure metadata is dropped.
+    $successObservation = [pscustomobject][ordered]@{
+        id = 'fixture-tool'
+        kind = 'runtime'
+        name = 'Fixture Tool'
+        observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; version = '1.1.0'; executable = 'E:\Tools\fixture.exe' }
+    }
+    $recovered = Merge-McSoftwareModule -Module $unverified -ModuleName development -Observations @($successObservation)
+    $recoveredObserved = $recovered.software[0].observed
+    Assert-McEqual -Actual $recoveredObserved.verification -Expected 'verified-present' -Message 'a later successful observation must restore verified-present'
+    Assert-McEqual -Actual $recoveredObserved.version -Expected '1.1.0' -Message 'the successful observation must supply the current version'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $recoveredObserved -Name 'verification_reason')) -Message 'stale failure reason must not survive a later success'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $recoveredObserved -Name 'verification_provider')) -Message 'stale failure provider must not survive a later success'
+
+    # An already-contradictory canonical record (verified-present + failed) is cleaned by the next success too.
+    $contradictory = [pscustomobject][ordered]@{
+        schema_version = 1
+        meta = [pscustomobject][ordered]@{ state = 'observed' }
+        software = @([pscustomobject][ordered]@{
+                id = 'fixture-tool'
+                kind = 'runtime'
+                name = 'Fixture Tool'
+                observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; version = '1.0.0'; verification_provider = 'runtimes-package-managers-toolchain'; verification_reason = 'failed' }
+                curated = [pscustomobject][ordered]@{ status = 'active' }
+            })
+    }
+    $cleaned = Merge-McSoftwareModule -Module $contradictory -ModuleName development -Observations @($successObservation)
+    $cleanedObserved = $cleaned.software[0].observed
+    Assert-McEqual -Actual $cleanedObserved.verification -Expected 'verified-present' -Message 'the contradictory record stays verified-present'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $cleanedObserved -Name 'verification_reason')) -Message 'stale failed reason must be dropped on the next successful verification'
+    Assert-McTrue -Condition ($null -eq (Get-McObjectPropertyOrNull -InputObject $cleanedObserved -Name 'verification_provider')) -Message 'stale failed provider must be dropped on the next successful verification'
+
+    # A genuinely still-failing entity stays unverified with its actual reason and last-known facts.
+    $stillFailing = Merge-McSoftwareModule -Module $recovered -ModuleName development -Observations @() -VerificationEvents @($timeoutEvent)
+    $stillFailingObserved = $stillFailing.software[0].observed
+    Assert-McEqual -Actual $stillFailingObserved.verification -Expected 'unverified' -Message 'a genuine later failure must mark the entity unverified again'
+    Assert-McEqual -Actual $stillFailingObserved.verification_reason -Expected 'timed_out' -Message 'a genuine later failure must record its own reason'
+    Assert-McEqual -Actual $stillFailingObserved.version -Expected '1.1.0' -Message 'a genuine later failure must keep the last-known version'
+
+    # Host-verifier successes that supply their own provider/reason pair keep them.
+    $hostSuccessObservation = [pscustomobject][ordered]@{
+        id = 'fixture-tool'
+        kind = 'runtime'
+        name = 'Fixture Tool'
+        observed = [pscustomobject][ordered]@{ present = $true; verification = 'verified-present'; version = '1.1.0'; verification_provider = 'host-authoritative-tools'; verification_reason = 'success' }
+    }
+    $hostRecovered = Merge-McSoftwareModule -Module (Copy-McJsonObject -InputObject $unverified) -ModuleName development -Observations @($hostSuccessObservation)
+    $hostRecoveredObserved = $hostRecovered.software[0].observed
+    Assert-McEqual -Actual $hostRecoveredObserved.verification_provider -Expected 'host-authoritative-tools' -Message 'a success observation supplying its own provider must keep it'
+    Assert-McEqual -Actual $hostRecoveredObserved.verification_reason -Expected 'success' -Message 'a success observation supplying its own reason must keep it'
+}
+
 Invoke-McTest -Name 'strong relationship derivation' -Body {
     $software = [pscustomobject][ordered]@{
         development = @(
