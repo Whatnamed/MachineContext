@@ -72,7 +72,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.5",
+        "version": "1.0.18",
         "executable": "E:\\Dev\\npm-global\\agently-cli.cmd",
         "command_resolution": [
           {
@@ -95,7 +95,11 @@
         ]
       },
       "curated": {
-        "purpose": "Agently application framework CLI."
+        "notes": [
+          "2026-10-05 PROVENANCE CORRECTION: the canonical purpose previously described this as a generic \"Agently application framework CLI\", which is wrong. Evidence from the machine: the E:\\Dev\\npm-global\\agently-cli.cmd shim actually launches node_modules\\@tencent-qqmail\\agently-cli\\scripts\\run.js; the installed package.json (E:\\Dev\\npm-global\\node_modules\\@tencent-qqmail\\agently-cli\\package.json) declares name \"@tencent-qqmail/agently-cli\", version 1.0.5 (at correction time), description \"Agent-first mail CLI for Agently\", license Apache-2.0, engines node>=16. The npm registry has NO package named \"agently-cli\" (npm view agently-cli returns 404), so the plain name must never be used for install/update commands; the scoped name is the only valid provenance. `agently-cli --help` shows an \"auth login (stores token in keychain)\" surface consistent with a mail CLI.",
+          "2026-10-05: 1.0.5 -> 1.0.18 (npm dist-tag latest for @tencent-qqmail/agently-cli at execution time) via npm install -g @tencent-qqmail/agently-cli@1.0.18 in the existing global prefix E:\\Dev\\npm-global. Executable and command resolution unchanged (E:\\Dev\\npm-global\\agently-cli.cmd); no duplicate install. Engines node>=16, so the Node 22 runtime is unaffected."
+        ],
+        "purpose": "Agently Mail CLI (@tencent-qqmail/agently-cli): Tencent QQMail agent-first mail CLI for the Agently agent."
       }
     },
     {
@@ -145,7 +149,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.98.1",
+        "version": "1.99.0",
         "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
         "command_resolution": [
           {
@@ -221,7 +225,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.3.4",
+        "version": "0.3.6",
         "executable": "E:\\Dev\\npm-global\\codex-threadripper.cmd",
         "command_resolution": [
           {
@@ -244,6 +248,9 @@
         ]
       },
       "curated": {
+        "notes": [
+          "2026-10-05: 0.3.4 -> 0.3.6 (npm dist-tag latest at execution time; no engines field declared for 0.3.6) via npm install -g codex-threadripper@0.3.6 in the existing global prefix E:\\Dev\\npm-global. Executable and command resolution unchanged (E:\\Dev\\npm-global\\codex-threadripper.cmd); no duplicate install."
+        ],
         "purpose": "Codex parallel session and thread execution accelerator tool."
       }
     },
@@ -255,6 +262,8 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
+        "verification_provider": "runtimes-package-managers-toolchain",
+        "verification_reason": "timed_out",
         "version": "3.11.5",
         "executable": "E:\\dev\\flutter\\bin\\dart.bat",
         "command_resolution": [
@@ -377,6 +386,8 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
+        "verification_provider": "runtimes-package-managers-toolchain",
+        "verification_reason": "failed",
         "version": "3.41.9",
         "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
         "command_resolution": [
@@ -494,6 +505,8 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
+        "verification_provider": "runtimes-package-managers-toolchain",
+        "verification_reason": "timed_out",
         "version": "3.7.1",
         "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
         "command_resolution": [
@@ -748,6 +761,8 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
+        "verification_provider": "runtimes-package-managers-toolchain",
+        "verification_reason": "timed_out",
         "version": "26.2.1",
         "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
         "command_resolution": [
@@ -879,7 +894,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.98.1",
+        "version": "1.99.0",
         "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
         "command_resolution": [
           {
@@ -952,19 +967,19 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "2.118.0",
-        "executable": "D:\\Tools\\SupabaseCLI\\2.118.0\\node_modules\\.bin\\supabase.cmd",
+        "version": "2.119.0",
+        "executable": "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin\\supabase.cmd",
         "command_resolution": [
           {
             "scope": "windows-host",
-            "executable": "D:\\Tools\\SupabaseCLI\\2.118.0\\node_modules\\.bin\\supabase.cmd",
+            "executable": "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin\\supabase.cmd",
             "command_type": "PersistentApplication",
             "path_index": 34,
             "source": "persistent-path"
           }
         ],
         "install": {
-          "root": "D:\\Tools\\SupabaseCLI\\2.118.0"
+          "root": "D:\\Tools\\SupabaseCLI\\2.119.0"
         },
         "evidence": [
           {
@@ -1048,7 +1063,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.21",
+        "version": "0.12.23",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1083,7 +1098,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.21",
+        "version": "0.12.23",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {
