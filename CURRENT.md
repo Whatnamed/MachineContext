@@ -5,9 +5,9 @@
 ## Verification
 
 - State: partial
-- Provider state: verified
+- Provider state: partial
 - Mode: Quick
-- Verified at: 2026-10-05T06:16:17.4190232Z
+- Verified at: 2026-10-05T06:55:12.1368364Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -18,7 +18,7 @@
   - `host-authoritative-tools`: success
   - `network-local-services`: success
   - `nvidia-smi`: success
-  - `runtimes-package-managers-toolchain`: success
+  - `runtimes-package-managers-toolchain`: partial
   - `shells-path-resolution`: success
   - `system-hardware-storage`: success
   - `visual-studio-msvc-sdk`: success
@@ -39,7 +39,7 @@
 - Storage:
   - `C:\` NTFS (13.8/195.9 GiB free/total)
   - `D:\` NTFS (15.8/279.3 GiB free/total)
-  - `E:\` NTFS (122.8/953.9 GiB free/total)
+  - `E:\` NTFS (122.0/953.9 GiB free/total)
 
 ## Development environment
 

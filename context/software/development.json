@@ -262,8 +262,6 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "verification_provider": "runtimes-package-managers-toolchain",
-        "verification_reason": "timed_out",
         "version": "3.11.5",
         "executable": "E:\\dev\\flutter\\bin\\dart.bat",
         "command_resolution": [
@@ -385,7 +383,7 @@
       "name": "Flutter",
       "observed": {
         "present": true,
-        "verification": "verified-present",
+        "verification": "unverified",
         "verification_provider": "runtimes-package-managers-toolchain",
         "verification_reason": "failed",
         "version": "3.41.9",
@@ -505,8 +503,6 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "verification_provider": "runtimes-package-managers-toolchain",
-        "verification_reason": "timed_out",
         "version": "3.7.1",
         "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
         "command_resolution": [
@@ -761,8 +757,6 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "verification_provider": "runtimes-package-managers-toolchain",
-        "verification_reason": "timed_out",
         "version": "26.2.1",
         "executable": "D:\\Python\\3.12.10\\Scripts\\pip.exe",
         "command_resolution": [

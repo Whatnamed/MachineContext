@@ -861,8 +861,6 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "verification_provider": "ai-tooling",
-        "verification_reason": "timed_out",
         "version": "2.64.0",
         "executable": "E:\\Dev\\npm-global\\opencodex.cmd",
         "command_resolution": [
