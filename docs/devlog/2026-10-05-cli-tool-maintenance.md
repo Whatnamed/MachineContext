@@ -102,8 +102,11 @@ keychain") is consistent with the mail-CLI reading.
    version probe) yet — because probe failures are fail-soft — still reached publish,
    leaving Flutter and WSL marked `unverified/failed` plus a session-injected
    `HTTP_PROXY`/`HTTPS_PROXY` env-projection drift. Nothing was committed. The clean pwsh-7
-   rerun (after the blocker below) republished over it: all ten providers `success`,
-   Flutter/WSL verified again, proxy env projection back to `[]`.
+   rerun (after the blocker below) republished over it: all ten providers `success`, WSL
+   verified again, proxy env projection back to `[]`. Flutter's `verification` returned to
+   `verified-present` (its pwsh-7 probe succeeded), but the degraded publish's failure
+   metadata survived the transition — the stale-metadata defect described in
+   `2026-10-05-reconcile-verification-metadata.md`.
 2. **`wsl.exe` is on this session's program blacklist.** `network.ps1` probes
    `wsl --status` / `wsl --list --quiet` every sync, and the blacklist kills the whole
    sync process (not fail-soft at the process level), so no publish was possible from
@@ -111,29 +114,36 @@ keychain") is consistent with the mail-CLI reading.
    Security → Program Blacklist. Recording this so the next round knows why a sync may
    die without any script error.
 
-## Out-of-round observation: flutter CLI currently unprobeable
+## Out-of-round observation: flutter CLI probe is intermittently unhealthy
 
-`flutter --version` fails on this machine right now with
-`CreateFile failed 231 (所有的管道范例都在使用中。)` from
-`runtime/bin/process_win.cc` — reproducible outside any sandbox, while
-`dart.exe --version` (same SDK, 3.11.5) succeeds and no dart/flutter processes are
-running. The install itself looks intact (`bin/cache/dart-sdk` present, engine.version
-present, version 3.41.9 preserved in canonical). No dart/flutter process was killed and
-no cache repair was attempted — flutter is outside this round's scope; the collector's
-designed degradation (`verification: unverified`, reason `failed`, version kept) is what
-canonical now honestly records. If it persists into the next session, running
-`flutter --version` from a plain terminal and possibly `flutter doctor`/cache repair is a
-user-side follow-up.
+`flutter --version` failed repeatedly during this session's interactive shells with
+`CreateFile failed 231 (所有的管道范例都在使用中。)` from `runtime/bin/process_win.cc`
+(reproduced outside any sandbox, while `dart.exe --version` in the same SDK succeeded and
+no dart/flutter processes were running). The install itself looks intact
+(`bin/cache/dart-sdk` present, engine.version present, version 3.41.9 preserved).
+**Correction (same-day review):** the sync-time flutter probe actually *succeeded* in the
+pwsh-7 publishes of this round — the published canonical recorded flutter
+`verified-present`, but carrying a stale `verification_reason: failed` left over from the
+degraded 5.1 publish. That stale-metadata retention is a reconcile defect, not honest
+recording; it is fixed and described in
+`2026-10-05-reconcile-verification-metadata.md`. Later syncs show the flutter probe is
+intermittent: it flips between `timed_out` (8s probe budget) and `failed` (the pipe
+error), which is exactly the fail-soft behavior the record is designed for — no cache
+repair was attempted and flutter remains outside maintenance scope.
 
 ## Gates
 
 - `sync.ps1` (pwsh 7, `-AllowDirty` because the publishing session itself produces the
   diff): overall success, all 10 providers success, validation ok, 0 warnings.
 - `validate.ps1`: run standalone below, expected 0 findings.
-- Diff reviewed line by line: only the version/verification fields above, the two
-  curated note sets, the expected non-round drift listed above, storage drift and the
-  heartbeat. No schema or collector changes → per §2.3 the full test suite was not
-  required and not run.
+- Diff reviewed line by line: the version/verification fields above, the two curated note
+  sets, the expected non-round drift listed above, storage drift and the heartbeat. The
+  review missed one thing at the time: the publish also attached a stale
+  `verification_reason: failed` to flutter (and similar stale `timed_out` metadata to
+  dart/git-lfs/pip/opencodex), which looked like collector output but was reconcile
+  retention of the degraded 5.1 state's failure metadata — corrected in
+  `2026-10-05-reconcile-verification-metadata.md`. No schema or collector changes → per
+  §2.3 the full test suite was not required and not run in this round.
 - Idempotency: a second sync changes only `context/status.json`'s `verified_at`
   heartbeat (checked by diff below).
 - Privacy sweep over added diff lines: no key/token/cookie/bearer/authorization shapes;
