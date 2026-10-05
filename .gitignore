@@ -31,3 +31,6 @@ captures/
 Thumbs.db
 .vscode/
 .idea/
+
+# WorkBuddy project-session data (agent memory etc.) is machine-local
+.workbuddy/
