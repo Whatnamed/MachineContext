@@ -5,9 +5,9 @@
 ## Verification
 
 - State: partial
-- Provider state: partial
+- Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-05T06:55:12.1368364Z
+- Verified at: 2026-10-08T11:39:56.3812676Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -18,7 +18,7 @@
   - `host-authoritative-tools`: success
   - `network-local-services`: success
   - `nvidia-smi`: success
-  - `runtimes-package-managers-toolchain`: partial
+  - `runtimes-package-managers-toolchain`: success
   - `shells-path-resolution`: success
   - `system-hardware-storage`: success
   - `visual-studio-msvc-sdk`: success
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (13.8/195.9 GiB free/total)
-  - `D:\` NTFS (15.8/279.3 GiB free/total)
-  - `E:\` NTFS (122.0/953.9 GiB free/total)
+  - `C:\` NTFS (13.0/195.9 GiB free/total)
+  - `D:\` NTFS (22.5/279.3 GiB free/total)
+  - `E:\` NTFS (126.0/953.9 GiB free/total)
 
 ## Development environment
 
@@ -76,13 +76,13 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.2.16 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.3.1 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.289 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.160.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.930.4958.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.930.4958.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.930.7945.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.930.7945.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`

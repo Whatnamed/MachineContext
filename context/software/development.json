@@ -383,9 +383,7 @@
       "name": "Flutter",
       "observed": {
         "present": true,
-        "verification": "unverified",
-        "verification_provider": "runtimes-package-managers-toolchain",
-        "verification_reason": "failed",
+        "verification": "verified-present",
         "version": "3.41.9",
         "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
         "command_resolution": [

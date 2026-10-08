@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "state": "partial",
-  "provider_state": "partial",
+  "provider_state": "verified",
   "published_verification": {
     "mode": "Quick",
-    "verified_at": "2026-10-05T06:55:12.1368364Z",
+    "verified_at": "2026-10-08T11:39:56.3812676Z",
     "provider_summary": [
       {
         "provider": "ai-tooling",
@@ -32,7 +32,7 @@
       },
       {
         "provider": "runtimes-package-managers-toolchain",
-        "health": "partial"
+        "health": "success"
       },
       {
         "provider": "shells-path-resolution",

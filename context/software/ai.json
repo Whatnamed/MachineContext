@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.2.16",
+        "version": "1.3.1",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -347,7 +347,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.930.4958.0",
+        "version": "26.930.7945.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -361,8 +361,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.930.4958.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.930.4958.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.930.7945.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.930.7945.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
