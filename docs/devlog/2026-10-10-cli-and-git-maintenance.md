@@ -71,20 +71,28 @@ Bun (1.4.2), DSH (0.2.0-rc.2), Agently CLI (1.0.18), Codex Threadripper (0.3.6).
    - `D:\Git\Git\ReleaseNotes.html` confirms `Git for Windows v2.56.0(2)` (October 5th 2026).
    - `D:\Git\Git\etc\package-versions.txt` confirms migration to UCRT64 toolchain: `git 2.56.0.2-1`, bundled `git-lfs 3.8.0-1`, `git-credential-manager 2.9.1-1`, `bash 5.3.015-2`, `openssl 3.5.9-1`.
    - `D:\Git\Git\etc\gitconfig` confirms system configuration, LFS filters, and credential manager intact.
-4. **Environment Incident & Root Cause**:
+4. **Environment Incident & Probable Root Cause**:
    - Following Inno Setup installer execution and system PATH/environment broadcasts, process creation via `run_command` began failing with Win32 Error 5 (`ERROR_ACCESS_DENIED`).
-   - Root cause: PowerShell 7 had previously been installed via Microsoft Store / MSIX as an AppExecutionAlias (`%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe`). System-level environment changes triggered Windows 11 AppExecutionAlias permission isolation / corruption, blocking `CreateProcess` invocations with `0x80070005`.
-5. **Resolution & Cleanup**:
-   - Installed official standalone MSI package `PowerShell-7.4.6-win-x64.msi` into `%PROGRAMFILES%\PowerShell\7\pwsh.exe`.
-   - Reconfigured Windows Terminal default profile to point directly to `%PROGRAMFILES%\PowerShell\7\pwsh.exe`, decoupling it from the broken dynamic MSIX profile.
-   - Deployed `pwsh.cmd` forwarder in `%LOCALAPPDATA%\agy\bin` (which precedes `WindowsApps` in User PATH), routing all `pwsh` calls directly to the native `C:\Program Files\PowerShell\7\pwsh.exe`.
-   - Uninstalled lingering broken Microsoft Store package `Microsoft.PowerShell 7.6.6.0` via `winget uninstall --name "PowerShell" --version "7.6.6.0"` to eliminate shortcut and search priority collisions.
-   - Cleaned up downloaded `PowerShell-7.4.6-win-x64.msi` installer from disk.
-   - Full command execution unblocked across terminal, host, and agent harness.
+   - Likely / probable root cause: PowerShell 7 had previously been installed via Microsoft Store / MSIX as an AppExecutionAlias (`%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe`). System-level environment changes and installer token boundaries likely triggered Windows 11 AppExecutionAlias permission isolation or reparse token corruption, causing process creation against the alias to fail with `0x80070005`. (Inferred from WindowsApps security boundary behaviors, MSIX concurrency issue #28117, and immediate resolution once bypassing AppExecutionAlias; not directly confirmed by kernel trace).
+5. **Incident Resolution & Final Native MSI Baseline**:
+   - Initial recovery: Installed standalone MSI package `PowerShell-7.4.6-win-x64.msi` into `%PROGRAMFILES%\PowerShell\7\pwsh.exe` and reconfigured Windows Terminal default profile to point directly to `%PROGRAMFILES%\PowerShell\7\pwsh.exe`.
+   - Temporary forwarder: A temporary `pwsh.cmd` forwarder was created in `%LOCALAPPDATA%\agy\bin` during emergency session recovery.
+   - Final native MSI upgrade: Verified official GitHub release `v7.6.6` as the current stable release. Downloaded official vendor installer `PowerShell-7.6.6-win-x64.msi` (SHA-256 `958838FF55091E1C8705D89EFED0CC7E8245A3A6EF6C0CCFAE20015227108AD8` and Authenticode valid, Microsoft Corporation). Upgraded `%PROGRAMFILES%\PowerShell\7` in place to `7.6.6`.
+   - Store package cleanup: Uninstalled legacy broken Store package `Microsoft.PowerShell 7.6.6.0` via `winget uninstall --name "PowerShell" --version "7.6.6.0"` to eliminate shortcut and search priority collisions.
+   - Shim cleanup: Removed temporary forwarder `%LOCALAPPDATA%\agy\bin\pwsh.cmd`, leaving `%PROGRAMFILES%\PowerShell\7\pwsh.exe` as the sole un-shimmed executable on the machine.
+   - Cleaned up all downloaded installer artifacts (`PowerShell-7.4.6-win-x64.msi`, `PowerShell-7.6.6-win-x64.msi`, `Git-2.56.0.2-64-bit.exe`).
+   - Verified `pwsh --version` (7.6.6), `where.exe pwsh` (resolving directly to Program Files), `$PSVersionTable` (7.6.6), child process spawning, and toolchain resolution directly from native PowerShell.
+
+## Observed Non-Round Drift (Pass-through)
+
+During canonical reconciliation, the following independent machine state changes were observed and recorded as genuine pass-through drift:
+- **Codex Desktop**: Updated `26.930.7945.0 → 26.1002.7124.0` in `context/software/ai.json` (background automatic vendor update).
+- **Codex CLI config**: Updated `model_reasoning_effort: high → medium` in `context/configs/ai/codex-cli.json` (pre-existing local user config change; preserved as observed state without modifying configuration files).
 
 ## Sync, Validation & Publication
 
-- **Sync 1**: Executed `pwsh scripts/sync.ps1 -RepoRoot E:\MachineContext -AllowDirty`. All 10 providers reported `success`, 0 warnings, published canonical files atomically.
-- **Validation**: Executed `pwsh scripts/validate.ps1 -RepoRoot E:\MachineContext`. 0 errors, 0 warnings, 0 findings (`ok: true`).
+- **Sync 1**: Executed native `& 'C:\Program Files\PowerShell\7\pwsh.exe' scripts/sync.ps1 -RepoRoot E:\MachineContext -AllowDirty`. All 10 providers reported `success`, 0 warnings, published canonical files atomically.
+- **Validation**: Executed `validate.ps1`. 0 errors, 0 warnings, 0 findings (`ok: true`).
 - **Sync 2 (Idempotency)**: Second pass confirmed identical canonical state outside verification heartbeat timestamp.
+
 
