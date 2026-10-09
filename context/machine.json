@@ -266,7 +266,7 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "7.4.6",
+        "version": "7.6.6",
         "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
         "command_resolution": [
           {
