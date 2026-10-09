@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-09T17:29:47.0430974Z
+- Verified at: 2026-10-09T17:41:02.4480580Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3

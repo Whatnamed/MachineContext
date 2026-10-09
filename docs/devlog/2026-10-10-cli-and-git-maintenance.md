@@ -74,10 +74,12 @@ Bun (1.4.2), DSH (0.2.0-rc.2), Agently CLI (1.0.18), Codex Threadripper (0.3.6).
 4. **Environment Incident & Root Cause**:
    - Following Inno Setup installer execution and system PATH/environment broadcasts, process creation via `run_command` began failing with Win32 Error 5 (`ERROR_ACCESS_DENIED`).
    - Root cause: PowerShell 7 had previously been installed via Microsoft Store / MSIX as an AppExecutionAlias (`%LOCALAPPDATA%\Microsoft\WindowsApps\pwsh.exe`). System-level environment changes triggered Windows 11 AppExecutionAlias permission isolation / corruption, blocking `CreateProcess` invocations with `0x80070005`.
-5. **Resolution**:
+5. **Resolution & Cleanup**:
    - Installed official standalone MSI package `PowerShell-7.4.6-win-x64.msi` into `%PROGRAMFILES%\PowerShell\7\pwsh.exe`.
    - Reconfigured Windows Terminal default profile to point directly to `%PROGRAMFILES%\PowerShell\7\pwsh.exe`, decoupling it from the broken dynamic MSIX profile.
    - Deployed `pwsh.cmd` forwarder in `%LOCALAPPDATA%\agy\bin` (which precedes `WindowsApps` in User PATH), routing all `pwsh` calls directly to the native `C:\Program Files\PowerShell\7\pwsh.exe`.
+   - Uninstalled lingering broken Microsoft Store package `Microsoft.PowerShell 7.6.6.0` via `winget uninstall --name "PowerShell" --version "7.6.6.0"` to eliminate shortcut and search priority collisions.
+   - Cleaned up downloaded `PowerShell-7.4.6-win-x64.msi` installer from disk.
    - Full command execution unblocked across terminal, host, and agent harness.
 
 ## Sync, Validation & Publication
