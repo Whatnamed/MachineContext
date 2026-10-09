@@ -194,7 +194,7 @@
             "scope": "windows-host",
             "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 30,
+            "path_index": 31,
             "source": "persistent-path"
           }
         ],
@@ -457,14 +457,14 @@
         "verification": "verified-present",
         "verification_provider": "git-for-windows",
         "verification_reason": "version-probe-success",
-        "version": "2.55.0",
+        "version": "2.56.0",
         "executable": "D:\\Git\\Git\\cmd\\git.exe",
         "command_resolution": [
           {
             "scope": "windows-host",
             "executable": "D:\\Git\\Git\\cmd\\git.exe",
             "command_type": "PersistentApplication",
-            "path_index": 17,
+            "path_index": 18,
             "source": "persistent-path"
           }
         ],
@@ -485,7 +485,7 @@
             "confidence": "high"
           }
         ],
-        "distribution_version": "2.55.0.windows.5"
+        "distribution_version": "2.56.0.windows.2"
       },
       "curated": {
         "notes": [
@@ -501,7 +501,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "3.7.1",
+        "version": "3.8.0",
         "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
         "command_resolution": [
           {
@@ -959,19 +959,19 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "2.119.0",
-        "executable": "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin\\supabase.cmd",
+        "version": "2.120.0",
+        "executable": "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin\\supabase.cmd",
         "command_resolution": [
           {
             "scope": "windows-host",
-            "executable": "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin\\supabase.cmd",
+            "executable": "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin\\supabase.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 34,
+            "path_index": 35,
             "source": "persistent-path"
           }
         ],
         "install": {
-          "root": "D:\\Tools\\SupabaseCLI\\2.119.0"
+          "root": "D:\\Tools\\SupabaseCLI\\2.120.0"
         },
         "evidence": [
           {
@@ -1055,7 +1055,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.23",
+        "version": "0.12.24",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1090,7 +1090,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.23",
+        "version": "0.12.24",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {

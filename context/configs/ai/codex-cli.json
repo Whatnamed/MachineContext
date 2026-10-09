@@ -21,7 +21,7 @@
       "model": "gpt-6.1-sol",
       "model_auto_compact_token_limit": 330000,
       "model_context_window": 372000,
-      "model_reasoning_effort": "high",
+      "model_reasoning_effort": "medium",
       "sandbox_mode": "danger-full-access",
       "unprojected_keys": [
         "codex-cli.disable_response_storage",

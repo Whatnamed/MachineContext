@@ -40,10 +40,11 @@
     {
       "scope": "windows-host",
       "all": [
-        "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+        "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
+        "%LOCALAPPDATA%\\agy\\bin\\pwsh.cmd"
       ],
       "command": "pwsh",
-      "resolved": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe"
+      "resolved": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe"
     },
     {
       "scope": "windows-host",
@@ -141,19 +142,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 13958643712,
+      "free_bytes": 12616466432,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 24159191040,
+      "free_bytes": 20937965568,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 135291469824,
+      "free_bytes": 135023034368,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -265,14 +266,14 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "7.6.6",
-        "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+        "version": "7.4.6",
+        "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
         "command_resolution": [
           {
             "scope": "windows-host",
-            "executable": "%LOCALAPPDATA%\\Microsoft\\WindowsApps\\pwsh.exe",
+            "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
             "command_type": "PersistentApplication",
-            "path_index": 28,
+            "path_index": 19,
             "source": "persistent-path"
           }
         ],
@@ -385,7 +386,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 45,
+    "entry_count": 46,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -405,8 +406,9 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Git\\Git\\cmd",
-      "%PROGRAMFILES%\\GitHub CLI"
+      "%PROGRAMFILES%\\PowerShell\\7"
     ],
     "persistent_effective_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -426,8 +428,9 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
-      "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\GitHub CLI",
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\PowerShell\\7",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -443,7 +446,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -472,7 +475,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -505,8 +508,9 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
-      "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\GitHub CLI",
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\PowerShell\\7",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -522,7 +526,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.119.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
