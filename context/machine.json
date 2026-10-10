@@ -40,8 +40,7 @@
     {
       "scope": "windows-host",
       "all": [
-        "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
-        "%LOCALAPPDATA%\\agy\\bin\\pwsh.cmd"
+        "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe"
       ],
       "command": "pwsh",
       "resolved": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe"
@@ -142,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 12616466432,
+      "free_bytes": 13421772800,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 20937965568,
+      "free_bytes": 21206401024,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 135023034368,
+      "free_bytes": 135291469824,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }

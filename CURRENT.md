@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-09T18:05:49.1861752Z
+- Verified at: 2026-10-10T01:21:22.1893610Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (11.8/195.9 GiB free/total)
-  - `D:\` NTFS (19.5/279.3 GiB free/total)
-  - `E:\` NTFS (125.8/953.9 GiB free/total)
+  - `C:\` NTFS (12.5/195.9 GiB free/total)
+  - `D:\` NTFS (19.8/279.3 GiB free/total)
+  - `E:\` NTFS (126.0/953.9 GiB free/total)
 
 ## Development environment
 
