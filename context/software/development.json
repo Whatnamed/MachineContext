@@ -468,9 +468,9 @@
       },
       "curated": {
         "constraints": [
-          "Reuse the existing SDK via its absolute executable path; leave global PATH, Visual Studio, proxy settings and system runtimes unchanged.",
-          "Keep CS2 and Morpho production workspaces read-only; verification projects and CLI caches belong outside those workspaces.",
-          "AgentBench must keep pointing config.local.json dotnet_executable at this installation and must not fall back to the SDK-less system host or install a second SDK."
+          "Reuse this SDK by its absolute executable path during verification and build runs; do not adjust global PATH, Visual Studio, proxy settings or system runtimes to make it resolvable.",
+          "During cross-project SDK verification and reuse, keep the CS2 and Morpho production workspaces read-only and place verification projects and CLI caches outside them. That is a protection for the SDK verification/reuse scenario, not a standing policy that those projects may never be modified.",
+          "AgentBench currently pins this installation through config.local.json dotnet_executable; keep that reference explicit rather than letting it fall back silently to the SDK-less system host or install a duplicate SDK. If the SDK later moves or is replaced, the reference may be updated once the new target is verified - what is prohibited is unverified fallback and duplicate installation, not the recorded path itself."
         ],
         "notes": [
           "Verified on 2026-10-12. The system dotnet host has runtimes and no SDK; this separate project-local SDK record supplies the development toolchain. CS2 Publish-Controller.ps1 resolves current-worktree temp\\tooling\\dotnet, then E:\\CS2MOD\\tooling\\dotnet, then PATH. E:\\CS2MOD\\tooling\\dotnet and E:\\Dev\\dotnet were absent; no download or installation was needed. Details: docs/devlog/2026-10-12-dotnet10-wpf-sdk-verification.md.",
