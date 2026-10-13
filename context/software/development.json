@@ -11,7 +11,8 @@
         "mcporter",
         "opencli",
         "tera-term",
-        "unity-hub"
+        "unity-hub",
+        "dotnet-sdk"
       ],
       "recorded_at": "2026-08-26T14:12:00.0000000Z",
       "refresh_policy": "manual-broad-scan",
@@ -374,7 +375,109 @@
         "sdk_state": "absent",
         "verification_note": "dotnet --version is unavailable because no .NET SDK is installed; runtimes were checked separately"
       },
-      "curated": {}
+      "curated": {
+        "notes": [
+          "2026-10-13: the runtime-only system host is a property of this installation, not of the machine. `%PROGRAMFILES%\\dotnet\\dotnet.exe --list-sdks` succeeds with zero SDK entries, re-verified read-only today alongside the recorded runtimes (6.0.26 and 7.0.0 plus 8.0.21 for NETCore/WindowsDesktop, 8.0.21 for AspNetCore). \"No system SDK\" must therefore not be read as \"no usable .NET SDK on this machine\": the development toolchain is a portable project-local SDK recorded separately as dotnet-sdk. The routine scan probes only this host, so observed.install.sdks and the collector-owned observed.verification_note always describe the system host and never project-local SDKs - the collector text \"no .NET SDK is installed\" reverted to its own wording on the 2026-10-13 sync, which is expected ownership behaviour and is why this note carries the qualification."
+        ]
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dotnet-sdk",
+      "kind": "sdk",
+      "name": ".NET SDK",
+      "observed": {
+        "scope": "project-local",
+        "present": true,
+        "verification": "verified-present",
+        "verification_provider": "manual-targeted-toolchain",
+        "verification_reason": "sdk-info-and-offline-wpf-build-succeeded",
+        "version": "10.0.401",
+        "executable": "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet\\dotnet.exe",
+        "alternative_installations": [
+          {
+            "scope": "project-local",
+            "verification": "verified-present",
+            "version": "10.0.401",
+            "executable": "E:\\Projects\\CS2-Local-Kit\\wt-14188-recovery\\temp\\tooling\\dotnet\\dotnet.exe",
+            "install": {
+              "scope": "project",
+              "method": "portable",
+              "root": "E:\\Projects\\CS2-Local-Kit\\wt-14188-recovery\\temp\\tooling\\dotnet"
+            },
+            "architecture": "x64",
+            "verification_note": "dotnet --info and WindowsDesktop reference files checked; the WPF build used the primary installation."
+          }
+        ],
+        "install": {
+          "scope": "project",
+          "method": "portable",
+          "root": "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet",
+          "sdks": [
+            {
+              "path": "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet\\sdk",
+              "version": "10.0.401"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "provider": "manual-targeted-toolchain",
+            "provider_key": "dotnet-sdk-wpf-20261012",
+            "fields": [
+              "version",
+              "architecture",
+              "executable",
+              "alternative_installations",
+              "windows_desktop_targeting_pack",
+              "windows_desktop_runtime",
+              "wpf_compilation"
+            ],
+            "confidence": "high",
+            "paths": [
+              "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet\\dotnet.exe",
+              "E:\\Projects\\CS2-Local-Kit\\wt-14188-recovery\\temp\\tooling\\dotnet\\dotnet.exe",
+              "E:\\Dev\\validation\\dotnet10-wpf-20261012\\evidence\\verification.json"
+            ]
+          }
+        ],
+        "architecture": "x64",
+        "refresh_policy": "manual-targeted-toolchain-verification",
+        "windows_desktop_runtime": {
+          "path": "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet\\shared\\Microsoft.WindowsDesktop.App\\10.0.12",
+          "version": "10.0.12"
+        },
+        "windows_desktop_targeting_pack": {
+          "name": "Microsoft.WindowsDesktop.App.Ref",
+          "path": "E:\\Projects\\CS2-Local-Kit\\CS2-Local-Kit\\temp\\tooling\\dotnet\\packs\\Microsoft.WindowsDesktop.App.Ref\\10.0.12",
+          "version": "10.0.12"
+        },
+        "wpf_compilation": {
+          "verification": "verified-present",
+          "build_exit_code": 0,
+          "errors": 0,
+          "evidence_path": "E:\\Dev\\validation\\dotnet10-wpf-20261012\\evidence\\verification.json",
+          "package_sources": [],
+          "project": "E:\\Dev\\validation\\dotnet10-wpf-20261012\\WpfSdkSmoke.csproj",
+          "restore_exit_code": 0,
+          "target_framework": "net10.0-windows",
+          "ui_runtime_tested": false,
+          "warnings": 0,
+          "xaml_compiled_to_baml": true
+        }
+      },
+      "curated": {
+        "constraints": [
+          "Reuse the existing SDK via its absolute executable path; leave global PATH, Visual Studio, proxy settings and system runtimes unchanged.",
+          "Keep CS2 and Morpho production workspaces read-only; verification projects and CLI caches belong outside those workspaces.",
+          "AgentBench must keep pointing config.local.json dotnet_executable at this installation and must not fall back to the SDK-less system host or install a second SDK."
+        ],
+        "notes": [
+          "Verified on 2026-10-12. The system dotnet host has runtimes and no SDK; this separate project-local SDK record supplies the development toolchain. CS2 Publish-Controller.ps1 resolves current-worktree temp\\tooling\\dotnet, then E:\\CS2MOD\\tooling\\dotnet, then PATH. E:\\CS2MOD\\tooling\\dotnet and E:\\Dev\\dotnet were absent; no download or installation was needed. Details: docs/devlog/2026-10-12-dotnet10-wpf-sdk-verification.md.",
+          "2026-10-13: re-verified read-only (`--version`, `--list-sdks`, `--list-runtimes` and Test-Path on the components listed below); nothing was downloaded, installed, copied or moved, and system and user PATH are unchanged. The primary root still enumerates SDK 10.0.401 x64 with Microsoft.NETCore.App, Microsoft.AspNetCore.App and Microsoft.WindowsDesktop.App 10.0.12, and the three files a consumer actually requires all exist: sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk.WindowsDesktop\\Sdk\\Sdk.props, packs\\Microsoft.WindowsDesktop.App.Ref\\10.0.12\\ref\\net10.0\\PresentationFramework.dll and shared\\Microsoft.WindowsDesktop.App\\10.0.12\\PresentationFramework.dll.",
+          "2026-10-13 consumer record: AgentBench (E:\\AgentBench\\AgentBench) reuses this exact installation rather than installing its own - config.local.json sets dotnet_executable to the primary dotnet.exe above, and scripts/dotnet_toolchain.py re-validates SDK 10.0.401, the WindowsDesktop 10.0.12 targeting pack and shared runtime, and the x64 PE header before every run, then confines DOTNET_ROOT, DOTNET_CLI_HOME, NUGET_PACKAGES, NUGET_HTTP_CACHE_PATH and TEMP/TMP to its own .scratch directories. Its docs/P1-B2-readiness.md states the same policy: read only this existing SDK, no system-host fallback, no repeat install. Recorded because it is how a project-local SDK is consumed without becoming a system SDK."
+        ]
+      }
     },
     {
       "schema_version": 1,
@@ -575,7 +678,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.64",
+        "version": "1.0.97",
         "executable": "E:\\Dev\\npm-global\\lark-cli.cmd",
         "command_resolution": [
           {
@@ -598,6 +701,9 @@
         ]
       },
       "curated": {
+        "notes": [
+          "2026-10-13: 1.0.64 -> 1.0.97 (npm dist-tag latest for @larksuite/cli at execution time) via npm install -g @larksuite/cli@1.0.97 in the existing global prefix E:\\Dev\\npm-global. Executable and command resolution unchanged (E:\\Dev\\npm-global\\lark-cli.cmd); no duplicate install, and the package.json inside the prefix reports the same 1.0.97. Engines node>=16, so the Node 22 runtime is unaffected. This entity has no routine provider coverage (it is listed in meta.supplemental_inventory.entity_ids), so the version is refreshed through the OPERATIONS section 6 route; the other npm-global CLIs were re-checked in the same round and are already at their dist-tag latest (opencli 1.8.8, agently-cli 1.0.18, codex-threadripper 0.3.6), while mcporter 0.9.0 stays pinned by its Node>=24 engine floor."
+        ],
         "purpose": "Feishu / Lark open platform developer CLI."
       }
     },
@@ -633,7 +739,8 @@
       },
       "curated": {
         "notes": [
-          "2026-09-26: version deliberately left at 0.9.0 — NOT an oversight and not a failure of the update round. `npm update -g mcporter` (the Agent Reach update guide step) was run and correctly moved nothing, because every release from 0.10.0 on declares engines.node \">=24\" while this machine runs Node 22.23.2 (D:\\Node.js\\Node.js, recorded on the node entity). Forcing 0.14.1 would install an unsupported package, and upgrading the Node runtime is a separate, much larger migration that this round explicitly did not take on. To move mcporter past 0.9.0, upgrade Node to >=24 first, then npm install -g mcporter@latest. Agent Reach is unaffected either way: its exa_search/linkedin/xiaohongshu channels read %USERPROFILE%\\.mcporter\\mcporter.json directly instead of pinning a mcporter CLI version."
+          "2026-09-26: version deliberately left at 0.9.0 — NOT an oversight and not a failure of the update round. `npm update -g mcporter` (the Agent Reach update guide step) was run and correctly moved nothing, because every release from 0.10.0 on declares engines.node \">=24\" while this machine runs Node 22.23.2 (D:\\Node.js\\Node.js, recorded on the node entity). Forcing 0.14.1 would install an unsupported package, and upgrading the Node runtime is a separate, much larger migration that this round explicitly did not take on. To move mcporter past 0.9.0, upgrade Node to >=24 first, then npm install -g mcporter@latest. Agent Reach is unaffected either way: its exa_search/linkedin/xiaohongshu channels read %USERPROFILE%\\.mcporter\\mcporter.json directly instead of pinning a mcporter CLI version.",
+          "2026-10-13 re-check, no upgrade performed: npm dist-tag latest is now 0.14.3 and it still declares engines.node \">=24\" while this machine runs Node 22.23.2, so 0.9.0 remains a deliberate pin and the Node runtime was not moved for it."
         ],
         "purpose": "Model Context Protocol (MCP) server manager and registry CLI."
       }
@@ -1055,7 +1162,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.24",
+        "version": "0.13.0",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1090,7 +1197,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.12.24",
+        "version": "0.13.0",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {
