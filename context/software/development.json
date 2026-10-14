@@ -11,7 +11,6 @@
         "mcporter",
         "opencli",
         "tera-term",
-        "unity-hub",
         "dotnet-sdk"
       ],
       "recorded_at": "2026-08-26T14:12:00.0000000Z",
@@ -1059,33 +1058,6 @@
     },
     {
       "schema_version": 1,
-      "id": "unity-hub",
-      "kind": "game-engine-hub",
-      "name": "Unity Hub",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "3.3.3-c3",
-        "executable": "D:\\Unity\\Unity Hub\\Unity Hub.exe",
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "unity-hub",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Unity editor and project manager."
-      }
-    },
-    {
-      "schema_version": 1,
       "id": "uv",
       "kind": "package-manager",
       "name": "uv",
@@ -1157,8 +1129,8 @@
     {
       "schema_version": 1,
       "id": "visual-studio",
-      "kind": "ide",
-      "name": "Visual Studio",
+      "kind": "build-tools",
+      "name": "Visual Studio Build Tools",
       "observed": {
         "scope": "windows-host",
         "present": true,
@@ -1170,7 +1142,7 @@
           "installations": [
             {
               "version": "17.14.37806.7",
-              "display_name": "Visual Studio ���ɹ��� 2022",
+              "display_name": "Visual Studio 生成工具 2022",
               "installation_path": "E:\\Dev\\BuildTools",
               "is_complete": true,
               "msvc_toolsets": [
@@ -1206,6 +1178,20 @@
               "desktop_cpp_workload"
             ],
             "confidence": "high"
+          },
+          {
+            "provider": "visual-studio-msvc-sdk",
+            "provider_key": "vswhere",
+            "fields": [
+              "present",
+              "version",
+              "install",
+              "msvc_toolsets",
+              "windows_sdk_versions",
+              "desktop_cpp_workload",
+              "vctools_workload"
+            ],
+            "confidence": "high"
           }
         ],
         "desktop_cpp_workload": {
@@ -1225,6 +1211,15 @@
         "msvc_toolsets": [
           "E:\\Dev\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207"
         ],
+        "vctools_workload": {
+          "present": true,
+          "verification": "verified-present",
+          "installation_paths": [
+            "E:\\Dev\\BuildTools"
+          ],
+          "probe_status": "success",
+          "workload_id": "Microsoft.VisualStudio.Workload.VCTools"
+        },
         "windows_sdk_versions": [
           "10.0.26100.0"
         ]

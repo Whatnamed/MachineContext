@@ -91,3 +91,19 @@ vs_Community.exe --config "E:\MachineContext\docs\assets\toolchain-migration\vs_
 The installed Build Tools component manifest is archived at:
 `docs/assets/toolchain-migration/vs_buildtools_installed.vsconfig`
 Contains `Microsoft.VisualStudio.Workload.VCTools`, `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`, `Microsoft.VisualStudio.Component.Windows11SDK.26100`, CMake, MSBuild, and vcpkg.
+
+---
+
+## 5. Record Refinement & Entity Lifecycle Cleanup
+
+In the follow-up record remediation:
+1. **Visual Studio Build Tools Classification**:
+   - `visual-studio` entity updated from `kind: ide` to `kind: build-tools`, and name to `Visual Studio Build Tools`, preserving stable identifier.
+   - Collector and validator explicitly distinguish `Microsoft.VisualStudio.Workload.NativeDesktop` (`desktop_cpp_workload`, verified-absent) from `Microsoft.VisualStudio.Workload.VCTools` (`vctools_workload`, verified-present at `E:\Dev\BuildTools`).
+2. **UTF-8 Output Encoding**:
+   - Configured `vswhere.exe -utf8` in `scripts/collectors/visual-studio.ps1` to prevent ANSI/GBK decoding corruption (`Visual Studio 生成工具 2022`).
+3. **Unity Hub Retirement**:
+   - Verified physical absence across filesystem and registry; purged stale `unity-hub` entity from `supplemental_inventory` and `development.json`.
+4. **Tool State Audit**:
+   - Verified Codex model (`gpt-6.1-sol`) in `%USERPROFILE%\.codex\config.toml` and Qoder `mcp-router.json` absence reflect real local machine state.
+

@@ -60,12 +60,13 @@ function ConvertTo-McVisualStudioDesktopCppObservation {
         [string]$ProbeStatus,
 
         [AllowNull()]
-        [string]$ProbeText
+        [string]$ProbeText,
+
+        [string]$WorkloadId = 'Microsoft.VisualStudio.Workload.NativeDesktop'
     )
 
-    $workloadId = 'Microsoft.VisualStudio.Workload.NativeDesktop'
     $result = [ordered]@{
-        workload_id = $workloadId
+        workload_id = $WorkloadId
         verification = 'unverified'
         probe_status = $ProbeStatus
     }
@@ -123,7 +124,7 @@ function Get-McVisualStudioObservation {
     }
 
     $primary = $candidates[0]
-    $probe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @('-all', '-prerelease', '-products', '*', '-format', 'json') -Provider 'visual-studio-msvc-sdk' -ProbeName 'vswhere-instances' -TimeoutMs 10000 -OutputCapBytes 65536 -ResolutionScope 'windows-host'
+    $probe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @('-all', '-prerelease', '-products', '*', '-format', 'json', '-utf8') -Provider 'visual-studio-msvc-sdk' -ProbeName 'vswhere-instances' -TimeoutMs 10000 -OutputCapBytes 65536 -ResolutionScope 'windows-host'
     if ($probe.status -ne 'success') {
         [void]$verificationEvents.Add([pscustomobject][ordered]@{
                 module = 'development'
@@ -196,15 +197,28 @@ function Get-McVisualStudioObservation {
     }
 
     $desktopCppProbe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @(
-        '-all', '-prerelease', '-products', '*', '-requires', 'Microsoft.VisualStudio.Workload.NativeDesktop', '-format', 'json'
+        '-all', '-prerelease', '-products', '*', '-requires', 'Microsoft.VisualStudio.Workload.NativeDesktop', '-format', 'json', '-utf8'
     ) -Provider 'visual-studio-msvc-sdk' -ProbeName 'vswhere-native-desktop-workload' -TimeoutMs 10000 -OutputCapBytes 65536 -ResolutionScope 'windows-host'
-    $desktopCpp = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus ([string]$desktopCppProbe.status) -ProbeText ([string]$desktopCppProbe.stdout)
+    $desktopCpp = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus ([string]$desktopCppProbe.status) -ProbeText ([string]$desktopCppProbe.stdout) -WorkloadId 'Microsoft.VisualStudio.Workload.NativeDesktop'
     if ([string]$desktopCpp.verification -eq 'unverified') {
         [void]$warnings.Add("Visual Studio Native Desktop workload verifier status: $($desktopCpp.probe_status)")
     }
 
+    $vctoolsProbe = Invoke-McProbe -Executable ([string]$primary.path) -Arguments @(
+        '-all', '-prerelease', '-products', '*', '-requires', 'Microsoft.VisualStudio.Workload.VCTools', '-format', 'json', '-utf8'
+    ) -Provider 'visual-studio-msvc-sdk' -ProbeName 'vswhere-vctools-workload' -TimeoutMs 10000 -OutputCapBytes 65536 -ResolutionScope 'windows-host'
+    $vctools = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus ([string]$vctoolsProbe.status) -ProbeText ([string]$vctoolsProbe.stdout) -WorkloadId 'Microsoft.VisualStudio.Workload.VCTools'
+    if ([string]$vctools.verification -eq 'unverified') {
+        [void]$warnings.Add("Visual Studio VCTools workload verifier status: $($vctools.probe_status)")
+    }
+
     $first = $installations[0]
     $firstVersion = if ($null -ne $first.PSObject.Properties['version']) { [string]$first.version } else { $null }
+    $productId = if ($null -ne $first.PSObject.Properties['product_id']) { [string]$first.product_id } else { '' }
+    $isBuildTools = ($productId -match 'BuildTools')
+    $kind = if ($isBuildTools) { 'build-tools' } else { 'ide' }
+    $name = if ($isBuildTools) { 'Visual Studio Build Tools' } else { 'Visual Studio' }
+
     $observed = [ordered]@{
         present = $true
         verification = 'verified-present'
@@ -217,17 +231,18 @@ function Get-McVisualStudioObservation {
         msvc_toolsets = @($toolsets | Sort-Object)
         windows_sdk_versions = @($sdkVersions)
         desktop_cpp_workload = $desktopCpp
+        vctools_workload = $vctools
         evidence = @([pscustomobject][ordered]@{
                 provider = 'visual-studio-msvc-sdk'
                 provider_key = 'vswhere'
-                fields = @('present', 'version', 'install', 'msvc_toolsets', 'windows_sdk_versions', 'desktop_cpp_workload')
+                fields = @('present', 'version', 'install', 'msvc_toolsets', 'windows_sdk_versions', 'desktop_cpp_workload', 'vctools_workload')
                 confidence = 'high'
             })
     }
     $entity = [pscustomobject][ordered]@{
         id = 'visual-studio'
-        kind = 'ide'
-        name = 'Visual Studio'
+        kind = $kind
+        name = $name
         observed = [pscustomobject]$observed
     }
     [void]$verificationEvents.Add([pscustomobject][ordered]@{

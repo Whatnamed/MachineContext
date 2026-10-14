@@ -222,6 +222,19 @@ Invoke-McTest -Name 'Visual Studio workload type contract rejects unsafe states'
     Validate-McSoftwareRecord -Record $valid -Findings $validFindings -Path '$.software[0]'
     Assert-McEqual -Actual $validFindings.Count -Expected 0 -Message 'valid Visual Studio workload should pass the type contract'
 
+    $validVcTools = Copy-McJsonObject -InputObject $valid
+    $validVcTools.kind = 'build-tools'
+    $validVcTools.name = 'Visual Studio Build Tools'
+    $validVcTools.observed.vctools_workload = [pscustomobject][ordered]@{
+        workload_id = 'Microsoft.VisualStudio.Workload.VCTools'
+        verification = 'verified-present'
+        present = $true
+        installation_paths = @('E:\Dev\BuildTools')
+    }
+    $validVcToolsFindings = [System.Collections.Generic.List[object]]::new()
+    Validate-McSoftwareRecord -Record $validVcTools -Findings $validVcToolsFindings -Path '$.software[0]'
+    Assert-McEqual -Actual $validVcToolsFindings.Count -Expected 0 -Message 'valid VCTools workload should pass the type contract'
+
     $unverified = Copy-McJsonObject -InputObject $valid
     $unverified.observed.desktop_cpp_workload = ConvertTo-McVisualStudioDesktopCppObservation -ProbeStatus 'timed_out' -ProbeText ''
     $unverifiedFindings = [System.Collections.Generic.List[object]]::new()

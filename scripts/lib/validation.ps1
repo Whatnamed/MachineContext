@@ -158,8 +158,8 @@ function Validate-McVisualStudioWorkload {
 
     $workloadId = Get-McContractProperty -InputObject $Value -Name 'workload_id'
     Assert-McContractScalar -Findings $Findings -Value $workloadId -Path ("{0}.workload_id" -f $Path)
-    if ([string]$workloadId -ne 'Microsoft.VisualStudio.Workload.NativeDesktop') {
-        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_id' -Message 'Visual Studio workload observation must identify the Native Desktop workload.' -Path ("{0}.workload_id" -f $Path)
+    if ([string]$workloadId -notin @('Microsoft.VisualStudio.Workload.NativeDesktop', 'Microsoft.VisualStudio.Workload.VCTools')) {
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_id' -Message 'Visual Studio workload observation must identify a recognized C++ workload (NativeDesktop or VCTools).' -Path ("{0}.workload_id" -f $Path)
     }
 
     $verification = Get-McContractProperty -InputObject $Value -Name 'verification'
@@ -182,13 +182,13 @@ function Validate-McVisualStudioWorkload {
     }
 
     if ($verificationText -eq 'verified-present' -and ($present -ne $true -or -not $pathsProperty -or $pathCount -eq 0)) {
-        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_present_contract' -Message 'verified-present Native Desktop workload must have present=true and at least one installation path.' -Path $Path
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_present_contract' -Message 'verified-present C++ workload must have present=true and at least one installation path.' -Path $Path
     }
     elseif ($verificationText -eq 'verified-absent' -and ($present -ne $false -or -not $pathsProperty -or $pathCount -ne 0)) {
-        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_absent_contract' -Message 'verified-absent Native Desktop workload must have present=false and no installation paths.' -Path $Path
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_absent_contract' -Message 'verified-absent C++ workload must have present=false and no installation paths.' -Path $Path
     }
     elseif ($verificationText -in @('unverified', 'stale') -and $present -eq $false) {
-        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_unsafe_absence' -Message 'Unverified or stale Native Desktop workload must not claim present=false.' -Path ("{0}.present" -f $Path)
+        Add-McValidationFinding -Findings $Findings -Severity error -Code 'visual_studio_workload_unsafe_absence' -Message 'Unverified or stale C++ workload must not claim present=false.' -Path ("{0}.present" -f $Path)
     }
 }
 
@@ -232,8 +232,13 @@ function Validate-McSoftwareRecord {
         foreach ($name in @('command_resolution', 'alternative_installations', 'config_paths', 'data_paths', 'evidence')) {
             Assert-McContractSequence -Findings $Findings -Value (Get-McContractProperty -InputObject $observed -Name $name) -Path ("{0}.observed.{1}" -f $Path, $name)
         }
-        if ([string](Get-McContractProperty -InputObject $Record -Name 'id') -eq 'visual-studio' -and (Test-McContractProperty -InputObject $observed -Name 'desktop_cpp_workload')) {
-            Validate-McVisualStudioWorkload -Value (Get-McContractProperty -InputObject $observed -Name 'desktop_cpp_workload') -Findings $Findings -Path ("{0}.observed.desktop_cpp_workload" -f $Path)
+        if ([string](Get-McContractProperty -InputObject $Record -Name 'id') -eq 'visual-studio') {
+            if (Test-McContractProperty -InputObject $observed -Name 'desktop_cpp_workload') {
+                Validate-McVisualStudioWorkload -Value (Get-McContractProperty -InputObject $observed -Name 'desktop_cpp_workload') -Findings $Findings -Path ("{0}.observed.desktop_cpp_workload" -f $Path)
+            }
+            if (Test-McContractProperty -InputObject $observed -Name 'vctools_workload') {
+                Validate-McVisualStudioWorkload -Value (Get-McContractProperty -InputObject $observed -Name 'vctools_workload') -Findings $Findings -Path ("{0}.observed.vctools_workload" -f $Path)
+            }
         }
     }
 

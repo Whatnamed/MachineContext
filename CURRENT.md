@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-14T13:56:16.5808136Z
+- Verified at: 2026-10-14T14:26:36.9276592Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -43,6 +43,7 @@
 
 ## Development environment
 
+- **Visual Studio Build Tools** `visual-studio` — 17.14.37806.7 — `E:\Dev\BuildTools`
 - **Agent Reach** `agent-reach` — 1.5.0 — `%USERPROFILE%\.agent-reach-venv\Scripts\agent-reach.exe`
 - **Agently CLI** `agently-cli` — 1.0.18 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.6 — `E:\Dev\npm-global\codex-threadripper.cmd`
@@ -54,8 +55,6 @@
 - **Supabase CLI** `supabase` — 2.120.0 — `D:\Tools\SupabaseCLI\2.120.0\node_modules\.bin\supabase.cmd`
 - **GitHub CLI** `gh` — 2.102.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.99.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
-- **Unity Hub** `unity-hub` — 3.3.3-c3 — `D:\Unity\Unity Hub\Unity Hub.exe`
-- **Visual Studio** `visual-studio` — 17.14.37806.7 — `E:\Dev\BuildTools`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.99.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
