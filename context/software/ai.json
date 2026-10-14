@@ -276,7 +276,7 @@
             "scope": "windows-host",
             "executable": "E:\\Codex\\codex-cli\\codex.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 22,
+            "path_index": 21,
             "source": "persistent-path"
           }
         ],

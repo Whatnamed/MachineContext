@@ -59,6 +59,13 @@
         "transport": "stdio"
       },
       {
+        "name": "node_repl",
+        "scope": "user",
+        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\cfb32733c877621e\\bin\\node_repl.exe",
+        "tool": "codex-cli",
+        "transport": "stdio"
+      },
+      {
         "name": "pencil",
         "scope": "user",
         "args": [
@@ -68,13 +75,6 @@
           "codexCLI"
         ],
         "command": "%USERPROFILE%\\.pencil\\mcp\\cursor\\out\\mcp-server-windows-x64.exe",
-        "tool": "codex-cli",
-        "transport": "stdio"
-      },
-      {
-        "name": "node_repl",
-        "scope": "user",
-        "command": "%LOCALAPPDATA%\\OpenAI\\Codex\\runtimes\\cua_node\\cfb32733c877621e\\bin\\node_repl.exe",
         "tool": "codex-cli",
         "transport": "stdio"
       },

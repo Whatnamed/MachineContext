@@ -22,25 +22,6 @@
     {
       "evidence": [
         {
-          "provider": "runtimes-package-managers-toolchain",
-          "fields": [
-            "executable",
-            "install.root"
-          ],
-          "paths": [
-            "E:\\dev\\flutter\\bin\\dart.bat",
-            "E:\\dev\\flutter\\bin"
-          ]
-        }
-      ],
-      "origin": "inferred",
-      "from": "dart",
-      "relation": "provided_by",
-      "to": "flutter"
-    },
-    {
-      "evidence": [
-        {
           "provider": "command",
           "provider_key": "dsh",
           "fields": [

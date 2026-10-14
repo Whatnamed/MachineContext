@@ -195,7 +195,7 @@
             "scope": "windows-host",
             "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 31,
+            "path_index": 29,
             "source": "persistent-path"
           }
         ],
@@ -254,41 +254,6 @@
         ],
         "purpose": "Codex parallel session and thread execution accelerator tool."
       }
-    },
-    {
-      "schema_version": 1,
-      "id": "dart",
-      "kind": "runtime",
-      "name": "Dart",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "3.11.5",
-        "executable": "E:\\dev\\flutter\\bin\\dart.bat",
-        "command_resolution": [
-          {
-            "executable": "E:\\dev\\flutter\\bin\\dart.bat",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "install": {
-          "root": "E:\\dev\\flutter\\bin"
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "dart",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {}
     },
     {
       "schema_version": 1,
@@ -481,41 +446,6 @@
     },
     {
       "schema_version": 1,
-      "id": "flutter",
-      "kind": "sdk",
-      "name": "Flutter",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "3.41.9",
-        "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
-        "command_resolution": [
-          {
-            "executable": "E:\\dev\\flutter\\bin\\flutter.bat",
-            "command_type": "PersistentApplication"
-          }
-        ],
-        "install": {
-          "root": "E:\\dev\\flutter\\bin"
-        },
-        "evidence": [
-          {
-            "provider": "command",
-            "provider_key": "flutter",
-            "fields": [
-              "present",
-              "version",
-              "executable",
-              "command_resolution"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {}
-    },
-    {
-      "schema_version": 1,
       "id": "gh",
       "kind": "cloud-cli",
       "name": "GitHub CLI",
@@ -567,7 +497,7 @@
             "scope": "windows-host",
             "executable": "D:\\Git\\Git\\cmd\\git.exe",
             "command_type": "PersistentApplication",
-            "path_index": 18,
+            "path_index": 17,
             "source": "persistent-path"
           }
         ],
@@ -1073,7 +1003,7 @@
             "scope": "windows-host",
             "executable": "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin\\supabase.cmd",
             "command_type": "PersistentApplication",
-            "path_index": 35,
+            "path_index": 33,
             "source": "persistent-path"
           }
         ],
@@ -1235,21 +1165,21 @@
         "verification": "verified-present",
         "verification_provider": "visual-studio-msvc-sdk",
         "verification_reason": "vswhere-installation-found",
-        "version": "17.13.35919.96",
+        "version": "17.14.37806.7",
         "install": {
           "installations": [
             {
-              "version": "17.13.35919.96",
-              "display_name": "Visual Studio Community 2022",
-              "installation_path": "D:\\Visual Studio\\product",
+              "version": "17.14.37806.7",
+              "display_name": "Visual Studio ���ɹ��� 2022",
+              "installation_path": "E:\\Dev\\BuildTools",
               "is_complete": true,
               "msvc_toolsets": [
-                "D:\\Visual Studio\\product\\VC\\Tools\\MSVC\\14.43.34808"
+                "E:\\Dev\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207"
               ],
-              "product_id": "Microsoft.VisualStudio.Product.Community"
+              "product_id": "Microsoft.VisualStudio.Product.BuildTools"
             }
           ],
-          "root": "D:\\Visual Studio\\product"
+          "root": "E:\\Dev\\BuildTools"
         },
         "evidence": [
           {
@@ -1279,19 +1209,24 @@
           }
         ],
         "desktop_cpp_workload": {
-          "present": true,
-          "verification": "verified-present",
-          "installation_paths": [
-            "D:\\Visual Studio\\product"
-          ],
+          "present": false,
+          "verification": "verified-absent",
+          "last_known": {
+            "present": false,
+            "verification": "verified-absent",
+            "installation_paths": [],
+            "probe_status": "success",
+            "workload_id": "Microsoft.VisualStudio.Workload.NativeDesktop"
+          },
+          "installation_paths": [],
           "probe_status": "success",
           "workload_id": "Microsoft.VisualStudio.Workload.NativeDesktop"
         },
         "msvc_toolsets": [
-          "D:\\Visual Studio\\product\\VC\\Tools\\MSVC\\14.43.34808"
+          "E:\\Dev\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207"
         ],
         "windows_sdk_versions": [
-          "10.0.22621.0"
+          "10.0.26100.0"
         ]
       },
       "curated": {}

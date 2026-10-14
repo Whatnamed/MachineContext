@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-13T03:39:46.6459290Z
+- Verified at: 2026-10-14T13:56:16.5808136Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (11.5/195.9 GiB free/total)
-  - `D:\` NTFS (8.5/279.3 GiB free/total)
-  - `E:\` NTFS (86.0/953.9 GiB free/total)
+  - `C:\` NTFS (17.8/195.9 GiB free/total)
+  - `D:\` NTFS (60.5/279.3 GiB free/total)
+  - `E:\` NTFS (152.0/953.9 GiB free/total)
 
 ## Development environment
 
@@ -55,7 +55,7 @@
 - **GitHub CLI** `gh` — 2.102.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.99.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Unity Hub** `unity-hub` — 3.3.3-c3 — `D:\Unity\Unity Hub\Unity Hub.exe`
-- **Visual Studio** `visual-studio` — 17.13.35919.96 — `D:\Visual Studio\product`
+- **Visual Studio** `visual-studio` — 17.14.37806.7 — `E:\Dev\BuildTools`
 - **Visual Studio Code** `code` — 1.134.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.99.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.8 — `D:\Node.js\Node.js\npm.cmd`
@@ -65,13 +65,11 @@
 - **winget** `winget` — 1.29.380 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
 - **Bun** `bun` — 1.4.2 — `%USERPROFILE%\.bun\bin\bun.exe`
-- **Dart** `dart` — 3.11.5 — `E:\dev\flutter\bin\dart.bat`
 - **Go** `go` — 1.26.7 — `D:\Go\bin\go.exe`
 - **Node.js** `node` — 22.23.2 — `D:\Node.js\Node.js\node.exe`
 - **Python** `python` — 3.12.10 — `D:\Python\3.12.10\python.exe`
 - **Python Launcher** `python-launcher` — 3.12.10 — `%SYSTEMROOT%\py.exe`
 - **.NET SDK** `dotnet-sdk` — 10.0.401 — `E:\Projects\CS2-Local-Kit\CS2-Local-Kit\temp\tooling\dotnet\dotnet.exe`
-- **Flutter** `flutter` — 3.41.9 — `E:\dev\flutter\bin\flutter.bat`
 - **Tera Term 5** `tera-term` — 5.5.0 — `E:\teraterm\teraterm5\ttermpro.exe`
 - **rustup** `rustup` — 1.29.1 — `%USERPROFILE%\.cargo\bin\rustup.exe`
 

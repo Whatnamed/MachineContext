@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 12348030976,
+      "free_bytes": 19058917376,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 9126805504,
+      "free_bytes": 64961380352,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 92341796864,
+      "free_bytes": 163208757248,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -272,7 +272,7 @@
             "scope": "windows-host",
             "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
             "command_type": "PersistentApplication",
-            "path_index": 19,
+            "path_index": 18,
             "source": "persistent-path"
           }
         ],
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 46,
+    "entry_count": 44,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -403,7 +403,6 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Git\\Git\\cmd",
@@ -425,7 +424,6 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Git\\Git\\cmd",
@@ -437,7 +435,6 @@
       "D:\\Claude\\cli",
       "E:\\Dev\\npm-global",
       "%USERPROFILE%\\.cargo\\bin",
-      "E:\\dev\\flutter\\bin",
       "%LOCALAPPDATA%\\agy\\bin",
       "%LOCALAPPDATA%\\Microsoft\\WindowsApps",
       "%USERPROFILE%\\.lmstudio\\bin",
@@ -465,7 +462,6 @@
       "D:\\Claude\\cli",
       "E:\\Dev\\npm-global",
       "%USERPROFILE%\\.cargo\\bin",
-      "E:\\dev\\flutter\\bin",
       "%LOCALAPPDATA%\\agy\\bin",
       "%LOCALAPPDATA%\\Microsoft\\WindowsApps",
       "D:\\Cursor\\cursor\\resources\\app\\bin",
@@ -505,7 +501,6 @@
       "D:\\Node.js\\Node.js",
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
-      "D:\\Windows Kits\\10\\Windows Performance Toolkit",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
       "D:\\Git\\Git\\cmd",
@@ -517,7 +512,6 @@
       "D:\\Claude\\cli",
       "E:\\Dev\\npm-global",
       "%USERPROFILE%\\.cargo\\bin",
-      "E:\\dev\\flutter\\bin",
       "%LOCALAPPDATA%\\agy\\bin",
       "%LOCALAPPDATA%\\Microsoft\\WindowsApps",
       "%USERPROFILE%\\.lmstudio\\bin",
