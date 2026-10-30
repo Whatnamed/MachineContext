@@ -1,5 +1,7 @@
 # MachineContext
 
+> **用户级全局 Agent 规则（不是本项目 AGENTS.md）**：本机运行 `pwsh -File scripts/export-global-agent-rules.ps1`，将当前真实生效的 Codex 全局规则与保留了「联网检索」的 DSH 完整规则逐字节导出至 `docs/global-agent-rules/AGENTS.md` 和 `docs/global-agent-rules/DSH-AGENTS.md`；审阅后提交至本私有仓库。不要使用旧的增补文件或 09-15 模板覆盖最新规则。
+
 MachineContext is a private, AI-readable source of truth for this computer's environment.
 
 Its purpose is to let ChatGPT, Codex, Agy, and other agents quickly understand the real machine before planning installations, development work, configuration changes, upgrades, migrations, or troubleshooting.
