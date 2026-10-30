@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.3.3",
+        "version": "1.3.6",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -351,7 +351,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.1007.2314.0",
+        "version": "26.1027.3384.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -365,8 +365,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1007.2314.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.1007.2314.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1027.3384.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.1027.3384.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -504,7 +504,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.2.0-rc.2",
+        "version": "0.2.1-rc.2",
         "executable": "D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd",
         "command_resolution": [
           {
@@ -574,7 +574,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.2.0-rc.2",
+        "version": "0.2.1-rc.2",
         "executable": "D:\\DSH-desktop\\DeepSeek Harness.exe",
         "evidence": [
           {
@@ -610,7 +610,7 @@
         "notes": [
           "Installed by the user on 2026-09-29. Registry evidence: HKCU uninstall entry \"DeepSeek Harness 0.2.0-rc.2\" (key 1bf39983-50d0-5fe0-9ef4-cece76f67c5e). Version cross-checked against the executable FileVersion 0.2.0-rc.2 (ProductVersion 0.2.0.0, mtime 2026-09-29T18:34+08:00).",
           "TRAP (OPERATIONS section 8 class): D:\\DSH-desktop\\version contains \"44.0.0\", which is the bundled Electron shell version, not the product version. Do not refresh observed.version from that file.",
-          "Current against its own update feed: https://download.deepseek.com/dsh-desk/feeds/win-x64/ channel nightly reports version 0.2.0-rc.2 (releaseDate 2026-09-29T10:35:27Z). No routine provider covers this entity, so it will go stale silently until refreshed by hand.",
+          "Historical update-feed check on 2026-09-29: https://download.deepseek.com/dsh-desk/feeds/win-x64/ channel nightly reported 0.2.0-rc.2 (releaseDate 2026-09-29T10:35:27Z). This is historical evidence, not a current-version assertion. No routine provider covers this entity; refresh its version from registry and executable evidence.",
           "Bundles its own dsh CLI launcher at D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd, which runs @deepseek-ai/dsh-desktop-host\\lib\\cli.js from app.asar inside the app process with ELECTRON_RUN_AS_NODE=1. Verified: it prints 0.2.0-rc.2 and the same profile-launcher help surface as the retired standalone CLI.",
           "The \"Manage dsh command\" feature is implemented by resources\\runtime\\cli\\command-manager.js, which on win32 spawns command-path.ps1 with an inspect/install/remove request. It prepends the launcher directory to the persistent USER PATH and records ownership in HKCU\\Software\\DeepSeekHarness\\Command (Directory, PathWasAbsent, RetainedEntries); it copies no shim and touches no Machine PATH. install requires the fingerprint returned by inspect, and remove reverses it.",
           "Private toolchain payload (resources\\runtime\\primary-runtime\\runtime.json): node 24.21.0, pnpm 11.7.0, python 3.12.14, plus office-skills. These are internal to the Desktop and do not change the machine Node.js 22 or Git installs."

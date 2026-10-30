@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 19058917376,
+      "free_bytes": 22548578304,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 64961380352,
+      "free_bytes": 30064771072,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 163208757248,
+      "free_bytes": 67377299456,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -265,7 +265,7 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "7.6.6",
+        "version": "7.6.7",
         "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
         "command_resolution": [
           {
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 44,
+    "entry_count": 64,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -452,7 +452,27 @@
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-investigate-20261015\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-offline-20261020\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-5350205a054b\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-225cb19cdff2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-bc25cfa87580\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-73ce542bf7ec\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-37ce3ef2465c\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-b45f4f543985\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-60697f7d93f2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-toggle-human-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\c21c08001ddd46c8b4bf10d788849a4e\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\51d6dfc22bdc4a4eb2827f044b0a2ba4\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-compat-14192-20261023\\temp\\bot-adapters-14192\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-3\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
     ],
     "user_path": [
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
@@ -480,7 +500,27 @@
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-investigate-20261015\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-offline-20261020\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-5350205a054b\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-225cb19cdff2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-bc25cfa87580\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-73ce542bf7ec\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-37ce3ef2465c\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-b45f4f543985\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-60697f7d93f2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-toggle-human-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\c21c08001ddd46c8b4bf10d788849a4e\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\51d6dfc22bdc4a4eb2827f044b0a2ba4\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-compat-14192-20261023\\temp\\bot-adapters-14192\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-3\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
     ]
   },
   "environment": {
@@ -529,7 +569,27 @@
       "E:\\CS2MOD\\main\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-human-crash\\.cache\\dotnet-home\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-runtime-baseline\\.cache\\dotnet-home\\.dotnet\\tools",
-      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools"
+      "E:\\CS2MOD\\wt-human-cosmetics\\.cache\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-investigate-20261015\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-offline-20261020\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-5350205a054b\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-225cb19cdff2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-bc25cfa87580\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-experiment-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-73ce542bf7ec\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-37ce3ef2465c\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-b45f4f543985\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-ui-20261020\\temp\\bot-experiment-build\\bot-experiment-e18c029-60697f7d93f2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-toggle-human-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\c21c08001ddd46c8b4bf10d788849a4e\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-match-setup-20261022\\temp\\match-patch\\51d6dfc22bdc4a4eb2827f044b0a2ba4\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-compat-14192-20261023\\temp\\bot-adapters-14192\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-3\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
     ],
     "shell_profiles": [
       {

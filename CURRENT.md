@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-10-14T14:26:36.9276592Z
+- Verified at: 2026-10-30T06:41:43.1840117Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
 - Storage:
-  - `C:\` NTFS (17.8/195.9 GiB free/total)
-  - `D:\` NTFS (60.5/279.3 GiB free/total)
-  - `E:\` NTFS (152.0/953.9 GiB free/total)
+  - `C:\` NTFS (21.0/195.9 GiB free/total)
+  - `D:\` NTFS (28.0/279.3 GiB free/total)
+  - `E:\` NTFS (62.8/953.9 GiB free/total)
 
 ## Development environment
 
@@ -74,18 +74,18 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.3.3 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.3.6 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
 - **Claude Code** `claude-code` — 2.1.296 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.162.1 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.1007.2314.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1007.2314.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.1027.3384.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1027.3384.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
-- **DSH** `dsh` — 0.2.0-rc.2 — `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`
-- **DSH Desktop** `dsh-desktop` — 0.2.0-rc.2 — `D:\DSH-desktop\DeepSeek Harness.exe`
+- **DSH** `dsh` — 0.2.1-rc.2 — `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`
+- **DSH Desktop** `dsh-desktop` — 0.2.1-rc.2 — `D:\DSH-desktop\DeepSeek Harness.exe`
 - **Grok Build CLI** `grok` — 1.0.52 — `D:\GrokBuild\home\bin\grok.exe`
 - **Kimi Code** `kimi-code-desktop` — 1.0.4 — `D:\KimiCode\Kimi Code\Kimi Code.exe`
 - **Oh My Pi** `omp` — 18.10.3 — `D:\OMP\omp.exe`

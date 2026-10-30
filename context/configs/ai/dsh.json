@@ -34,7 +34,7 @@
             "agent-default-model": {
               "provider": "deepseek-account",
               "model": "deepseek-flash",
-              "reasoningEffort": "max"
+              "reasoningEffort": "high"
             },
             "llm-deepseek": {
               "baseURL": "https://api.deepseek.com/v1",
