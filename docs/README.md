@@ -34,7 +34,8 @@ Root-level policy/reference documents remain `AGENTS.md`, `PRIVACY.md`, `SCHEMA.
 | 了解为什么这样设计 | `docs/DECISIONS.md` + `docs/ARCHITECTURE.md` |
 | 了解某次变更的来龙去脉 | `docs/devlog/` |
 
-- [global-agent-rules-karpathy-2026-10-30.md](global-agent-rules-karpathy-2026-10-30.md) — 一次性共享全局规则的精简增补及本机部署步骤；原始六章全局规则位于本机非跟踪位置，**不等同于仓库根 AGENTS.md**。
+- `docs/global-agent-rules/AGENTS.md`（用户全局通用版）及 `DSH-AGENTS.md`（DSH 专属完整版本）：**完整原文由本机实际生效文件导出后才出现**，不是这里的项目级 `AGENTS.md`，不得用摘要或旧模板拼接替代。运行 `pwsh -File scripts/export-global-agent-rules.ps1`，审阅后再提交。
+- 2026-10-30 Karpathy 合并的历史设计说明保留于 Git 历史；当前使用完整导出文件而非增补文档。
 
 ## Document ownership
 
