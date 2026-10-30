@@ -1,5 +1,7 @@
 # 2026-10-30 Read-only inventory sync and PowerShell startup diagnosis
 
+Follow-up: The user subsequently authorized upgrading PowerShell only. The [7.6.9 upgrade and startup verification](2026-10-30-pwsh-769-upgrade.md) supersede the unresolved status below; this entry preserves the preceding read-only session.
+
 Scope: Refresh the existing Quick inventory and publish repository records. The user explicitly excluded software installation/upgrades and machine configuration changes. No collector implementation, collection scope, PATH, registry, proxy, or PowerShell settings were changed.
 
 ## Observed changes
