@@ -34,6 +34,8 @@ Root-level policy/reference documents remain `AGENTS.md`, `PRIVACY.md`, `SCHEMA.
 | 了解为什么这样设计 | `docs/DECISIONS.md` + `docs/ARCHITECTURE.md` |
 | 了解某次变更的来龙去脉 | `docs/devlog/` |
 
+- [global-agent-rules-karpathy-2026-10-30.md](global-agent-rules-karpathy-2026-10-30.md) — 一次性共享全局规则的精简增补及本机部署步骤；原始六章全局规则位于本机非跟踪位置，**不等同于仓库根 AGENTS.md**。
+
 ## Document ownership
 
 `AGENTS.md` contains repository-wide instructions/invariants only. It must not become a task plan or an operations manual (see `OPERATIONS.md`).
