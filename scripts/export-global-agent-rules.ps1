@@ -1,6 +1,4 @@
-# Export the actual, already-deployed user-global instruction files.
-# Do not generate/merge rules, and do not modify any local agent configuration.
-# Run from a locally synced E:\MachineContext checkout.
+# Export the actually deployed personal global rules, without changing agent settings.
 $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $sourceCodex = Join-Path $HOME '.codex/AGENTS.md'
@@ -15,61 +13,19 @@ foreach ($source in @($sourceCodex, $sourceDsh)) {
     $raw = [System.IO.File]::ReadAllText($source, [System.Text.UTF8Encoding]::new($false, $true))
     foreach ($header in $required) {
         if (-not $raw.Contains($header)) {
-            throw "Global rules seem incomplete: missing '$header' in $source. No files exported."
+            throw "Incomplete global rules: missing '$header' in $source; no files exported."
         }
     }
-    if ($raw -notmatch '(?m)^## (仓库状态|仓库与本机环境)\s* [System.IO.File]::ReadAllText($sourceDsh, [System.Text.UTF8Encoding]::new($false, $true))
-if (-not $dshText.Contains('## 联网检索')) {
-    throw "DSH-specific '联网检索' section missing; refusing to replace repo copy."
-}
-
-[System.IO.Directory]::CreateDirectory($targetDir) | Out-Null
-$copies = @(
-    @{ Source = $sourceCodex; Target = (Join-Path $targetDir 'AGENTS.md') },
-    @{ Source = $sourceDsh; Target = (Join-Path $targetDir 'DSH-AGENTS.md') }
-)
-foreach ($entry in $copies) {
-    $bytes = [System.IO.File]::ReadAllBytes($entry.Source)
-    [System.IO.File]::WriteAllBytes($entry.Target, $bytes)
-    $sourceHash = (Get-FileHash -LiteralPath $entry.Source -Algorithm SHA256).Hash
-    $targetHash = (Get-FileHash -LiteralPath $entry.Target -Algorithm SHA256).Hash
-    if ($sourceHash -ne $targetHash) { throw "Copy verification failed: $($entry.Target)" }
-    Write-Output ("{0}  {1} bytes  SHA256={2}" -f $entry.Target, $bytes.Length, $targetHash.Substring(0, 12))
-}
-Write-Output 'Exported complete, byte-identical current rules. Source files were not changed.'
-Write-Output 'Review the generated files and git diff before explicitly committing/pushing to this PRIVATE repo.'
-& git -C $repo status --short -- docs/global-agent-rules
-) {
-        throw "Global rules seem incomplete: missing repository context chapter in $source."
+    if ($raw -notmatch '(?m)^## (仓库状态|仓库与本机环境)\s*$') {
+        throw "Missing repository context chapter in $source."
     }
-    if ($raw -notmatch '(?m)^## (Git|Git 与开发环境)\s* [System.IO.File]::ReadAllText($sourceDsh, [System.Text.UTF8Encoding]::new($false, $true))
-if (-not $dshText.Contains('## 联网检索')) {
-    throw "DSH-specific '联网检索' section missing; refusing to replace repo copy."
-}
-
-[System.IO.Directory]::CreateDirectory($targetDir) | Out-Null
-$copies = @(
-    @{ Source = $sourceCodex; Target = (Join-Path $targetDir 'AGENTS.md') },
-    @{ Source = $sourceDsh; Target = (Join-Path $targetDir 'DSH-AGENTS.md') }
-)
-foreach ($entry in $copies) {
-    $bytes = [System.IO.File]::ReadAllBytes($entry.Source)
-    [System.IO.File]::WriteAllBytes($entry.Target, $bytes)
-    $sourceHash = (Get-FileHash -LiteralPath $entry.Source -Algorithm SHA256).Hash
-    $targetHash = (Get-FileHash -LiteralPath $entry.Target -Algorithm SHA256).Hash
-    if ($sourceHash -ne $targetHash) { throw "Copy verification failed: $($entry.Target)" }
-    Write-Output ("{0}  {1} bytes  SHA256={2}" -f $entry.Target, $bytes.Length, $targetHash.Substring(0, 12))
-}
-Write-Output 'Exported complete, byte-identical current rules. Source files were not changed.'
-Write-Output 'Review the generated files and git diff before explicitly committing/pushing to this PRIVATE repo.'
-& git -C $repo status --short -- docs/global-agent-rules
-) {
-        throw "Global rules seem incomplete: missing Git chapter in $source."
+    if ($raw -notmatch '(?m)^## (Git|Git 与开发环境)\s*$') {
+        throw "Missing Git chapter in $source."
     }
 }
 $dshText = [System.IO.File]::ReadAllText($sourceDsh, [System.Text.UTF8Encoding]::new($false, $true))
 if (-not $dshText.Contains('## 联网检索')) {
-    throw "DSH-specific '联网检索' section missing; refusing to replace repo copy."
+    throw "DSH-specific 联网检索 section missing; no files exported."
 }
 
 [System.IO.Directory]::CreateDirectory($targetDir) | Out-Null
@@ -85,6 +41,6 @@ foreach ($entry in $copies) {
     if ($sourceHash -ne $targetHash) { throw "Copy verification failed: $($entry.Target)" }
     Write-Output ("{0}  {1} bytes  SHA256={2}" -f $entry.Target, $bytes.Length, $targetHash.Substring(0, 12))
 }
-Write-Output 'Exported complete, byte-identical current rules. Source files were not changed.'
-Write-Output 'Review the generated files and git diff before explicitly committing/pushing to this PRIVATE repo.'
+Write-Output 'Exported current, byte-identical global rules. Source files were not modified.'
+Write-Output 'Review generated content before committing or pushing to this PRIVATE repo.'
 & git -C $repo status --short -- docs/global-agent-rules
