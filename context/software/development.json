@@ -110,7 +110,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.4.2",
+        "version": "1.4.4",
         "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
         "command_resolution": [
           {
@@ -149,7 +149,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.99.0",
+        "version": "1.99.1",
         "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
         "command_resolution": [
           {
@@ -187,7 +187,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "1.134.0",
+        "version": "1.144.0",
         "executable": "D:\\VSCode\\Microsoft VS Code\\bin\\code.cmd",
         "command_resolution": [
           {
@@ -496,7 +496,7 @@
             "scope": "windows-host",
             "executable": "D:\\Git\\Git\\cmd\\git.exe",
             "command_type": "PersistentApplication",
-            "path_index": 17,
+            "path_index": 18,
             "source": "persistent-path"
           }
         ],
@@ -517,7 +517,7 @@
             "confidence": "high"
           }
         ],
-        "distribution_version": "2.56.0.windows.2"
+        "distribution_version": "2.56.0.windows.4"
       },
       "curated": {
         "notes": [
@@ -533,7 +533,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "3.8.0",
+        "version": "3.8.1",
         "executable": "D:\\Git\\Git\\cmd\\git-lfs.exe",
         "command_resolution": [
           {
@@ -572,7 +572,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.26.7",
+        "version": "1.27.3",
         "executable": "D:\\Go\\bin\\go.exe",
         "command_resolution": [
           {
@@ -682,7 +682,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "22.23.2",
+        "version": "22.23.4",
         "executable": "D:\\Node.js\\Node.js\\node.exe",
         "command_resolution": [
           {
@@ -717,7 +717,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "10.9.8",
+        "version": "10.9.9",
         "executable": "D:\\Node.js\\Node.js\\npm.cmd",
         "command_resolution": [
           {
@@ -922,7 +922,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.99.0",
+        "version": "1.99.1",
         "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
         "command_resolution": [
           {
@@ -957,7 +957,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.29.1",
+        "version": "1.29.2",
         "executable": "%USERPROFILE%\\.cargo\\bin\\rustup.exe",
         "command_resolution": [
           {
@@ -995,19 +995,19 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "2.120.0",
-        "executable": "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin\\supabase.cmd",
+        "version": "2.122.0",
+        "executable": "D:\\Tools\\SupabaseCLI\\2.122.0\\node_modules\\.bin\\supabase.cmd",
         "command_resolution": [
           {
             "scope": "windows-host",
-            "executable": "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin\\supabase.cmd",
+            "executable": "D:\\Tools\\SupabaseCLI\\2.122.0\\node_modules\\.bin\\supabase.cmd",
             "command_type": "PersistentApplication",
             "path_index": 33,
             "source": "persistent-path"
           }
         ],
         "install": {
-          "root": "D:\\Tools\\SupabaseCLI\\2.120.0"
+          "root": "D:\\Tools\\SupabaseCLI\\2.122.0"
         },
         "evidence": [
           {
@@ -1064,7 +1064,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.0",
+        "version": "0.13.6",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1099,7 +1099,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.0",
+        "version": "0.13.6",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {

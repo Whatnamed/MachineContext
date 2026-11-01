@@ -26,7 +26,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.3.6",
+        "version": "1.4.12",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -169,7 +169,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.1.296",
+        "version": "2.1.316",
         "executable": "D:\\Claude\\cli\\claude.cmd",
         "command_resolution": [
           {
@@ -269,7 +269,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "0.162.1",
+        "version": "0.166.0",
         "executable": "E:\\Codex\\codex-cli\\codex.cmd",
         "command_resolution": [
           {
@@ -504,7 +504,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.2.1-rc.2",
+        "version": "0.2.1-rc.5",
         "executable": "D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd",
         "command_resolution": [
           {
@@ -626,7 +626,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.0.52",
+        "version": "1.0.70",
         "executable": "D:\\GrokBuild\\home\\bin\\grok.exe",
         "command_resolution": [
           {
@@ -771,7 +771,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "18.10.3",
+        "version": "18.14.2",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {

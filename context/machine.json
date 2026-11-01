@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 21474836480,
+      "free_bytes": 22280142848,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 30064771072,
+      "free_bytes": 31138512896,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 67108864000,
+      "free_bytes": 71135395840,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -272,7 +272,7 @@
             "scope": "windows-host",
             "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
             "command_type": "PersistentApplication",
-            "path_index": 18,
+            "path_index": 17,
             "source": "persistent-path"
           }
         ],
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 64,
+    "entry_count": 67,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -405,8 +405,8 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
-      "D:\\Git\\Git\\cmd",
-      "%PROGRAMFILES%\\PowerShell\\7"
+      "%PROGRAMFILES%\\PowerShell\\7",
+      "D:\\Git\\Git\\cmd"
     ],
     "persistent_effective_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -426,8 +426,8 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
-      "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\PowerShell\\7",
+      "D:\\Git\\Git\\cmd",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -442,7 +442,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.122.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -472,7 +472,10 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
       "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
-      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
     ],
     "user_path": [
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
@@ -490,7 +493,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.122.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -520,7 +523,10 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
       "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
-      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
     ]
   },
   "environment": {
@@ -543,8 +549,8 @@
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
       "%PROGRAMFILES%\\GitHub CLI",
-      "D:\\Git\\Git\\cmd",
       "%PROGRAMFILES%\\PowerShell\\7",
+      "D:\\Git\\Git\\cmd",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -559,7 +565,7 @@
       "%USERPROFILE%\\.bun\\bin",
       "%USERPROFILE%\\go\\bin",
       "%USERPROFILE%\\.agent-reach-venv\\Scripts",
-      "D:\\Tools\\SupabaseCLI\\2.120.0\\node_modules\\.bin",
+      "D:\\Tools\\SupabaseCLI\\2.122.0\\node_modules\\.bin",
       "D:\\OMP",
       "%USERPROFILE%\\.dotnet\\tools",
       "E:\\CS2MOD\\wt-agent-b\\.cache\\dotnet-home\\.dotnet\\tools",
@@ -589,7 +595,10 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\nades-build-final\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-nades-14192-20261023\\temp\\dotnet-check-home\\.dotnet\\tools",
       "temp\\integration\\aim-build\\dotnet-home\\.dotnet\\tools",
-      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools"
+      "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
+      "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
     ],
     "shell_profiles": [
       {
