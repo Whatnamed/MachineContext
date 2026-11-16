@@ -5,10 +5,8 @@
     "supplemental_inventory": {
       "entity_ids": [
         "antigravity-desktop",
-        "cherry-studio",
         "claude-desktop",
         "open-design",
-        "trae",
         "wand",
         "zcode"
       ],
@@ -110,7 +108,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.17.0",
+        "version": "2.32.1",
         "executable": "%LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe",
         "evidence": [
           {
@@ -129,36 +127,10 @@
         "notes": [
           "no user-level rule file was added for Antigravity Desktop (2026-09-16). Its embedded docs and the shipping language_server.exe both name ~/.gemini/config/ as the global customization root, which is the same %USERPROFILE%\\.gemini\\config\\GEMINI.md that Agy already reads; the app.asar (shell) never resolves a rule path, so a rule read by this product is served by the agent runtime, not the shell",
           "deliberately did not create %USERPROFILE%\\.gemini\\GEMINI.md: the docs place global rules under the config root, but no runtime evidence positively excludes the parent ~/.gemini directory as an additional candidate, so duplicate injection of the same ruleset could not be ruled out; existing config\\GEMINI.md was left untouched",
-          "2026-09-26 version refresh: 2.11.0 -> 2.17.0. This entity has no routine provider coverage (OPERATIONS section 8). Evidence: %LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe FileVersion 2.17.0 / ProductVersion 2.17.0.0 (mtime 2026-09-23T07:01:04+08:00); the HKCU uninstall entry \"Antigravity 2.17.0\" (key 121a0be4-63bd-531e-acf8-fc3924c7e984, DisplayIcon resolves to the same executable). The install root holds no versioned payload directory, so the install-root executable is authoritative here. Executable path unchanged."
+          "2026-09-26 version refresh: 2.11.0 -> 2.17.0. This entity has no routine provider coverage (OPERATIONS section 8). Evidence: %LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe FileVersion 2.17.0 / ProductVersion 2.17.0.0 (mtime 2026-09-23T07:01:04+08:00); the HKCU uninstall entry \"Antigravity 2.17.0\" (key 121a0be4-63bd-531e-acf8-fc3924c7e984, DisplayIcon resolves to the same executable). The install root holds no versioned payload directory, so the install-root executable is authoritative here. Executable path unchanged.",
+          "2026-11-16 version refresh: 2.17.0 -> 2.32.1 (no routine provider coverage; OPERATIONS section 8). Evidence: %LOCALAPPDATA%\\Programs\\antigravity\\Antigravity.exe FileVersion 2.32.1 (ProductVersion 2.32.1.0), live running Antigravity.exe processes, and HKCU uninstall entry \"Antigravity 2.32.1\" (key 121a0be4-63bd-531e-acf8-fc3924c7e984)."
         ],
         "purpose": "Google Antigravity desktop IDE application."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "cherry-studio",
-      "kind": "ai-tool",
-      "name": "Cherry Studio",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "1.8.1",
-        "executable": "%PROGRAMFILES%\\Cherry Studio\\Cherry Studio.exe",
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "cherry-studio",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "purpose": "Desktop multi-model LLM client with MCP support."
       }
     },
     {
@@ -574,7 +546,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.2.1-rc.2",
+        "version": "0.2.1-rc.5",
         "executable": "D:\\DSH-desktop\\DeepSeek Harness.exe",
         "evidence": [
           {
@@ -613,7 +585,8 @@
           "Historical update-feed check on 2026-09-29: https://download.deepseek.com/dsh-desk/feeds/win-x64/ channel nightly reported 0.2.0-rc.2 (releaseDate 2026-09-29T10:35:27Z). This is historical evidence, not a current-version assertion. No routine provider covers this entity; refresh its version from registry and executable evidence.",
           "Bundles its own dsh CLI launcher at D:\\DSH-desktop\\resources\\runtime\\cli\\bin\\dsh.cmd, which runs @deepseek-ai/dsh-desktop-host\\lib\\cli.js from app.asar inside the app process with ELECTRON_RUN_AS_NODE=1. Verified: it prints 0.2.0-rc.2 and the same profile-launcher help surface as the retired standalone CLI.",
           "The \"Manage dsh command\" feature is implemented by resources\\runtime\\cli\\command-manager.js, which on win32 spawns command-path.ps1 with an inspect/install/remove request. It prepends the launcher directory to the persistent USER PATH and records ownership in HKCU\\Software\\DeepSeekHarness\\Command (Directory, PathWasAbsent, RetainedEntries); it copies no shim and touches no Machine PATH. install requires the fingerprint returned by inspect, and remove reverses it.",
-          "Private toolchain payload (resources\\runtime\\primary-runtime\\runtime.json): node 24.21.0, pnpm 11.7.0, python 3.12.14, plus office-skills. These are internal to the Desktop and do not change the machine Node.js 22 or Git installs."
+          "Private toolchain payload (resources\\runtime\\primary-runtime\\runtime.json): node 24.21.0, pnpm 11.7.0, python 3.12.14, plus office-skills. These are internal to the Desktop and do not change the machine Node.js 22 or Git installs.",
+          "2026-11-16 version refresh: 0.2.1-rc.2 -> 0.2.1-rc.5 (no routine provider coverage; OPERATIONS section 8). Evidence: D:\\DSH-desktop\\DeepSeek Harness.exe FileVersion 0.2.1-rc.5 (ProductVersion 0.2.1.0) and HKCU uninstall entry \"DeepSeek Harness 0.2.1-rc.5\" (key 1bf39983-50d0-5fe0-9ef4-cece76f67c5e), matching the bundled dsh CLI."
         ],
         "purpose": "DeepSeek Harness official desktop application; owns the dsh command on this machine."
       }
@@ -905,7 +878,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.4.2",
+        "version": "0.5.7",
         "executable": "D:\\Qoder-CN\\Qoder CN\\Qoder CN.exe",
         "config_paths": [
           {
@@ -955,55 +928,10 @@
           "2026-09-16 version correction (registry sentence updated 2026-09-19): this entity is not the installer baseline. Qoder CN keeps a versioned payload library at D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\<ver>\\ and executes the app from there, so the install-root Qoder CN.exe stays at the installer baseline (0.1.3) and is misleading on its own. The registry DisplayVersion is NOT permanently pinned to that baseline either: it read 0.1.3 on 2026-09-16 but reported 0.3.4 on 2026-09-19, so treat it as possibly-current rather than always-stale — and still confirm against the running process. Historical evidence for 0.2.5 (2026-09-16): the live agent worker resolved its runtime from .qoder-versions\\0.2.5\\resources\\app.asar.unpacked\\...\\qoder-worker-runtime.obf.mjs; .qoder-versions\\0.2.5\\resources\\build-manifest.json reported productVersion 0.2.5 (commit cb28e393, buildTime 2026-09-11); 0.2.5.qoder-update-ready.json was staged 2026-09-15T22:09; and the app status file reported 0.2.5. Do not use registry DisplayVersion alone to refresh this entity.",
           "Qoder CN version history observed 2026-09-19: staged payloads under .qoder-versions are 0.1.8 (2026-09-06), 0.2.5 (2026-09-15) and 0.3.4 (2026-09-19, current); the installer baseline in the install root remains 0.1.3.",
           "2026-09-19 version refresh: this entity is 0.3.4, not 0.2.5. Evidence: of the 13 running Qoder CN processes, 12 resolve their executable from .qoder-versions\\0.3.4\\Qoder CN.exe (the newest cohort, started 2026-09-19T22:52+08:00) while 1 leftover (pid 18628, started 12:44+08:00) still runs the older 0.2.5 payload — a stale process, not evidence against the refresh; .qoder-versions\\0.3.4\\resources\\build-manifest.json reports productVersion 0.3.4 (commit 081b9000518bbd81daf8108840085007425d9bb9, buildTime 2026-09-19T09:22:27Z, electron 43.1.1); .qoder-app-status.json reports version 0.3.4; 0.3.4.qoder-update-ready.json (releaseId 0.3.4, payloadLayout pending-asar-v1) was staged 2026-09-19T22:35; and the registry DisplayVersion now also reads 0.3.4. Refreshed by a one-time script because this supplementary desktop entity has no routine provider coverage.",
-          "2026-09-26 version refresh: 0.3.4 -> 0.4.2. Evidence follows the section 8 priority for versioned-payload apps: (1) the single live Qoder CN process resolves its executable from D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\0.4.2\\Qoder CN.exe, and the 0.3.4 process cohort seen on 2026-09-19 is gone; (2) .qoder-versions\\0.4.2\\resources\\build-manifest.json reports productVersion 0.4.2 (commit cbe199bb4faab2d747b21b0ed1f22cecb38b18ef, buildTime 2026-09-23T13:13:14.194Z, electron 43.1.1); (3) the HKCU uninstall entry now also reads DisplayVersion 0.4.2. The install-root Qoder CN.exe remains the installer baseline (0.1.3) as expected for this product. The .qoder-versions directory now holds 0.2.5, 0.3.4 and 0.4.2 (staged 2026-09-24T19:35+08:00). Refreshed by a one-time script because this supplementary desktop entity has no routine provider coverage."
+          "2026-09-26 version refresh: 0.3.4 -> 0.4.2. Evidence follows the section 8 priority for versioned-payload apps: (1) the single live Qoder CN process resolves its executable from D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\0.4.2\\Qoder CN.exe, and the 0.3.4 process cohort seen on 2026-09-19 is gone; (2) .qoder-versions\\0.4.2\\resources\\build-manifest.json reports productVersion 0.4.2 (commit cbe199bb4faab2d747b21b0ed1f22cecb38b18ef, buildTime 2026-09-23T13:13:14.194Z, electron 43.1.1); (3) the HKCU uninstall entry now also reads DisplayVersion 0.4.2. The install-root Qoder CN.exe remains the installer baseline (0.1.3) as expected for this product. The .qoder-versions directory now holds 0.2.5, 0.3.4 and 0.4.2 (staged 2026-09-24T19:35+08:00). Refreshed by a one-time script because this supplementary desktop entity has no routine provider coverage.",
+          "2026-11-16 version refresh: 0.4.2 -> 0.5.7 (versioned-payload app; OPERATIONS section 8). Evidence: D:\\Qoder-CN\\Qoder CN\\.qoder-versions\\0.5.7\\Qoder CN.exe exists, .qoder-versions\\0.5.7\\resources\\build-manifest.json reports productVersion 0.5.7 (commit 73fe8d7343fbbbc3fb5ec665489082f6e4db0128, buildTime 2026-11-09T09:29:42.244Z, electron 43.8.4), 0.5.7.qoder-update-ready.json is present, and HKCU uninstall entry \"Qoder CN 0.5.7\" (key f160a86b-5726-553b-9fff-d78743c4373f) reports DisplayVersion 0.5.7. Note: main Qoder CN.exe was not running during the check; install-root Qoder CN.exe remains at baseline 0.1.3."
         ],
         "purpose": "Qoder CN desktop agent (Alibaba Qoder)."
-      }
-    },
-    {
-      "schema_version": 1,
-      "id": "trae",
-      "kind": "ai-tool",
-      "name": "TRAE Work CN",
-      "observed": {
-        "present": true,
-        "verification": "verified-present",
-        "version": "0.1.58",
-        "executable": "D:\\TRAE_Work_CN\\TRAE SOLO CN\\TRAE SOLO CN.exe",
-        "config_paths": [
-          {
-            "kind": "config-file",
-            "path": "%USERPROFILE%\\.trae-cn\\user_rules.md",
-            "exists": true
-          }
-        ],
-        "evidence": [
-          {
-            "provider": "filesystem",
-            "provider_key": "trae",
-            "fields": [
-              "present",
-              "version",
-              "executable"
-            ],
-            "confidence": "high"
-          },
-          {
-            "provider": "user-confirmed",
-            "provider_key": "global-rules-deployment-2026-09-16",
-            "fields": [
-              "config_paths"
-            ],
-            "confidence": "high"
-          }
-        ]
-      },
-      "curated": {
-        "notes": [
-          "user-level global rules deployed at %USERPROFILE%\\.trae-cn\\user_rules.md (2026-09-16); path derived from the product config (product.json dataFolderName=\".trae-cn\") plus the compiled customRuleService globalFilePath getter, which joins the product data folder with the literal filename \"user_rules.md\" — it is NOT under a rules\\ subdirectory and NOT the directory-style \"%USERPROFILE%\\.trae-cn\\user_rules\". Workspace-scoped rules differ: <workspace>\\.trae-cn\\rules\\project_rules.md",
-          "deployment justified by actual use evidence (2026-09-16): per-project agent memory under %USERPROFILE%\\.trae-cn\\memory\\projects (Morpho, Morpho-ui-trae, flclash-traffic-ledger), native-runcommand tool-execution snapshots, and an agent log at %APPDATA%\\TRAE SOLO CN\\logs — not mere installation presence"
-        ],
-        "purpose": "ByteDance Trae AI Native IDE."
       }
     },
     {
@@ -1041,7 +969,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "5.5.6",
+        "version": "5.9.3",
         "executable": "E:\\WorkBuddy\\WorkBuddy.exe",
         "evidence": [
           {
@@ -1071,7 +999,8 @@
           "installed and configured by the user on 2026-08",
           "config home %USERPROFILE%\\.workbuddy is tracked as a path observation; no config profile yet",
           "previously recorded in software/productivity.json as collaboration-app 5.3.8.0; reclassified as agent tooling on 2026-08",
-          "2026-09-26 version refresh: 5.3.14 -> 5.5.6. This entity has no routine provider coverage (OPERATIONS section 8). Evidence: E:\\WorkBuddy\\WorkBuddy.exe FileVersion 5.5.6 (mtime 2026-09-10T18:47+08:00); the HKCU uninstall entry \"WorkBuddy 5.5.6\" (key BFD312E9-1019-4F57-9F44-F86246833B50). Executable path unchanged."
+          "2026-09-26 version refresh: 5.3.14 -> 5.5.6. This entity has no routine provider coverage (OPERATIONS section 8). Evidence: E:\\WorkBuddy\\WorkBuddy.exe FileVersion 5.5.6 (mtime 2026-09-10T18:47+08:00); the HKCU uninstall entry \"WorkBuddy 5.5.6\" (key BFD312E9-1019-4F57-9F44-F86246833B50). Executable path unchanged.",
+          "2026-11-16 version refresh: 5.5.6 -> 5.9.3 (no routine provider coverage; OPERATIONS section 8). Evidence: E:\\WorkBuddy\\WorkBuddy.exe FileVersion 5.9.3 (ProductVersion 5.9.3.0) and HKCU uninstall entry \"WorkBuddy 5.9.3\" (key BFD312E9-1019-4F57-9F44-F86246833B50)."
         ],
         "purpose": "WorkBuddy desktop agent application."
       }
@@ -1084,7 +1013,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "3.14.3.7762",
+        "version": "3.16.3.8992",
         "executable": "D:\\ZCode\\ZCode\\ZCode.exe",
         "config_paths": [
           {
@@ -1118,7 +1047,8 @@
         "notes": [
           "user-level global rules deployed at %USERPROFILE%\\.zcode\\AGENTS.md (2026-09-15; ZCode loads it before workspace AGENTS.md)",
           "2026-09-19 version refresh: 3.8.1.5310 -> 3.14.0.7681. ZCode has no routine provider coverage, so this entity had silently gone stale since the 2026-08-26 initial scan (OPERATIONS section 8). Evidence: D:\\ZCode\\ZCode\\ZCode.exe FileVersion/ProductVersion 3.14.0.7681 (mtime 2026-09-19T10:13+08:00); the HKCU uninstall entry \"ZCode 3.14.0\" (DisplayVersion 3.14.0, key 268ce9e6-a30b-5890-ad18-d4b3ebba5377); and the bundled app package.json (@zcode/desktop) version 3.14.0. The executable path is unchanged.",
-          "2026-09-26 version refresh: 3.14.0.7681 -> 3.14.3.7762. ZCode auto-updates (setting.json autoDownloadAndInstallUpdates=true) and has no routine provider coverage, so this entity had gone stale again since the 2026-09-19 refresh. Evidence: D:\\ZCode\\ZCode\\ZCode.exe FileVersion/ProductVersion 3.14.3.7762 (mtime 2026-09-22T11:20:48+08:00); the HKCU uninstall entry \"ZCode 3.14.3\" (DisplayVersion 3.14.3, key 268ce9e6-a30b-5890-ad18-d4b3ebba5377); and the active provider runtime directory D:\\ZCode\\appdata\\.zcode\\v2\\runtime\\provider\\windows-x86_64\\3.14.3. The executable path is unchanged. Found during the 2026-09-26 ZCode TokenRhythm GLM-5.3 configuration round (OPERATIONS section 8)."
+          "2026-09-26 version refresh: 3.14.0.7681 -> 3.14.3.7762. ZCode auto-updates (setting.json autoDownloadAndInstallUpdates=true) and has no routine provider coverage, so this entity had gone stale again since the 2026-09-19 refresh. Evidence: D:\\ZCode\\ZCode\\ZCode.exe FileVersion/ProductVersion 3.14.3.7762 (mtime 2026-09-22T11:20:48+08:00); the HKCU uninstall entry \"ZCode 3.14.3\" (DisplayVersion 3.14.3, key 268ce9e6-a30b-5890-ad18-d4b3ebba5377); and the active provider runtime directory D:\\ZCode\\appdata\\.zcode\\v2\\runtime\\provider\\windows-x86_64\\3.14.3. The executable path is unchanged. Found during the 2026-09-26 ZCode TokenRhythm GLM-5.3 configuration round (OPERATIONS section 8).",
+          "2026-11-16 version refresh: 3.14.3.7762 -> 3.16.3.8992 (no routine provider coverage; OPERATIONS section 8). Evidence: D:\\ZCode\\ZCode\\ZCode.exe FileVersion/ProductVersion 3.16.3.8992 and HKCU uninstall entry \"ZCode 3.16.3\" (DisplayVersion 3.16.3, key 268ce9e6-a30b-5890-ad18-d4b3ebba5377)."
         ],
         "purpose": "Zhipu AI coding workbench."
       }

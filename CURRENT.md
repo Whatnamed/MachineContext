@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-11-16T03:22:22.5273182Z
+- Verified at: 2026-11-16T03:30:04.3102506Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -76,8 +76,7 @@
 ## AI and agent tooling
 
 - **Agy** `agy` — 1.4.12 — `%LOCALAPPDATA%\agy\bin\agy.exe`
-- **Antigravity Desktop** `antigravity-desktop` — 2.17.0 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
-- **Cherry Studio** `cherry-studio` — 1.8.1 — `%PROGRAMFILES%\Cherry Studio\Cherry Studio.exe`
+- **Antigravity Desktop** `antigravity-desktop` — 2.32.1 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
 - **Claude Code** `claude-code` — 2.1.316 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.166.0 — `E:\Codex\codex-cli\codex.cmd`
@@ -86,17 +85,16 @@
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.2.1-rc.5 — `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`
-- **DSH Desktop** `dsh-desktop` — 0.2.1-rc.2 — `D:\DSH-desktop\DeepSeek Harness.exe`
+- **DSH Desktop** `dsh-desktop` — 0.2.1-rc.5 — `D:\DSH-desktop\DeepSeek Harness.exe`
 - **Grok Build CLI** `grok` — 1.0.70 — `D:\GrokBuild\home\bin\grok.exe`
 - **Kimi Code** `kimi-code-desktop` — 1.0.4 — `D:\KimiCode\Kimi Code\Kimi Code.exe`
 - **Oh My Pi** `omp` — 18.14.2 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.64.0 — `E:\Dev\npm-global\opencodex.cmd`
-- **Qoder CN** `qoder` — 0.4.2 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
-- **TRAE Work CN** `trae` — 0.1.58 — `D:\TRAE_Work_CN\TRAE SOLO CN\TRAE SOLO CN.exe`
+- **Qoder CN** `qoder` — 0.5.7 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
 - **Wand** `wand` — 12.21.0 — `%LOCALAPPDATA%\Wand\Wand.exe`
-- **WorkBuddy** `workbuddy` — 5.5.6 — `E:\WorkBuddy\WorkBuddy.exe`
-- **ZCode** `zcode` — 3.14.3.7762 — `D:\ZCode\ZCode\ZCode.exe`
+- **WorkBuddy** `workbuddy` — 5.9.3 — `E:\WorkBuddy\WorkBuddy.exe`
+- **ZCode** `zcode` — 3.16.3.8992 — `D:\ZCode\ZCode\ZCode.exe`
 
 ## AI configuration profiles
 
