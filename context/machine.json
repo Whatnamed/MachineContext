@@ -82,15 +82,15 @@
       "raw_product_name": "Windows 10 Home",
       "normalized_family": "Windows 11",
       "architecture": "64 位",
-      "build_number": "26200",
-      "display_version": "25H2",
+      "build_number": "26300",
+      "display_version": "26H2",
       "edition": "Core",
       "locale": "zh-CN",
       "locale_id": "0804",
       "machine_context_root": "E:\\MachineContext",
       "time_zone": "China Standard Time",
       "ui_language": "zh-CN",
-      "update_build_revision": 9168
+      "update_build_revision": 9711
     },
     "curated": {}
   },
@@ -129,7 +129,7 @@
           "vram_bytes": 8589934592,
           "vram_source": "nvidia-smi",
           "vram_status": "verified",
-          "driver_version": "616.92"
+          "driver_version": "621.14"
         }
       ],
       "logical_cores": 12,
@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 22280142848,
+      "free_bytes": 37312528384,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 31138512896,
+      "free_bytes": 16911433728,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 71135395840,
+      "free_bytes": 154618822656,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -168,7 +168,7 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "10.0.26200.9168",
+        "version": "10.0.26300.9711",
         "executable": "%SYSTEMROOT%\\system32\\cmd.exe",
         "command_resolution": [
           {
@@ -349,7 +349,7 @@
         "verification": "verified-present",
         "verification_provider": "shells-path-resolution",
         "verification_reason": "version-probe-success",
-        "version": "5.1.26100.9168",
+        "version": "5.1.26100.9711",
         "executable": "%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
         "command_resolution": [
           {
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 67,
+    "entry_count": 68,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -475,7 +475,8 @@
       "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
-      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
     ],
     "user_path": [
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
@@ -526,7 +527,8 @@
       "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
-      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
     ]
   },
   "environment": {
@@ -598,7 +600,8 @@
       "temp\\integration\\aim-build-2\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
-      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim"
+      "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
     ],
     "shell_profiles": [
       {

@@ -17,8 +17,13 @@
       "enabledPlugins": {
         "architecture-visualization@qoder-marketplace": true,
         "design-review@qoder-marketplace": true,
+        "office-docx@qoder-marketplace": true,
+        "office-excel@qoder-marketplace": true,
+        "paper-format-check@qoder-marketplace": true,
         "postman@qoder-marketplace": true,
-        "qoder-context@qoderapp-bundler": true
+        "Presentations@qoder-marketplace": true,
+        "qoder-context@qoderapp-bundler": true,
+        "research-copilot@qoder-marketplace": true
       },
       "unprojected_keys": [
         "qoder.mcpServers",

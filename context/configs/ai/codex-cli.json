@@ -11,17 +11,15 @@
           "sandbox_mode",
           "model_reasoning_effort",
           "model_context_window",
-          "model_auto_compact_token_limit",
           "unprojected_keys"
         ],
         "source_path": "%USERPROFILE%\\.codex\\config.toml"
       }
     ],
     "projection": {
-      "model": "gpt-6.1-terra",
-      "model_auto_compact_token_limit": 330000,
-      "model_context_window": 372000,
-      "model_reasoning_effort": "xhigh",
+      "model": "gpt-6.1-sol",
+      "model_context_window": 500000,
+      "model_reasoning_effort": "high",
       "sandbox_mode": "danger-full-access",
       "unprojected_keys": [
         "codex-cli.disable_response_storage",

@@ -288,7 +288,7 @@
             {
               "name": "Microsoft.AspNetCore.App",
               "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.AspNetCore.App",
-              "version": "8.0.21"
+              "version": "8.0.33"
             },
             {
               "name": "Microsoft.NETCore.App",
@@ -303,7 +303,7 @@
             {
               "name": "Microsoft.NETCore.App",
               "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.NETCore.App",
-              "version": "8.0.21"
+              "version": "8.0.33"
             },
             {
               "name": "Microsoft.WindowsDesktop.App",
@@ -318,7 +318,7 @@
             {
               "name": "Microsoft.WindowsDesktop.App",
               "path": "%PROGRAMFILES%\\dotnet\\shared\\Microsoft.WindowsDesktop.App",
-              "version": "8.0.21"
+              "version": "8.0.33"
             }
           ],
           "sdks": []
@@ -440,6 +440,45 @@
           "Verified on 2026-10-12. The system dotnet host has runtimes and no SDK; this separate project-local SDK record supplies the development toolchain. CS2 Publish-Controller.ps1 resolves current-worktree temp\\tooling\\dotnet, then E:\\CS2MOD\\tooling\\dotnet, then PATH. E:\\CS2MOD\\tooling\\dotnet and E:\\Dev\\dotnet were absent; no download or installation was needed. Details: docs/devlog/2026-10-12-dotnet10-wpf-sdk-verification.md.",
           "2026-10-13: re-verified read-only (`--version`, `--list-sdks`, `--list-runtimes` and Test-Path on the components listed below); nothing was downloaded, installed, copied or moved, and system and user PATH are unchanged. The primary root still enumerates SDK 10.0.401 x64 with Microsoft.NETCore.App, Microsoft.AspNetCore.App and Microsoft.WindowsDesktop.App 10.0.12, and the three files a consumer actually requires all exist: sdk\\10.0.401\\Sdks\\Microsoft.NET.Sdk.WindowsDesktop\\Sdk\\Sdk.props, packs\\Microsoft.WindowsDesktop.App.Ref\\10.0.12\\ref\\net10.0\\PresentationFramework.dll and shared\\Microsoft.WindowsDesktop.App\\10.0.12\\PresentationFramework.dll.",
           "2026-10-13 consumer record: AgentBench (E:\\AgentBench\\AgentBench) reuses this exact installation rather than installing its own - config.local.json sets dotnet_executable to the primary dotnet.exe above, and scripts/dotnet_toolchain.py re-validates SDK 10.0.401, the WindowsDesktop 10.0.12 targeting pack and shared runtime, and the x64 PE header before every run, then confines DOTNET_ROOT, DOTNET_CLI_HOME, NUGET_PACKAGES, NUGET_HTTP_CACHE_PATH and TEMP/TMP to its own .scratch directories. Its docs/P1-B2-readiness.md states the same policy: read only this existing SDK, no system-host fallback, no repeat install. Recorded because it is how a project-local SDK is consumed without becoming a system SDK."
+        ]
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "ffmpeg",
+      "kind": "cli",
+      "name": "FFmpeg",
+      "observed": {
+        "present": true,
+        "verification": "verified-present",
+        "version": "9.0.2",
+        "executable": "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links\\ffmpeg.exe",
+        "command_resolution": [
+          {
+            "executable": "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links\\ffmpeg.exe",
+            "command_type": "PersistentApplication"
+          }
+        ],
+        "install": {
+          "root": "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
+        },
+        "evidence": [
+          {
+            "provider": "command",
+            "provider_key": "ffmpeg",
+            "fields": [
+              "present",
+              "version",
+              "executable",
+              "command_resolution"
+            ],
+            "confidence": "high"
+          }
+        ]
+      },
+      "curated": {
+        "notes": [
+          "2026-11-16: installed via winget (package id Gyan.FFmpeg, full build under %LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe); %LOCALAPPDATA%\\Microsoft\\WinGet\\Links exposes ffmpeg.exe alongside sibling ffplay.exe and ffprobe.exe on persistent user PATH. Update via winget upgrade Gyan.FFmpeg. A separate internal binary at D:\\Program Files\\KeyShot Studio\\bin\\ffmpeg.exe belongs to KeyShot Studio (off PATH, leave untouched); the earlier Python-bundled imageio-ffmpeg copy in D:\\Python\\3.12.10 was uninstalled."
         ]
       }
     },

@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-11-01T08:52:07.6163198Z
+- Verified at: 2026-11-16T03:22:22.5273182Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -25,8 +25,8 @@
 
 ## Machine
 
-- OS: Windows 11 Core 25H2
-- Build: 26200
+- OS: Windows 11 Core 26H2
+- Build: 26300
 - Architecture: 64 位
 - Locale / UI: zh-CN / zh-CN
 - Time zone: China Standard Time
@@ -35,11 +35,11 @@
 - GPUs:
   - GameViewer Virtual Display Adapter (15.6.5.199)
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
-  - NVIDIA GeForce RTX 3070 Laptop GPU (616.92)
+  - NVIDIA GeForce RTX 3070 Laptop GPU (621.14)
 - Storage:
-  - `C:\` NTFS (20.8/195.9 GiB free/total)
-  - `D:\` NTFS (29.0/279.3 GiB free/total)
-  - `E:\` NTFS (66.2/953.9 GiB free/total)
+  - `C:\` NTFS (34.8/195.9 GiB free/total)
+  - `D:\` NTFS (15.8/279.3 GiB free/total)
+  - `E:\` NTFS (144.0/953.9 GiB free/total)
 
 ## Development environment
 
@@ -47,6 +47,7 @@
 - **Agent Reach** `agent-reach` — 1.5.0 — `%USERPROFILE%\.agent-reach-venv\Scripts\agent-reach.exe`
 - **Agently CLI** `agently-cli` — 1.0.18 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.6 — `E:\Dev\npm-global\codex-threadripper.cmd`
+- **FFmpeg** `ffmpeg` — 9.0.2 — `%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe`
 - **Git** `git` — 2.56.0.windows.4 — `D:\Git\Git\cmd\git.exe`
 - **Git LFS** `git-lfs` — 3.8.1 — `D:\Git\Git\cmd\git-lfs.exe`
 - **Lark CLI** `lark-cli` — 1.0.97 — `E:\Dev\npm-global\lark-cli.cmd`
@@ -80,7 +81,7 @@
 - **Claude Code** `claude-code` — 2.1.316 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
 - **Codex CLI** `codex-cli` — 0.166.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.1027.3384.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1027.3384.0_x64__2p2nqsd0c76g0`
+- **Codex Desktop** `codex-desktop` — 26.1111.2228.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1111.2228.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
