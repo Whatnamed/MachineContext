@@ -198,6 +198,7 @@ Git config 只记录跨项目开发行为相关的非敏感事实；不默认记
 - AWS / Azure / Google Cloud CLI；
 - PostgreSQL/MySQL/MariaDB/Redis 等本地开发服务/CLI（实际存在或项目使用时）；
 - Terraform/Pulumi 等实际长期使用工具；
+- FFmpeg（实际存在时）；
 - 其他长期开发工具。
 
 认证状态只有确有规划价值时才能以非敏感布尔/alias 表示，绝不保存 credential。

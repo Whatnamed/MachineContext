@@ -252,6 +252,7 @@ function ConvertTo-McSemanticVersion {
     $versionPattern = '(?<version>v?\d+\.\d+(?:\.\d+){0,3}(?:[-+][0-9A-Za-z][0-9A-Za-z.-]*)?)'
     $patterns = @(
         ('(?i)\bgo\s+version\s+go' + $versionPattern),
+        ('(?i)\bffmpeg\s+version\s+(?<version>v?\d+\.\d+(?:\.\d+){0,3})(?:-(?:full|essentials)_build(?:-[^\s]*)?|\s|$)'),
         ('(?i)\b(?:python|pip|pipx|cargo|rustc|rustup|uv|uvx|gh|flutter|dart|npm|pnpm|yarn|bun|deno|ruby|php|cmake|ninja|adb|git-lfs|git|node)\b[^\d]{0,48}' + $versionPattern),
         ('(?i)\bversion\s*[=:]?\s*' + $versionPattern),
         ('(?<![A-Za-z0-9])' + $versionPattern)

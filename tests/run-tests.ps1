@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
 
@@ -524,6 +524,7 @@ Invoke-McTest -Name 'semantic version and banner normalization' -Body {
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'git version 2.53.0.windows.3') -Expected '2.53.0' -Message 'Git banners must discard provider suffixes'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'Flutter 3.41.9 • channel stable • https://github.com/flutter/flutter.git') -Expected '3.41.9' -Message 'Flutter banners must become semantic versions'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'go version go1.24.11 windows/amd64') -Expected '1.24.11' -Message 'Go banners must strip the go prefix'
+    Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'ffmpeg version 9.0.2-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers') -Expected '9.0.2' -Message 'FFmpeg banners must discard Gyan build suffixes'
     Assert-McEqual -Actual (ConvertTo-McSemanticVersion -Text 'not a version banner with C:\Users\fixture\secret') -Expected $null -Message 'unparseable banners must not enter canonical version fields'
 
     $rawEntity = [pscustomobject][ordered]@{
@@ -1101,6 +1102,13 @@ Invoke-McTest -Name 'curated ownership and safe absence semantics' -Body {
     $aiUnmappedIds = @($aiManagedIds | Where-Object { $aiEventIds -notcontains $_ })
     Assert-McEqual -Actual ($aiUnmappedIds -join ',') -Expected '' -Message 'every AI definition id must be covered by the ai-tooling provider failure map'
     Assert-McTrue -Condition (@($aiToolingEvents | Where-Object { $_.verification -eq 'unverified' }).Count -eq $aiManagedIds.Count) -Message 'ai-tooling provider failure must downgrade exactly its managed entities to unverified'
+
+    $runtimeToolingEvents = @($failureEvents | Where-Object { $_.provider -eq 'runtimes-package-managers-toolchain' })
+    $runtimeManagedIds = @(Get-McRuntimeDefinitions | ForEach-Object { [string]$_.id })
+    $runtimeEventIds = @($runtimeToolingEvents | ForEach-Object { [string]$_.id })
+    $runtimeUnmappedIds = @($runtimeManagedIds | Where-Object { $runtimeEventIds -notcontains $_ })
+    Assert-McEqual -Actual ($runtimeUnmappedIds -join ',') -Expected '' -Message 'every runtime definition id must be covered by the runtimes-package-managers-toolchain provider failure map'
+    Assert-McTrue -Condition ($runtimeEventIds -contains 'ffmpeg') -Message 'ffmpeg must be covered by the runtimes-package-managers-toolchain provider failure map'
 }
 
 Invoke-McTest -Name 'provider diagnostics and local state' -Body {

@@ -64,7 +64,7 @@ function Get-McProviderFailureEvents {
     )
 
     $targets = [ordered]@{
-        'runtimes-package-managers-toolchain' = @([pscustomobject]@{ module = 'development'; ids = @('node', 'python', 'python-launcher', 'go', 'rustc', 'cargo', 'rustup', 'java', 'flutter', 'dart', 'ruby', 'php', 'deno', 'npm', 'pnpm', 'yarn', 'bun', 'pip', 'pipx', 'uv', 'uvx', 'conda', 'mamba', 'nvm', 'fnm', 'volta', 'pyenv', 'mise', 'git-lfs', 'cmake', 'ninja', 'adb', 'nvcc', 'gh', 'docker', 'kubectl', 'vercel', 'wrangler', 'firebase', 'aws', 'az', 'gcloud', 'terraform', 'winget', 'choco', 'scoop') })
+        'runtimes-package-managers-toolchain' = @([pscustomobject]@{ module = 'development'; ids = @('node', 'python', 'python-launcher', 'go', 'rustc', 'cargo', 'rustup', 'java', 'flutter', 'dart', 'ruby', 'php', 'deno', 'npm', 'pnpm', 'yarn', 'bun', 'pip', 'pipx', 'uv', 'uvx', 'conda', 'mamba', 'nvm', 'fnm', 'volta', 'pyenv', 'mise', 'git-lfs', 'ffmpeg', 'cmake', 'ninja', 'adb', 'nvcc', 'gh', 'docker', 'kubectl', 'vercel', 'wrangler', 'firebase', 'aws', 'az', 'gcloud', 'terraform', 'winget', 'choco', 'scoop') })
         # Keep this list in parity with Get-McAiDefinitions (ai-tools.ps1):
         # every id that provider manages must be downgraded to unverified when
         # the provider fails as a whole. The test suite enforces the parity.

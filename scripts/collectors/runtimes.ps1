@@ -34,6 +34,7 @@ function Get-McRuntimeDefinitions {
         [pscustomobject]@{ id = 'pyenv'; name = 'pyenv'; kind = 'version-manager'; command = 'pyenv'; args = @('--version') },
         [pscustomobject]@{ id = 'mise'; name = 'mise'; kind = 'version-manager'; command = 'mise'; args = @('--version') },
         [pscustomobject]@{ id = 'git-lfs'; name = 'Git LFS'; kind = 'cli'; command = 'git-lfs'; args = @('--version') },
+        [pscustomobject]@{ id = 'ffmpeg'; name = 'FFmpeg'; kind = 'cli'; command = 'ffmpeg'; args = @('-version') },
         [pscustomobject]@{ id = 'cmake'; name = 'CMake'; kind = 'build-tool'; command = 'cmake'; args = @('--version') },
         [pscustomobject]@{ id = 'ninja'; name = 'Ninja'; kind = 'build-tool'; command = 'ninja'; args = @('--version') },
         [pscustomobject]@{ id = 'adb'; name = 'Android Debug Bridge'; kind = 'sdk-tool'; command = 'adb'; args = @('version') },
