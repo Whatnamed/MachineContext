@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 37312528384,
+      "free_bytes": 34091302912,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 16911433728,
+      "free_bytes": 15837691904,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 154618822656,
+      "free_bytes": 154350387200,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -272,7 +272,7 @@
             "scope": "windows-host",
             "executable": "%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe",
             "command_type": "PersistentApplication",
-            "path_index": 17,
+            "path_index": 16,
             "source": "persistent-path"
           }
         ],
@@ -404,9 +404,9 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
-      "%PROGRAMFILES%\\GitHub CLI",
       "%PROGRAMFILES%\\PowerShell\\7",
-      "D:\\Git\\Git\\cmd"
+      "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI"
     ],
     "persistent_effective_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -425,9 +425,9 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
-      "%PROGRAMFILES%\\GitHub CLI",
       "%PROGRAMFILES%\\PowerShell\\7",
       "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
@@ -550,9 +550,9 @@
       "D:\\calibre\\New Folder",
       "%PROGRAMFILES%\\NVIDIA Corporation\\NVIDIA App\\NvDLISR",
       "D:\\Go\\bin",
-      "%PROGRAMFILES%\\GitHub CLI",
       "%PROGRAMFILES%\\PowerShell\\7",
       "D:\\Git\\Git\\cmd",
+      "%PROGRAMFILES%\\GitHub CLI",
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
       "E:\\Dev\\uv",
       "E:\\Codex\\codex-cli",
