@@ -141,19 +141,19 @@
   "storage": [
     {
       "filesystem": "NTFS",
-      "free_bytes": 34091302912,
+      "free_bytes": 28185722880,
       "mount_point": "C:\\",
       "total_bytes": 210348535808
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 15837691904,
+      "free_bytes": 146028888064,
       "mount_point": "D:\\",
       "total_bytes": 299891683328
     },
     {
       "filesystem": "NTFS",
-      "free_bytes": 154350387200,
+      "free_bytes": 88852135936,
       "mount_point": "E:\\",
       "total_bytes": 1024207089664
     }
@@ -385,7 +385,7 @@
   ],
   "paths": {
     "scope": "windows-host",
-    "entry_count": 68,
+    "entry_count": 69,
     "machine_context_root": "E:\\MachineContext",
     "machine_path": [
       "D:\\Python\\3.12.10\\Scripts",
@@ -476,7 +476,8 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
       "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
-      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links",
+      "%USERPROFILE%\\.t3\\bin"
     ],
     "user_path": [
       "D:\\DSH-desktop\\resources\\runtime\\cli\\bin",
@@ -528,7 +529,8 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
       "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
-      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links",
+      "%USERPROFILE%\\.t3\\bin"
     ]
   },
   "environment": {
@@ -601,7 +603,8 @@
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build\\dotnet-home\\.dotnet\\tools",
       "E:\\Projects\\CS2-Local-Kit\\wt-bot-perf-14194-20261101\\temp\\perf-14194\\build-final\\dotnet-home\\.dotnet\\tools",
       "D:\\VSCode\\Microsoft VS Code\\bin\\copilot-shim",
-      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links"
+      "%LOCALAPPDATA%\\Microsoft\\WinGet\\Links",
+      "%USERPROFILE%\\.t3\\bin"
     ],
     "shell_profiles": [
       {

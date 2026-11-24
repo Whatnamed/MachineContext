@@ -110,7 +110,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.4.4",
+        "version": "1.4.5",
         "executable": "%USERPROFILE%\\.bun\\bin\\bun.exe",
         "command_resolution": [
           {
@@ -490,7 +490,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.104.0",
+        "version": "2.105.0",
         "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
         "command_resolution": [
           {
@@ -528,7 +528,7 @@
         "verification": "verified-present",
         "verification_provider": "git-for-windows",
         "verification_reason": "version-probe-success",
-        "version": "2.56.0",
+        "version": "2.56.1",
         "executable": "D:\\Git\\Git\\cmd\\git.exe",
         "command_resolution": [
           {
@@ -556,7 +556,7 @@
             "confidence": "high"
           }
         ],
-        "distribution_version": "2.56.0.windows.4"
+        "distribution_version": "2.56.1.windows.1"
       },
       "curated": {
         "notes": [
@@ -1103,7 +1103,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.8",
+        "version": "0.13.9",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1138,7 +1138,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.8",
+        "version": "0.13.9",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {

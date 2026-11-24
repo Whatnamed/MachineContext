@@ -7,7 +7,7 @@
 - State: partial
 - Provider state: verified
 - Mode: Quick
-- Verified at: 2026-11-17T10:23:17.7939104Z
+- Verified at: 2026-11-24T07:39:56.5886324Z
 - Verification scope: core provider scan (supplemental broad inventory maintained separately via user-confirmed scans)
 - Audit closure: partial
 - Audit findings: conflicts=0, open_unknowns=3, accepted_unknowns=1, canonical_unknowns=4, unresolved=1, candidate_unknowns=3
@@ -37,9 +37,9 @@
   - Intel(R) UHD Graphics 730 (31.0.101.5333)
   - NVIDIA GeForce RTX 3070 Laptop GPU (621.14)
 - Storage:
-  - `C:\` NTFS (31.8/195.9 GiB free/total)
-  - `D:\` NTFS (14.8/279.3 GiB free/total)
-  - `E:\` NTFS (143.8/953.9 GiB free/total)
+  - `C:\` NTFS (26.2/195.9 GiB free/total)
+  - `D:\` NTFS (136.0/279.3 GiB free/total)
+  - `E:\` NTFS (82.8/953.9 GiB free/total)
 
 ## Development environment
 
@@ -48,23 +48,23 @@
 - **Agently CLI** `agently-cli` — 1.0.18 — `E:\Dev\npm-global\agently-cli.cmd`
 - **Codex Threadripper** `codex-threadripper` — 0.3.6 — `E:\Dev\npm-global\codex-threadripper.cmd`
 - **FFmpeg** `ffmpeg` — 9.0.2 — `%LOCALAPPDATA%\Microsoft\WinGet\Links\ffmpeg.exe`
-- **Git** `git` — 2.56.0.windows.4 — `D:\Git\Git\cmd\git.exe`
+- **Git** `git` — 2.56.1.windows.1 — `D:\Git\Git\cmd\git.exe`
 - **Git LFS** `git-lfs` — 3.8.1 — `D:\Git\Git\cmd\git-lfs.exe`
 - **Lark CLI** `lark-cli` — 1.0.97 — `E:\Dev\npm-global\lark-cli.cmd`
 - **MCPorter** `mcporter` — 0.9.0 — `E:\Dev\npm-global\mcporter.cmd`
 - **OpenCLI** `opencli` — 1.8.8 — `E:\Dev\npm-global\opencli.cmd`
 - **Supabase CLI** `supabase` — 2.122.0 — `D:\Tools\SupabaseCLI\2.122.0\node_modules\.bin\supabase.cmd`
-- **GitHub CLI** `gh` — 2.104.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
+- **GitHub CLI** `gh` — 2.105.0 — `%PROGRAMFILES%\GitHub CLI\gh.exe`
 - **Rust compiler** `rustc` — 1.100.0 — `%USERPROFILE%\.cargo\bin\rustc.exe`
 - **Visual Studio Code** `code` — 1.144.0 — `D:\VSCode\Microsoft VS Code\bin\code.cmd`
 - **Cargo** `cargo` — 1.100.0 — `%USERPROFILE%\.cargo\bin\cargo.exe`
 - **npm** `npm` — 10.9.9 — `D:\Node.js\Node.js\npm.cmd`
 - **pip** `pip` — 26.2.1 — `D:\Python\3.12.10\Scripts\pip.exe`
-- **uv** `uv` — 0.13.8 — `E:\Dev\uv\uv.exe`
-- **uvx** `uvx` — 0.13.8 — `E:\Dev\uv\uvx.exe`
+- **uv** `uv` — 0.13.9 — `E:\Dev\uv\uv.exe`
+- **uvx** `uvx` — 0.13.9 — `E:\Dev\uv\uvx.exe`
 - **winget** `winget` — 1.29.380 — `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`
 - **.NET** `dotnet` — unknown — `%PROGRAMFILES%\dotnet\dotnet.exe`
-- **Bun** `bun` — 1.4.4 — `%USERPROFILE%\.bun\bin\bun.exe`
+- **Bun** `bun` — 1.4.5 — `%USERPROFILE%\.bun\bin\bun.exe`
 - **Go** `go` — 1.27.4 — `D:\Go\bin\go.exe`
 - **Node.js** `node` — 22.23.5 — `D:\Node.js\Node.js\node.exe`
 - **Python** `python` — 3.12.10 — `D:\Python\3.12.10\python.exe`
@@ -75,20 +75,20 @@
 
 ## AI and agent tooling
 
-- **Agy** `agy` — 1.5.10 — `%LOCALAPPDATA%\agy\bin\agy.exe`
+- **Agy** `agy` — 1.5.16 — `%LOCALAPPDATA%\agy\bin\agy.exe`
 - **Antigravity Desktop** `antigravity-desktop` — 2.32.1 — `%LOCALAPPDATA%\Programs\antigravity\Antigravity.exe`
-- **Claude Code** `claude-code` — 2.1.316 — `D:\Claude\cli\claude.cmd`
+- **Claude Code** `claude-code` — 2.1.331 — `D:\Claude\cli\claude.cmd`
 - **Claude Desktop** `claude-desktop` — 1.37937.3.0 — `%PROGRAMFILES%\WindowsApps\Claude_1.37937.3.0_x64__pzs8sxrjxfjjc\Claude.exe`
-- **Codex CLI** `codex-cli` — 0.169.0 — `E:\Codex\codex-cli\codex.cmd`
-- **Codex Desktop** `codex-desktop` — 26.1111.2228.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1111.2228.0_x64__2p2nqsd0c76g0`
+- **Codex CLI** `codex-cli` — 0.172.0 — `E:\Codex\codex-cli\codex.cmd`
+- **Codex Desktop** `codex-desktop` — 26.1120.5083.0 — `%PROGRAMFILES%\WindowsApps\OpenAI.Codex_26.1120.5083.0_x64__2p2nqsd0c76g0`
 - **Cursor CLI** `cursor-cli` — 3.8.11 — `d:\Cursor\cursor\resources\app\bin\cursor.cmd`
 - **Doubao** `doubao` — 2.25.16 — `D:\Doubao\Doubao.exe`
 - **Doubao Work** `doubao-work` — 2.30.5 — `D:\DoubaoWork\DoubaoWork.exe`
 - **DSH** `dsh` — 0.2.1-rc.5 — `D:\DSH-desktop\resources\runtime\cli\bin\dsh.cmd`
 - **DSH Desktop** `dsh-desktop` — 0.2.1-rc.5 — `D:\DSH-desktop\DeepSeek Harness.exe`
-- **Grok Build CLI** `grok` — 1.0.70 — `D:\GrokBuild\home\bin\grok.exe`
+- **Grok Build CLI** `grok` — 1.0.92 — `D:\GrokBuild\home\bin\grok.exe`
 - **Kimi Code** `kimi-code-desktop` — 1.0.4 — `D:\KimiCode\Kimi Code\Kimi Code.exe`
-- **Oh My Pi** `omp` — 18.22.0 — `D:\OMP\omp.exe`
+- **Oh My Pi** `omp` — 19.1.1 — `D:\OMP\omp.exe`
 - **Open Design** `open-design` — 0.16.1 — `E:\open-design\Open Design\Open Design.exe`
 - **OpenCodex** `opencodex` — 2.64.0 — `E:\Dev\npm-global\opencodex.cmd`
 - **Qoder CN** `qoder` — 0.5.7 — `D:\Qoder-CN\Qoder CN\Qoder CN.exe`
@@ -104,7 +104,7 @@
 - `opencodex` — %USERPROFILE%\.opencodex — `context/configs/ai/opencodex.json`
 - `qoder` — %USERPROFILE%\.qoder-cn — `context/configs/ai/qoder.json`
 - `zcode` — D:\ZCode\appdata\.zcode\v2 — `context/configs/ai/zcode.json`
-- MCP servers: claude-code (3), codex-cli (3), dsh (1), gemini-cli (1), qoder (1)
+- MCP servers: claude-code (3), codex-cli (2), dsh (1), gemini-cli (1), qoder (1)
   - Full inventory: `context/configs/mcp.json`
 
 ## Additional software inventory
