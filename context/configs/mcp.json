@@ -54,7 +54,7 @@
       {
         "name": "node_repl",
         "scope": "user",
-        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1120.5083.0_x64__2p2nqsd0c76g0\\app\\resources\\cua_node\\bin\\node_repl.exe",
+        "command": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1120.6357.0_x64__2p2nqsd0c76g0\\app\\resources\\cua_node\\bin\\node_repl.exe",
         "tool": "codex-cli",
         "transport": "stdio"
       },

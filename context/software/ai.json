@@ -24,7 +24,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.5.16",
+        "version": "1.5.18",
         "executable": "%LOCALAPPDATA%\\agy\\bin\\agy.exe",
         "command_resolution": [
           {
@@ -141,7 +141,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.1.331",
+        "version": "2.1.332",
         "executable": "D:\\Claude\\cli\\claude.cmd",
         "command_resolution": [
           {
@@ -323,7 +323,7 @@
         "verification": "verified-present",
         "verification_provider": "host-authoritative-tools",
         "verification_reason": "success",
-        "version": "26.1120.5083.0",
+        "version": "26.1120.6357.0",
         "evidence": [
           {
             "provider": "host-authoritative-tools",
@@ -337,8 +337,8 @@
             "confidence": "high"
           }
         ],
-        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1120.5083.0_x64__2p2nqsd0c76g0",
-        "package_full_name": "OpenAI.Codex_26.1120.5083.0_x64__2p2nqsd0c76g0",
+        "install_location": "%PROGRAMFILES%\\WindowsApps\\OpenAI.Codex_26.1120.6357.0_x64__2p2nqsd0c76g0",
+        "package_full_name": "OpenAI.Codex_26.1120.6357.0_x64__2p2nqsd0c76g0",
         "package_name": "OpenAI.Codex"
       },
       "curated": {
@@ -744,7 +744,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "19.1.1",
+        "version": "19.2.1",
         "executable": "D:\\OMP\\omp.exe",
         "command_resolution": [
           {

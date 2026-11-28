@@ -149,7 +149,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.100.0",
+        "version": "1.100.1",
         "executable": "%USERPROFILE%\\.cargo\\bin\\cargo.exe",
         "command_resolution": [
           {
@@ -490,7 +490,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "2.105.0",
+        "version": "2.106.0",
         "executable": "%PROGRAMFILES%\\GitHub CLI\\gh.exe",
         "command_resolution": [
           {
@@ -961,7 +961,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "1.100.0",
+        "version": "1.100.1",
         "executable": "%USERPROFILE%\\.cargo\\bin\\rustc.exe",
         "command_resolution": [
           {
@@ -1103,7 +1103,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.9",
+        "version": "0.13.10",
         "executable": "E:\\Dev\\uv\\uv.exe",
         "command_resolution": [
           {
@@ -1138,7 +1138,7 @@
       "observed": {
         "present": true,
         "verification": "verified-present",
-        "version": "0.13.9",
+        "version": "0.13.10",
         "executable": "E:\\Dev\\uv\\uvx.exe",
         "command_resolution": [
           {
